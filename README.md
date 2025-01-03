@@ -28,9 +28,9 @@ Features:
 ## Install locally
 
 ```bash
-composer create-project mysticeragames/markitstatic-cms cms
+composer create-project mysticeragames/markitstatic-cms markitstatic-cms "0.1.*"
 
-cd cms
+cd markitstatic-cms
 
 symfony server:start
 
