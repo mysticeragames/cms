@@ -41,7 +41,7 @@ git submodule add git@github.com:mysticeragames/mysticeragames.com-content.git c
 REPODIR=content
 BRANCH=$(git -C $REPODIR branch --show-current)
 
-if [ -z "$(git -C $REPODIR ls-files)" ]; then cp -r src/Initial/Content $REPODIR && git -C $REPODIR add . && git -C $REPODIR commit -m "initial" && git -C $REPODIR push -u origin $BRANCH; fi
+if [ -z "$(git -C $REPODIR ls-files)" ]; then cp -r src/Demo/Content $REPODIR && git -C $REPODIR add . && git -C $REPODIR commit -m "initial" && git -C $REPODIR push -u origin $BRANCH; fi
 
 # Add a repository to store generated files from deployment
 git submodule add git@github.com:mysticeragames/mysticeragames.com-generated.git generated
@@ -49,7 +49,7 @@ git submodule add git@github.com:mysticeragames/mysticeragames.com-generated.git
 # again: the same as content: make sure to have at least 1 commit
 REPODIR=generated
 BRANCH=$(git -C $REPODIR branch --show-current)
-if [ -z "$(git -C $REPODIR ls-files)" ]; then cp -r src/Initial/Generated $REPODIR && git -C $REPODIR add . && git -C $REPODIR commit -m "initial" && git -C $REPODIR push -u origin $BRANCH; fi
+if [ -z "$(git -C $REPODIR ls-files)" ]; then cp -r src/Demo/Generated $REPODIR && git -C $REPODIR add . && git -C $REPODIR commit -m "initial" && git -C $REPODIR push -u origin $BRANCH; fi
 
 
 symfony server:start
