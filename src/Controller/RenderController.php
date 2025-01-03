@@ -143,7 +143,7 @@ class RenderController extends AbstractController
         return $response;
     }
 
-    function renderUrl(string $path, bool $editMode = false): Response
+    public function renderUrl(string $path, bool $editMode = false): Response
     {
         // Render public asset
         if($this->isAsset($path)) {
