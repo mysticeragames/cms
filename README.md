@@ -32,27 +32,38 @@ composer create-project mysticeragames/markitstatic-cms markitstatic-cms "0.1.*"
 
 cd markitstatic-cms
 
-# TODO: Allow submodules to be added within the CMS
+
+# TODO: Connect git repositories from within the CMS
+
+
+REPO_CONTENT=git@github.com:mysticeragames/mysticeragames.com-content.git
+REPO_DEPLOY=git@github.com:mysticeragames/mysticeragames.com-generated.git
 
 # Add a repository to store content
-git submodule add git@github.com:mysticeragames/mysticeragames.com-content.git content
-
-# When it's an empty repository, make sure to have at least 1 commit
-REPODIR=content
-BRANCH=$(git -C $REPODIR branch --show-current)
-
-if [ -z "$(git -C $REPODIR ls-files)" ]; then cp -r src/Demo/Content/* $REPODIR && git -C $REPODIR add . && git -C $REPODIR commit -m "initial" && git -C $REPODIR push -u origin $BRANCH; fi
+git submodule add --force $REPO_CONTENT content && git -C content log --oneline -1 || ( echo "no commits yet" && cp -r src/Demo/Content/Minimal/* content && git -C content add . && git -C content commit -m "initial" && git -C content push -u origin $(git -C content branch --show-current) && rm -r content && git submodule add --force $REPO_CONTENT content );
 
 # Add a repository to store generated files from deployment
-git submodule add git@github.com:mysticeragames/mysticeragames.com-generated.git generated
-
-# again: the same as content: make sure to have at least 1 commit
-REPODIR=generated
-BRANCH=$(git -C $REPODIR branch --show-current)
-if [ -z "$(git -C $REPODIR ls-files)" ]; then cp -r src/Demo/Generated/* $REPODIR && git -C $REPODIR add . && git -C $REPODIR commit -m "initial" && git -C $REPODIR push -u origin $BRANCH; fi
+git submodule add --force $REPO_DEPLOY generated && git -C generated log --oneline -1 || ( echo "no commits yet" && cp -r src/Demo/Generated/* generated && git -C generated add . && git -C generated commit -m "initial" && git -C generated push -u origin $(git -C generated branch --show-current) && rm -r generated && git submodule add --force $REPO_DEPLOY generated )
 
 
 symfony server:start
+
+
+# Howto list submodules
+git submodule
+
+# Howto pull submodule
+# TODO: first stash local changes.
+git -C content pull
+git -C generated pull
+
+# Howto remove submodules:
+git rm -rf content --force; rm -rf content; rm -rf .git/modules/content
+git rm -rf generated --force; rm -rf generated; rm -rf .git/modules/generated
+
+
+# TODO: CHECK stash / avoid merge conflicts:
+https://stackoverflow.com/a/76212621/2263114
 
 ```
 
