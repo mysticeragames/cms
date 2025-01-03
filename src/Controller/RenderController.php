@@ -4,13 +4,6 @@ namespace App\Controller;
 
 use App\Repositories\PageRepository;
 use App\Services\ContentParser;
-use League\CommonMark\Environment\Environment;
-use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
-use League\CommonMark\Extension\FrontMatter\FrontMatterExtension;
-use League\CommonMark\Extension\FrontMatter\Output\RenderedContentWithFrontMatter;
-use League\CommonMark\MarkdownConverter;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\MimeTypes;
@@ -18,14 +11,18 @@ use Symfony\Component\Routing\Attribute\Route;
 use Twig\Environment as TwigEnvironment;
 use Twig\Loader\ArrayLoader as TwigArrayLoader;
 
-
 class RenderController extends AbstractController
 {
     private ContentParser $contentParser;
     private PageRepository $pageRepository;
 
-    public function __construct(ContentParser $contentParser, PageRepository $pageRepository)
+    public function __construct(string $projectDir, ContentParser $contentParser, PageRepository $pageRepository)
     {
+        if(!is_dir($projectDir . '/content')) {
+
+            dd('no content dir found: ' . $projectDir . '/content');
+        }
+
         $this->contentParser = $contentParser;
         $this->pageRepository = $pageRepository;
     }
