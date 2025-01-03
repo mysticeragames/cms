@@ -80,7 +80,7 @@
         ],
         "post-create-project-cmd": [
             "cp .gitignore-project .gitignore && rm .gitignore-project",
-            "git init && git add . && git commit -m 'initial'"
+            "git init && git add . && git commit --quiet -m 'initial'"
         ]
     },
     "conflict": {
