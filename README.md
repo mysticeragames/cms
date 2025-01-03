@@ -32,16 +32,28 @@ composer create-project mysticeragames/markitstatic-cms markitstatic-cms "0.1.*"
 
 cd markitstatic-cms
 
-symfony server:start
-
-
 # TODO: Allow submodules to be added within the CMS
 
 # Add a repository to store content
-git submodule add git@github.com:mysticeragames/markitstatic-demo-content.git content
+git submodule add git@github.com:mysticeragames/mysticeragames.com-content.git content
+
+# When it's an empty repository, make sure to have at least 1 commit
+REPODIR=content
+BRANCH=$(git -C $REPODIR branch --show-current)
+
+if [ -z "$(git -C $REPODIR ls-files)" ]; then cp -r src/Initial/Content $REPODIR && git -C $REPODIR add . && git -C $REPODIR commit -m "initial" && git -C $REPODIR push -u origin $BRANCH; fi
 
 # Add a repository to store generated files from deployment
-git submodule add git@github.com:mysticeragames/markitstatic-demo-generated.git generated
+git submodule add git@github.com:mysticeragames/mysticeragames.com-generated.git generated
+
+# again: the same as content: make sure to have at least 1 commit
+REPODIR=generated
+BRANCH=$(git -C $REPODIR branch --show-current)
+if [ -z "$(git -C $REPODIR ls-files)" ]; then cp -r src/Initial/Generated $REPODIR && git -C $REPODIR add . && git -C $REPODIR commit -m "initial" && git -C $REPODIR push -u origin $BRANCH; fi
+
+
+symfony server:start
+
 ```
 
 ### Run in Docker (TODO)
