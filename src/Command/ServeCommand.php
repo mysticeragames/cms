@@ -56,6 +56,8 @@ class ServeCommand extends Command
         ]);
 
         $process = new Process(['php', '-S', "$host:$port", '-t', $this->projectDir . '/public']);
+        $process->setTimeout(null);
+        $process->setIdleTimeout(null);
         $process->run();
 
         // return int(0))
