@@ -1,11 +1,5 @@
-twig:
-    file_name_pattern: '*.twig'
-    strict_variables: false
-    default_path: '%kernel.project_dir%/content/templates'
-    paths:
-        'content/templates': ~
-        'src/templates/front': ~
-        'src/templates/cms': 'cms'
+# twig:
+# --> Use twig.php (dynamic paths)
 
 when@test:
     twig:

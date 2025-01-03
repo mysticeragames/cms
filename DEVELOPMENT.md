@@ -1,6 +1,9 @@
 # Development
 
 ```bash
+# Make sure no errors are found
+php bin/console cache:clear
+
 # Update
 composer update
 
