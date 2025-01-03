@@ -1,6 +1,19 @@
 {
+    "name": "mysticeragames/markitstatic-cms",
+    "description": "MarkItStatic-CMS - Flat-File CMS with Static Website Generator",
+    "keywords": [],
+    "homepage": "https://github.com/mysticeragames/markitstatic-cms",
+    "authors": [
+        {
+            "name": "Mystic ERA games",
+            "email": "info@mysticeragames.com",
+            "homepage": "https://www.mysticeragames.com",
+            "role": "Developer"
+        }
+    ],
+
     "type": "project",
-    "license": "proprietary",
+    "license": "MIT",
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
@@ -55,6 +68,10 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "post-create-project-cmd": [
+            "cp .gitignore-project .gitignore && rm .gitignore-project",
+            "git init && git add . && git commit -m 'initial'"
         ]
     },
     "conflict": {

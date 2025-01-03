@@ -1,6 +1,3 @@
-# Ensure the CMS will never commit any test-content
-/content
-/generated
 
 ###> symfony/framework-bundle ###
 /.env.local
