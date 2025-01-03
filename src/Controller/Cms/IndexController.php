@@ -12,7 +12,7 @@ class IndexController extends AbstractController
     #[Route('/', 'index', methods: ['get'])]
     public function index(): Response
     {
-        dd('cms index');
+        return $this->render('@cms/index.html.twig');
     }
 
     #[Route('/{path}', 'catchall', methods: ['get'], requirements: ['path' => '.+'], priority: -10)]

@@ -1,0 +1,48 @@
+<h1>Page</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th></th>
+            <th>path</th>
+            <th>title</th>
+            <th>slug</th>
+            <th>createdAt</th>
+            <th>updatedAt</th>
+            <th>layout</th>
+            <th>template</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <a href="{{ path('cms.pages.edit', { path: page.path })}}">Edit</a>
+            </td>
+            <td>{{ page.path }}</td>
+            <td>{{ page.title }}</td>
+            <td>{{ page.slug }}</td>
+            <td title="{{ page.createdAt }}">{{ page.createdAt|date('Y-m-d') }}</td>
+            <td title="{{ page.updatedAt }}">{{ page.updatedAt|date('Y-m-d') }}</td>
+            <td>{{ page.layout }}</td>
+            <td>{{ page.template }}</td>
+        </tr>
+    </tbody>
+
+    <textarea>{{ page.__markdown }}</textarea>
+
+</table>
+
+
+<iframe style="height: 100vh; width:50vw;" id="preview" data-src="{{ path('cms.pages.render-edit', { path: page.path }) }}" src=""></iframe>
+
+<script>
+    var iframe = document.querySelector('#preview');
+    var src = iframe.getAttribute('data-src');
+
+    function updatePreview() {
+        console.log('reload preview');
+        iframe.src = src + '?v' + Math.random();
+    }
+    document.querySelector('textarea').addEventListener('keyup', updatePreview);
+    updatePreview();
+</script>

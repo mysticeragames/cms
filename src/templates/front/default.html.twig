@@ -1,0 +1,7 @@
+{% extends page.layout %}
+
+{% block title %}{{ page.title }} - {{ config.site_title }}{% endblock %}
+
+{% block page_contents %}
+    {{ content|raw }}
+{% endblock %}

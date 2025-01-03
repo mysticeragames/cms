@@ -2,6 +2,7 @@
 
 namespace App\Controller\Cms;
 
+use App\Repositories\PageRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -9,10 +10,19 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/---cms/pages', name: 'cms.pages.')]
 class PageController extends AbstractController
 {
+    private PageRepository $pageRepository;
+    
+    public function __construct(PageRepository $pageRepository)
+    {
+        $this->pageRepository = $pageRepository;
+    }
+
     #[Route('/', 'index', methods: ['get'])]
     public function index(): Response
     {
-        dd('cms pages index');
+        return $this->render('@cms/pages/index.html.twig', [
+            'pages' => $this->pageRepository->getPages(),
+        ]);
     }
 
     #[Route('/show/{path}', 'show', methods: ['get'], requirements: ['path' => '.+'])]
@@ -24,7 +34,9 @@ class PageController extends AbstractController
     #[Route('/edit/{path}', 'edit', methods: ['get'], requirements: ['path' => '.+'])]
     public function edit(string $path = ''): Response
     {
-        dd('cms pages edit ' . $path);
+        return $this->render('@cms/pages/edit.html.twig', [
+            'page' => $this->pageRepository->getPage($path, true),
+        ]);
     }
 
     #[Route('/patch/{path}', 'post', methods: ['store'], requirements: ['path' => '.+'])]
