@@ -1,6 +1,4 @@
 {
-    "name": "mysticeragames/markitstatic-cms",
-    "description": "MarkItStatic-CMS - Flat-File CMS with Static Website Generator",
     "keywords": [],
     "homepage": "https://github.com/mysticeragames/markitstatic-cms",
     "authors": [
@@ -13,7 +11,7 @@
     ],
 
     "type": "project",
-    "license": "MIT",
+    "license": "proprietary",
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {

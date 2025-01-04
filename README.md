@@ -80,12 +80,67 @@ https://stackoverflow.com/a/76212621/2263114
 
 ```
 
-### Run in Docker (TODO)
+### Run in Docker
 
-No volumes needed: the content + generated files are attached as git-submodule repositories, so the docker container can be destroyed at any time.
+Idea/TODO: No volumes needed: the content + generated files are attached as git-submodule repositories, so the docker container can be destroyed at any time.
 
 ```bash
-docker run -d --name -p 8585:80 markitstatic-cms mysticeragames/markitstatic-cms
+# Normal usage
+docker pull mysticeragames/makeitstatic-cms:latest  # pull latest version
+docker run -d --name cms --restart unless-stopped -p 8000:8080 mysticeragames/makeitstatic-cms:latest  # start container
+docker exec cms sh -c "mkdir -p ./content && cp -r ./src/Demo/Content/Full/* ./content" # Copy demo content
+docker exec -t cms php bin/console site # CMS commands
+docker stop cms  # stop container
+docker start cms  # start container again
+docker rm cms --force  # remove container
+
+# Other
+docker run --rm -it mysticeragames/makeitstatic-cms:latest php -v
+docker run --rm -it mysticeragames/makeitstatic-cms:latest composer -v
+docker run --rm -it mysticeragames/makeitstatic-cms:latest npm -v
+docker run --rm -it mysticeragames/makeitstatic-cms:latest sh
+
+# Debug run
+docker run --rm --name cms -p 8000:8080 mysticeragames/makeitstatic-cms:latest
+
+
+docker exec cms sh -c 'echo -e "APP_ENV=dev\nAPP_SECRET=" > /var/www/html/.env.local && php bin/console cache:clear && /usr/sbin/nginx -s reload' # set env to dev
+
+docker exec cms sh -c 'echo -e "APP_ENV=prod\nAPP_SECRET=" > /var/www/html/.env.local && php bin/console cache:clear && /usr/sbin/nginx -s reload' # set env to prod
+
+
+# View latest 5 log lines:
+docker exec cms tail /var/log/nginx/project_access.log -n 5
+docker exec cms tail /var/log/nginx/project_error.log -n 5
 ```
 
-http://localhost:8585
+- http://localhost:8000
+- http://localhost:8000/---cms
+
+```bash
+# Build new image
+docker build --no-cache -t mysticeragames/makeitstatic-cms:latest .
+docker build -t mysticeragames/makeitstatic-cms:latest .
+# docker push mysticeragames/makeitstatic-cms:latest   # push to repo (TODO: make Github Action that takes the Release version as tag)
+
+# DEVELOPMENT MODE: Mount local folder (including all the CMS files - note: use APP_ENV=prod to avoid messages)
+docker run --rm --name makeitstatic-cms -p 8000:8080 -v $(pwd):/var/www/html mysticeragames/makeitstatic-cms:latest
+
+
+### TODO / idea:
+docker exec cms php bin/console site:add-git-source {repo}
+### TODO / idea:
+docker exec cms php bin/console site:add-git-target {repo}
+
+# But for now, to add GIT repo's (content + generated)
+
+# Add a repository to store content
+docker exec makeitstatic-cms sh -c 'REPO_CONTENT=https://github.com/mysticeragames/mysticeragames.com-content.git && git submodule add --force $REPO_CONTENT content && git -C content log --oneline -1 || ( echo "no commits yet" && cp -r ./src/Demo/Content/Minimal/* ./content && git -C content add . && git -C content commit -m "initial" && git -C content push -u origin $(git -C content branch --show-current) && rm -r content && git submodule add --force $REPO_CONTENT content );'
+
+# Add a repository to store generated files from deployment
+docker exec makeitstatic-cms sh -c 'REPO_DEPLOY=https://github.com/mysticeragames/mysticeragames.com-generated.git && git submodule add --force $REPO_DEPLOY generated && git -C generated log --oneline -1 || ( echo "no commits yet" && cp -r src/Demo/Generated/* generated && git -C generated add . && git -C generated commit -m "initial" && git -C generated push -u origin $(git -C generated branch --show-current) && rm -r generated && git submodule add --force $REPO_DEPLOY generated )'
+
+# TODO: Mount SSH GIT key to container (or: possibility to upload SSH key)
+/home/markitstatic/.ssh/id_.... (note: permissions...)
+
+```
