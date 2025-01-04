@@ -39,6 +39,19 @@ class ServeCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        // https://symfony.com/doc/current/components/console/helpers/formatterhelper.html
+        /** @var FormatterHelper $formatter */
+        $formatter = $this->getHelper('formatter');
+
+        $errorMessages = ['Error!', 'Disabled the build-in webserver: use symfony cli instead: Some routes are not working with this'];
+        $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
+        $output->writeln($formattedBlock);
+        return Command::FAILURE;
+
+
+
+        
+
         if (!$output instanceof ConsoleOutputInterface) {
             throw new \LogicException('This command accepts only an instance of "ConsoleOutputInterface".');
         }

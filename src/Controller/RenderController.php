@@ -34,7 +34,11 @@ class RenderController extends AbstractController
     //     dd($path);
     // }
 
-
+    // #[Route('/assets/{path}', 'debug', methods: ['get'], requirements: ['path' => '.+'], priority: 1000)]
+    // function debug(string $path): Response
+    // {
+    //     dd($path);
+    // }
 
 
     

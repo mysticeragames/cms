@@ -46,14 +46,20 @@ git submodule add --force $REPO_CONTENT content && git -C content log --oneline 
 git submodule add --force $REPO_DEPLOY generated && git -C generated log --oneline -1 || ( echo "no commits yet" && cp -r src/Demo/Generated/* generated && git -C generated add . && git -C generated commit -m "initial" && git -C generated push -u origin $(git -C generated branch --show-current) && rm -r generated && git submodule add --force $REPO_DEPLOY generated )
 
 
+symfony server:start
+```
+
+|  |  |
+| ---- | --- |
+| Website   | http://localhost:8000 |
+| CMS       | http://localhost:8000/---cms |
+
+```bash
 php bin/console site
 php bin/console site:generate # Generate static files
 php bin/console site:deploy # Add/commit/push all generated files to the connected repository
 
 
-symfony server:start
-#or (when you don't have Symfony CLI installed):
-php bin/console serve
 
 
 # Howto list submodules
