@@ -1,19 +1,40 @@
 # **MakeIt***Static*-CMS
 
+### Static input > static output
+
 ## *WORK IN PROGRESS!*
 
-#### No database | Static content files | Static generated files | S3 connection for media
+# Docker
 
-Requirements:
+```bash
+# Run the CMS
+docker run -d --name makeitstatic-cms --restart unless-stopped -p 8000:8080 mysticeragames/makeitstatic-cms:latest
 
-- GIT - https://git-scm.com/downloads (todo: put in docker image)
-- composer - https://getcomposer.org/download/ (todo: put in docker image)
-- Symfony CLI - https://symfony.com/download (todo: put in docker image)
-- PHP - https://www.php.net/downloads.php (todo: put in docker image)
-- FFMPEG - https://www.ffmpeg.org/download.html (to extract frame for video-poster) (todo: put in docker image)
-- TODO: Docker - https://docs.docker.com/engine/install/ubuntu/
+# Add a repository to store content
+docker exec makeitstatic-cms sh -c 'REPO_CONTENT=https://github.com/mysticeragames/mysticeragames.com-content.git && git submodule add --force $REPO_CONTENT content && git -C content log --oneline -1 || ( echo "no commits yet" && cp -r ./src/Demo/Content/Minimal/* ./content && git -C content add . && git -C content commit -m "initial" && git -C content push -u origin $(git -C content branch --show-current) && rm -r content && git submodule add --force $REPO_CONTENT content );'
 
-Features:
+# Add a repository to store generated files from deployment
+docker exec makeitstatic-cms sh -c 'REPO_DEPLOY=https://github.com/mysticeragames/mysticeragames.com-generated.git && git submodule add --force $REPO_DEPLOY generated && git -C generated log --oneline -1 || ( echo "no commits yet" && cp -r src/Demo/Generated/* generated && git -C generated add . && git -C generated commit -m "initial" && git -C generated push -u origin $(git -C generated branch --show-current) && rm -r generated && git submodule add --force $REPO_DEPLOY generated )'
+```
+
+- http://localhost:8000/---cms
+- http://localhost:8000
+
+### Update
+
+```bash
+docker rm makeitstatic-cms --force
+
+docker run --pull -d --name makeitstatic-cms --restart unless-stopped -p 8000:8080 mysticeragames/makeitstatic-cms:latest
+```
+
+### Requirements
+
+- Docker
+- A git repository to store content
+- A git repository to store generated files
+
+### Features
 
 - Content in it's own repository
 - Generated files in it's own repository
@@ -82,7 +103,7 @@ https://stackoverflow.com/a/76212621/2263114
 
 ### Run in Docker
 
-Idea/TODO: No volumes needed: the content + generated files are attached as git-submodule repositories, so the docker container can be destroyed at any time.
+Idea/TODO: The content + generated files are attached as git-submodule repositories, so the docker container can be destroyed at any time.
 
 ```bash
 # Normal usage
