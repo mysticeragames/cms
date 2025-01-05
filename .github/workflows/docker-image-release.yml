@@ -1,0 +1,48 @@
+name: Docker Image Release
+
+on:
+  # https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#release
+  release:
+    types:
+      - released
+
+env:
+  IMAGE_NAME: mysticeragames/makeitstatic-cms
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4.2.2
+
+
+      - uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: docker.io
+          username: rboonzaijer
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+
+      - name: Build Docker image
+        run: |
+          docker build --no-cache -t ${{ env.IMAGE_NAME }}:build .
+
+
+      - name: PHPUnit Test
+        run: |
+          docker run --rm ${{ env.IMAGE_NAME }}:build php bin/phpunit
+
+
+      - name: Push release + latest
+        env:
+          TARGET_IMAGE: ${{ env.IMAGE_NAME }}:${{ github.event.release.name }}
+          TARGET_IMAGE_LATEST: ${{ env.IMAGE_NAME }}:latest
+        run: |
+          docker tag ${{ env.IMAGE_NAME }}:build ${{ env.TARGET_IMAGE }}
+          docker push ${{ env.TARGET_IMAGE }}
+
+          docker tag ${{ env.IMAGE_NAME }}:build ${{ env.TARGET_IMAGE_LATEST }}
+          docker push ${{ env.TARGET_IMAGE_LATEST }}

@@ -1,15 +1,19 @@
-name: PHPUnit Tests
+name: Docker Image dev-main
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
+    types:
+      - closed
 
 env:
-  REGISTRY: docker.io
-  DOCKERHUB_USERNAME: rboonzaijer
   IMAGE_NAME: mysticeragames/makeitstatic-cms
 
 jobs:
   build:
+    if: github.event_name == 'push' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -17,16 +21,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
 
+
       - uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ env.DOCKERHUB_USERNAME }}
+          registry: docker.io
+          username: rboonzaijer
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
 
       - name: Build Docker image
         run: |
           docker build --no-cache -t ${{ env.IMAGE_NAME }}:build .
 
-      - name: Test
+
+      - name: PHPUnit Test
         run: |
           docker run --rm ${{ env.IMAGE_NAME }}:build php bin/phpunit
+
+
+      - name: Push release
+        env:
+          TARGET_IMAGE: ${{ env.IMAGE_NAME }}:dev-main
+        run: |
+          docker tag ${{ env.IMAGE_NAME }}:build ${{ env.TARGET_IMAGE }}
+          docker push ${{ env.TARGET_IMAGE }}
