@@ -1,8 +1,8 @@
 {
-    "name": "mysticeragames/markitstatic-cms",
-    "description": "MarkItStatic-CMS - Flat-File CMS with Static Website Generator",
+    "name": "mysticeragames/makeitstatic-cms",
+    "description": "MakeItStatic-CMS - Flat-File CMS with Static Website Generator",
     "keywords": [],
-    "homepage": "https://github.com/mysticeragames/markitstatic-cms",
+    "homepage": "https://github.com/mysticeragames/makeitstatic-cms",
     "authors": [
         {
             "name": "Mystic ERA games",

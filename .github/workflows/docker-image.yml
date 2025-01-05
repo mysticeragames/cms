@@ -10,7 +10,7 @@ on:
 env:
   REGISTRY: docker.io
   DOCKERHUB_USERNAME: rboonzaijer
-  IMAGE_NAME: mysticeragames/markitstatic-cms
+  IMAGE_NAME: mysticeragames/makeitstatic-cms
 
 jobs:
   build:

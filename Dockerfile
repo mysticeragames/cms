@@ -65,8 +65,8 @@ USER cms
 
 # Setup git
 RUN git config --global init.defaultBranch main && \
-    git config --global user.email "MarkItStatic" &&\
-    git config --global user.name "MarkItStatic"
+    git config --global user.email "MakeItStatic" &&\
+    git config --global user.name "MakeItStatic"
 
 # Copy all CMS files
 COPY --chown=cms ./ /var/www/html/

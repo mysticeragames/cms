@@ -89,22 +89,22 @@ php bin/console debug:router
 
 
 # Copy all files to test repo
-git clone git@github.com:mysticeragames/MarkItStatic-CMS.git
-git clone git@github.com:mysticeragames/Test-MarkItStatic-CMS.git
-rsync -av MarkItStatic-CMS/ Test-MarkItStatic-CMS/ --exclude=.git
+git clone git@github.com:mysticeragames/makeitstatic-cms.git
+git clone git@github.com:mysticeragames/test-makeitstatic-cms.git
+rsync -av makeitstatic-cms/ test-makeitstatic-cms/ --exclude=.git
 
 # delete all other files from target
-rsync -av MarkItStatic-CMS/ Test-MarkItStatic-CMS/ --exclude=.git --delete
+rsync -av makeitstatic-cms/ Test-makeitstatic-cms/ --exclude=.git --delete
 
 ```
 
 ## Locations
 
 This project
-- https://github.com/mysticeragames/markitstatic-cms
+- https://github.com/mysticeragames/makeitstatic-cms
 
 Packagist (for 'composer create-project ...')
-- https://packagist.org/packages/mysticeragames/markitstatic-cms
+- https://packagist.org/packages/mysticeragames/makeitstatic-cms
 
 Docker (TODO: create image with all dependencies)
 - https://hub.docker.com/u/mysticeragames

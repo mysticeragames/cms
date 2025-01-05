@@ -1,4 +1,4 @@
-# **MarkIt***Static*-CMS
+# **MakeIt***Static*-CMS
 
 ## *WORK IN PROGRESS!*
 
@@ -28,9 +28,9 @@ Features:
 ## Install locally
 
 ```bash
-composer create-project mysticeragames/markitstatic-cms markitstatic-cms "0.1.*"
+composer create-project mysticeragames/makeitstatic-cms makeitstatic-cms "0.1.*"
 
-cd markitstatic-cms
+cd makeitstatic-cms
 
 
 # TODO: Connect git repositories from within the CMS
@@ -141,6 +141,6 @@ docker exec makeitstatic-cms sh -c 'REPO_CONTENT=https://github.com/mysticeragam
 docker exec makeitstatic-cms sh -c 'REPO_DEPLOY=https://github.com/mysticeragames/mysticeragames.com-generated.git && git submodule add --force $REPO_DEPLOY generated && git -C generated log --oneline -1 || ( echo "no commits yet" && cp -r src/Demo/Generated/* generated && git -C generated add . && git -C generated commit -m "initial" && git -C generated push -u origin $(git -C generated branch --show-current) && rm -r generated && git submodule add --force $REPO_DEPLOY generated )'
 
 # TODO: Mount SSH GIT key to container (or: possibility to upload SSH key)
-/home/markitstatic/.ssh/id_.... (note: permissions...)
+/home/makeitstatic/.ssh/id_.... (note: permissions...)
 
 ```
