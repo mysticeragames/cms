@@ -30,7 +30,7 @@ docker exec makeitstatic-cms sh -c 'REPO_DEPLOY=https://github.com/mysticeragame
 ```bash
 docker rm makeitstatic-cms --force
 
-docker run --pull -d --name makeitstatic-cms --restart unless-stopped -p 8000:8080 mysticeragames/makeitstatic-cms:latest
+docker run --pull always -d --name makeitstatic-cms --restart unless-stopped -p 8000:8080 mysticeragames/makeitstatic-cms:latest
 ```
 
 ### Requirements
