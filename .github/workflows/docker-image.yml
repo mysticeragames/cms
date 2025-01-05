@@ -40,21 +40,21 @@ jobs:
         env:
           TARGET_IMAGE: ${{ env.IMAGE_NAME }}:${{ github.ref_name }}
         run: |
-          docker tag ${{ env.IMAGE_NAME }}build ${{ TARGET_IMAGE }}
-          docker push ${{ TARGET_IMAGE }}
+          docker tag ${{ env.IMAGE_NAME }}build ${{ env.TARGET_IMAGE }}
+          docker push ${{ env.TARGET_IMAGE }}
 
       - name: Push release
         if: github.event.release.type == 'published' # (both 'released' + 'prereleased')
         env:
           TARGET_IMAGE: ${{ env.IMAGE_NAME }}:${{ github.event.release.name }}
         run: |
-          docker tag ${{ env.IMAGE_NAME }}:build ${{ TARGET_IMAGE }}
-          docker push ${{ TARGET_IMAGE }}
+          docker tag ${{ env.IMAGE_NAME }}:build ${{ env.TARGET_IMAGE }}
+          docker push ${{ env.TARGET_IMAGE }}
 
       - name: Push latest
         if: github.event.release.type == 'released'
         env:
           TARGET_IMAGE: ${{ env.IMAGE_NAME }}:latest
         run: |
-          docker tag ${{ env.IMAGE_NAME }}:build ${{ TARGET_IMAGE }}
-          docker push ${{ TARGET_IMAGE }}
+          docker tag ${{ env.IMAGE_NAME }}:build ${{ env.TARGET_IMAGE }}
+          docker push ${{ env.TARGET_IMAGE }}
