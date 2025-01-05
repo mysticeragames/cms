@@ -1,5 +1,7 @@
 # SOURCE: https://github.com/TrafeX/docker-php-nginx
 
+TEST_INVALID
+
 # Set base image
 ARG ALPINE_VERSION=3.21
 FROM alpine:${ALPINE_VERSION}
