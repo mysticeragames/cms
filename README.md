@@ -13,7 +13,12 @@ Flat-File CMS with Static Site Generator
 
 ```bash
 # Run the CMS
-docker run -d --name makeitstatic-cms --restart unless-stopped -p 8000:8080 mysticeragames/makeitstatic-cms:latest
+docker run /
+  -d /
+  --name makeitstatic-cms /
+  --restart unless-stopped /
+  -p 8000:8080 /
+  mysticeragames/makeitstatic-cms:latest
 
 # Add a repository to store content
 docker exec makeitstatic-cms sh -c 'REPO_CONTENT=https://github.com/mysticeragames/mysticeragames.com-content.git && git submodule add --force $REPO_CONTENT content && git -C content log --oneline -1 || ( echo "no commits yet" && cp -r ./src/Demo/Content/Minimal/* ./content && git -C content add . && git -C content commit -m "initial" && git -C content push -u origin $(git -C content branch --show-current) && rm -r content && git submodule add --force $REPO_CONTENT content );'
