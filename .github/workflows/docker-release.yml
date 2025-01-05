@@ -3,6 +3,7 @@ name: Docker
 on:
   release:
     types: [released] # released | prereleased | published (both)
+  workflow_dispatch: # manual
 
 env:
   REGISTRY: docker.io
