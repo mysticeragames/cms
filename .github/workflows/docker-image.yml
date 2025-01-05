@@ -4,8 +4,8 @@ on:
   release:
     types: [published]
   pull_request:
-  push:
-    branches: [main]
+  # push:
+  #   branches: [main]
 
 env:
   REGISTRY: docker.io
