@@ -58,7 +58,6 @@ composer create-project mysticeragames/makeitstatic-cms makeitstatic-cms "0.1.*"
 
 cd makeitstatic-cms
 
-
 # TODO: Connect git repositories from within the CMS
 
 
