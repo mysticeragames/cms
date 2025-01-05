@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: docker.io
-  DOCKERHUB_USER: mysticeragames
+  DOCKERHUB_USER: rboonzaijer
   IMAGE_NAME: mysticeragames/markitstatic-cms
 
 jobs:
