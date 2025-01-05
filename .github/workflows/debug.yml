@@ -6,11 +6,6 @@ on:
   pull_request:
   push:
 
-env:
-  REGISTRY: docker.io
-  DOCKERHUB_USERNAME: rboonzaijer
-  IMAGE_NAME: mysticeragames/makeitstatic-cms
-
 jobs:
   build:
     runs-on: ubuntu-latest
