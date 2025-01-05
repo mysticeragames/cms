@@ -21,18 +21,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
 
+      - name: Debug variables
+        run: |
+          echo github.event_name: "${{ github.event_name }}"
+          echo github.event_path: "${{ github.event_path }}"
+          echo github.head_ref: "${{ github.head_ref }}"
+          echo github.ref_name: "${{ github.ref_name }}"
+          echo github.ref: "${{ github.ref }}"
+          echo github.base_ref: "${{ github.base_ref }}"
+          echo github.actor: "${{ github.actor }}"
+
       - name: Set variables
+        #if: github.event_name == 'release' || github.event_name == 'prerelease'
         id: setvars
         run: |
-          if [[ "${{github.base_ref}}" == "main" || "${{github.ref}}" == "refs/heads/main" ]]; then
+          if [[ "${{github.event_name}}" == "release" || "${{github.event_name}}" == "prerelease" ]]; then
             echo "::set-output name=TARGET_TAG_PREFIX::"
+            echo "" > $TARGET_TAG_PREFIX2
           else
             echo "::set-output name=TARGET_TAG_PREFIX::dev-"
+            echo "dev-" > $TARGET_TAG_PREFIX2
           fi
 
       - name: Get variables (test)
         run: |
-          echo ${{steps.setvars.outputs.TARGET_TAG_PREFIX}}
+          echo ${{ steps.setvars.outputs.TARGET_TAG_PREFIX }}
+          echo ${{ env.TARGET_TAG_PREFIX2 }}
+
 
       - uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
         with:
