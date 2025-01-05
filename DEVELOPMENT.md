@@ -71,6 +71,7 @@
 - Remove strict GIT dependency for generated directory:
     - Git repository (git-submodule) (recommended)
     - Just a folder: /mounts/generated/ (Mountable by docker volume for example, so generated files are created on the host)
+- quick-save content in a separate branch: (for example 'concept', or select your own branch), and only when pressing 'publish', save it in the main branch (overwriting all files in the main branch!)
 
 ## Commands
 
