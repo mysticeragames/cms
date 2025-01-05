@@ -2,6 +2,10 @@
 
 ## TODO LIST
 
+- Create base docker image in other repo and use that instead of installing php etc for every test:
+  - mysticeragames/makeitstatic-cms-base:1.0.0 (for cms + generator)
+  - mysticeragames/makeitstatic-generator-base:1.0.0 (for only generator console app)
+  - mysticeragames/makeitstatic-serve:1.0.0 (nginx to serve static files + assets)
 - Allow pages to be created
 - Allow pages to be edited
 - Allow pages to be removed
