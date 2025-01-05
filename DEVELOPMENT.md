@@ -86,6 +86,16 @@ php bin/phpunit
 
 # Make sure route priorities are correct (wildcards on the bottom)
 php bin/console debug:router
+
+
+# Copy all files to test repo
+git clone git@github.com:mysticeragames/MarkItStatic-CMS.git
+git clone git@github.com:mysticeragames/Test-MarkItStatic-CMS.git
+rsync -av MarkItStatic-CMS/ Test-MarkItStatic-CMS/ --exclude=.git
+
+# delete all other files from target
+rsync -av MarkItStatic-CMS/ Test-MarkItStatic-CMS/ --exclude=.git --delete
+
 ```
 
 ## Locations
