@@ -5,8 +5,9 @@
 // src/Command/GenerateCommand.php
 namespace App\Command;
 
-use App\Controller\RenderController;
 use App\Repositories\PageRepository;
+use App\Services\ContentRenderer;
+use App\Services\TwigRenderer;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -19,10 +20,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 class GenerateCommand extends Command
 {
     private PageRepository $pageRepository;
-    private RenderController $renderController;
+    private TwigRenderer $twigRenderer;
+    private ContentRenderer $contentRenderer;
+
     private string $projectDir;
 
-    public function __construct(PageRepository $pageRepository, RenderController $renderController, string $projectDir)
+    public function __construct(PageRepository $pageRepository, TwigRenderer $twigRenderer, ContentRenderer $contentRenderer, string $projectDir)
     {
         // best practices recommend to call the parent constructor first and
         // then set your own properties. That wouldn't work in this case
@@ -32,7 +35,8 @@ class GenerateCommand extends Command
         parent::__construct();
 
         $this->pageRepository = $pageRepository;
-        $this->renderController = $renderController;
+        $this->twigRenderer = $twigRenderer;
+        $this->contentRenderer = $contentRenderer;
         $this->projectDir = $projectDir;
     }
 
@@ -107,7 +111,11 @@ class GenerateCommand extends Command
             $section1->overwrite(($i+1) . "/$total");
             $section2->overwrite($path);
 
-            $response = $this->renderController->renderUrl($path);
+            
+            $content = $this->contentRenderer->render($this->projectDir, $path);
+            //$content = $this->twigRenderer->render($path);
+
+            //$response = $this->renderController->renderUrl($path);
 
             // Create directory if it does not exist
             if(!is_dir($outputDir)) {
@@ -115,7 +123,7 @@ class GenerateCommand extends Command
             }
 
             // Write file
-            file_put_contents($outputPath, $response->getContent());
+            file_put_contents($outputPath, $content);
         }
         $section2->overwrite('--> Done.');
 

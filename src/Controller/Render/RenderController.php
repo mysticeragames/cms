@@ -4,19 +4,19 @@ namespace App\Controller\Render;
 
 use App\Repositories\PageRepository;
 use App\Services\ContentParser;
+use App\Services\ContentRenderer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Routing\Attribute\Route;
-use Twig\Environment as TwigEnvironment;
-use Twig\Loader\ArrayLoader as TwigArrayLoader;
 
 class RenderController extends AbstractController
 {
     private ContentParser $contentParser;
     private PageRepository $pageRepository;
+    private ContentRenderer $contentRenderer;
 
-    public function __construct(string $projectDir, ContentParser $contentParser, PageRepository $pageRepository)
+    public function __construct(string $projectDir, ContentParser $contentParser, PageRepository $pageRepository, ContentRenderer $contentRenderer)
     {
         if(!is_dir($projectDir . '/content')) {
 
@@ -25,6 +25,7 @@ class RenderController extends AbstractController
 
         $this->contentParser = $contentParser;
         $this->pageRepository = $pageRepository;
+        $this->contentRenderer = $contentRenderer;
     }
 
     // #[Route('/{path}', 'render', methods: ['get'], requirements: ['path' => '.+'], priority: -100)]
@@ -49,32 +50,20 @@ class RenderController extends AbstractController
         return $this->renderAsset('/assets/' . $path);
     }
 
-    public static function getEditPathSuffix(): string
-    {
-        return '.__EDITING_CONCEPT__.md';
-    }
-
-    private function getEditFilePath(string $path)
-    {
-        $append = $this->getEditPathSuffix();
-
-        if(str_ends_with($path, $append)) {
-            return $path;
-        }
-        return $path . $append;
-    }
-
-
     #[Route('/---cms/render/edit/{path}', 'cms.pages.render-edit', methods: ['get'], requirements: ['path' => '.+'], priority: 50)]
     public function renderEditUrl(string $path = ''): Response
     {
-        dump($path);
-        //dd('ok');
-        
+        dump('EDITMODE --- ' . $path);
+
         $page = $this->pageRepository->getPage($path);
         if($page !== null) {
-            if(!is_file($this->getEditFilePath($page['filePath']))) {
-                copy($page['filePath'], $this->getEditFilePath($page['filePath']));
+
+            $editFilepath = $page['filePath'];
+            if(!str_ends_with($editFilepath, PageRepository::EDIT_PATH_SUFFIX)) {
+                $editFilepath = $editFilepath . PageRepository::EDIT_PATH_SUFFIX;
+            }
+            if(!is_file($editFilepath)) {
+                copy($page['filePath'], $editFilepath);
             }
         }
 
@@ -154,54 +143,9 @@ class RenderController extends AbstractController
             return $this->renderAsset($path);
         }
 
-        $page = $this->pageRepository->getPage($path);
+        $content = $this->contentRenderer->render($this->getParameter('kernel.project_dir'), $path, $editMode);
 
-        // Return 404 page
-        if($page === null) {
-            $filepath = $this->getParameter('kernel.project_dir') . '/content/pages/404.md';
-            if(!is_file($filepath)) {
-                $filepath = $this->getParameter('kernel.project_dir') . '/src/content/pages/404.md';
-            }
-        } else {
-            $filepath = $page['filePath'];
-
-            if($editMode) {
-                $filepath = $this->getEditFilePath($filepath);
-            }
-        }
-
-        $config = $this->getConfig();
-
-        $nav = [];
-        if(isset($config['nav'])) {
-            $nav = $config['nav'];
-            if(!is_array($nav)) {
-                $nav = [$nav];
-            }
-        }
-
-        $markdown = file_get_contents($filepath);
-
-        // $converter = $contentParser->createConverter();
-        // $result = $converter->convert($markdown);
-        // $content = $result->getContent();
-
-        $result = $this->contentParser->parse($markdown);
-        $content = $result['content'];
-        $page = $result['variables'];
-        
-        $twigVariables = [
-            'page' => $page,
-            'config' => $config,
-        ];
-
-        // The markdown is converted to HTML, now also render twig variables
-        $twig = new TwigEnvironment(new TwigArrayLoader(['___render_template' => $content]));
-        $content = $twig->render('___render_template', $twigVariables);
-        
-        return $this->render($page['template'], array_merge($twigVariables, [
-            'content' => $content,
-        ]));
+        return new Response($content);
     }
 
     function getConfig(): array

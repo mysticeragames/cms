@@ -2,13 +2,14 @@
 
 namespace App\Repositories;
 
-use App\Controller\RenderController;
 use App\Services\ContentParser;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
 class PageRepository
 {
+    public const string EDIT_PATH_SUFFIX = '.__EDITING_CONCEPT__.md';
+
     private string $projectDir;
     private string $contentPagesDirectory;
     private ContentParser $contentParser;
@@ -30,7 +31,7 @@ class PageRepository
 
         if($finder->hasResults()) {
             foreach($finder as $file) {
-                if($file->isFile() && strtolower($file->getExtension()) === 'md' && !str_ends_with($file->getPathname(), RenderController::getEditPathSuffix())) {
+                if($file->isFile() && strtolower($file->getExtension()) === 'md' && !str_ends_with($file->getPathname(), PageRepository::EDIT_PATH_SUFFIX)) {
                     $files[] = $this->parsePagePath($file);
                 }
             }
