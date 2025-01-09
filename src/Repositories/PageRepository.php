@@ -11,55 +11,65 @@ class PageRepository
     public const string EDIT_PATH_SUFFIX = '.__EDITING_CONCEPT__.md';
 
     private string $projectDir;
-    private string $contentPagesDirectory;
+    //private string $contentPagesDirectory;
     private ContentParser $contentParser;
 
     public function __construct(string $projectDir, ContentParser $contentParser)
     {
         $this->projectDir = $projectDir;
         //$directory = $this->getParameter('kernel.project_dir') . '/content/pages';
-        $this->contentPagesDirectory = $this->projectDir . '/content/pages';
+        //$this->contentPagesDirectory = $this->projectDir . '/content/pages';
         $this->contentParser = $contentParser;
     }
 
-    public function getPages($path = null): array
+    private function getContentPagesDirectory(string $site): string
+    {
+        return "$this->projectDir/content/sites/$site/pages";
+    }
+
+    public function getPages(string $site, string $path = null): array
     {
         $files = [];
         
         $finder = new Finder();
-        $finder->files()->in($this->contentPagesDirectory);
+        $finder->files()->in($this->getContentPagesDirectory($site));
 
         if($finder->hasResults()) {
             foreach($finder as $file) {
                 if($file->isFile() && strtolower($file->getExtension()) === 'md' && !str_ends_with($file->getPathname(), PageRepository::EDIT_PATH_SUFFIX)) {
-                    $files[] = $this->parsePagePath($file);
+                    $files[] = $this->parsePagePath($site, $file);
                 }
             }
         }
         return $files;
     }
     
-    private function createRegexExactPath($path)
+    private function createRegexExactPath(string $path)
     {
         return '/^' . preg_quote($path, '/') . '$/';
     }
 
-    private function findPageByPaths(array $searchPaths, bool $includeMarkdown = false)
+    private function findPageByPaths(string $site, array $searchPaths, bool $includeMarkdown = false)
     {
+        $siteDir = $this->getContentPagesDirectory($site);
+        if(!is_dir($siteDir)) {
+            return null;
+        }
+
         foreach($searchPaths as $searchPath) {
             $finder = new Finder();
-            $finder->path($this->createRegexExactPath($searchPath))->in($this->contentPagesDirectory)->files();
+            $finder->path($this->createRegexExactPath($searchPath))->in($siteDir)->files();
 
             if($finder->hasResults()) {
                 foreach($finder as $file) {
-                    return $this->parsePagePath($file, $includeMarkdown);
+                    return $this->parsePagePath($site, $file, $includeMarkdown);
                 }
             }
         }
         return null;
     }
 
-    public function getPage(string $path, bool $includeMarkdown = false)
+    public function getPage(string $site, string $path, bool $includeMarkdown = false)
     {
         $searchPaths = [];
 
@@ -73,10 +83,10 @@ class PageRepository
             $searchPaths[] = rtrim($path, '/') . '.md'; // my/path/ -> my/path.md
         }
         
-        return $this->findPageByPaths($searchPaths, $includeMarkdown);
+        return $this->findPageByPaths($site, $searchPaths, $includeMarkdown);
     }
 
-    function parsePagePath(SplFileInfo $file, bool $includeMarkdown = false): array
+    function parsePagePath(string $site, SplFileInfo $file, bool $includeMarkdown = false): array
     {
         if(is_file($file->getRealPath())) {
             $markdown = file_get_contents($file->getRealPath());
@@ -84,7 +94,7 @@ class PageRepository
             $pageVariables = $parsedPage['variables'];
 
             // Generate default slug/title (overridable by the variables in the page yaml)
-            $path = substr($file->getPathname(), strlen($this->contentPagesDirectory) + 1, -3);
+            $path = substr($file->getPathname(), strlen($this->getContentPagesDirectory($site)) + 1, -3);
             $parts = explode('/', $path);
             $defaultSlug = array_pop($parts);
             if($defaultSlug === 'index' && isset($parts[0])) {

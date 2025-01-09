@@ -15,11 +15,11 @@ class ContentRenderer
         $this->contentParser = $contentParser;
     }
 
-    public function render(string $projectDir, string $path, bool $editMode = false): string
+    public function render(string $projectDir, string $site, string $path, bool $editMode = false): string
     {
         $twigRenderer = new TwigRenderer();
 
-        $page = $this->pageRepository->getPage($path);
+        $page = $this->pageRepository->getPage($site, $path);
 
         // Return 404 page
         if($page === null) {
@@ -75,11 +75,31 @@ class ContentRenderer
         $twigRenderer = new TwigRenderer();
         $content = $twigRenderer->renderBlock($content, $twigVariables);
 
-        $renderBundles = [
-            $projectDir . '/content/pages',
-            $projectDir . '/src/templates/front',
-        ];
+        $renderBundles = [];
 
+        // Site templates (overrides the theme)
+        $siteDirTemplates = "$projectDir/content/$site/templates";
+        if(is_dir($siteDirTemplates)) {
+            $renderBundles[] = $siteDirTemplates;
+        }
+
+        // Theme templates (overrides default templates)
+        $theme = false;
+        if(isset($page['theme'])) {
+            $theme = $page['theme'];
+        } elseif(isset($config['theme'])) {
+            $theme = $config['theme'];
+        }
+        if(!empty($theme)) {
+            $themeDir = "$projectDir/content/$site/themes/$theme";
+            if(is_dir($themeDir)) {
+                $renderBundles[] = $themeDir;
+            }
+        }
+
+        // Default fallback templates
+        $renderBundles[] = "$projectDir/src/templates/front";
+        
         return $twigRenderer->render(
             $renderBundles,
             $page['template'],

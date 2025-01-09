@@ -16,7 +16,7 @@
     <tbody>
         <tr>
             <td>
-                <a href="{{ path('cms.pages.edit', { path: page.path })}}">Edit</a>
+                <a href="{{ path('cms.pages.edit', { site: site, path: page.path })}}">Edit</a>
             </td>
             <td>{{ page.path }}</td>
             <td>{{ page.title }}</td>

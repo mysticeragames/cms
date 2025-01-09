@@ -1,0 +1,20 @@
+<h1>Sites</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th></th>
+            <th>path</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for site in sites %}
+            <tr>
+                <td>
+                    <a href="{{ path('cms.pages.index', { site: site.path })}}">Show</a>
+                </td>
+                <td>{{ site.path }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
