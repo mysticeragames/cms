@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Render;
 
 use App\Repositories\PageRepository;
 use App\Services\ContentParser;
