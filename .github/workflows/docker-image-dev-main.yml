@@ -4,16 +4,13 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    types:
-      - closed
 
 env:
   IMAGE_NAME: mysticeragames/makeitstatic-cms
 
 jobs:
   build:
-    if: github.event_name == 'push' || github.event.pull_request.merged == true
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: read
