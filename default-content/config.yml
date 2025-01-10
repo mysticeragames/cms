@@ -1,0 +1,8 @@
+site:
+  title: MakeItStatic-CMS # The website title
+  title_separated: true # Set to false if you only want 1 title (priority in this order: page.title, site.title)
+  title_separator: ' | by ' # The separator between the page.title and the site.title
+page:
+  layout: layout # The layout you want to extend
+  template: default # The template you want to render
+  twig: false # Set to true to render twig variables in markdown

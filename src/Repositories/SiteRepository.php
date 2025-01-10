@@ -16,7 +16,7 @@ class SiteRepository
 
     public function getSites(): array
     {
-        $siteDir = $this->projectDir . '/content/sites';
+        $siteDir = $this->projectDir . '/content/src';
         $finder = new Finder();
         $finder->depth(0)->directories()->in($siteDir);
 
@@ -31,20 +31,20 @@ class SiteRepository
         return $sites;
     }
 
-    public function getSite(string $path = null): string
-    {
-        $siteDir = $this->projectDir . '/content/sites/' . $path;
+    // public function getSite(string $path = null): string
+    // {
+    //     $siteDir = $this->projectDir . '/content/' . $path;
 
-        return $path;
-        // if(is_dir($siteDir)) {
-        //     return $this->parseSitePath($path);
-        // }
-        return null;
-    }
+    //     return $path;
+    //     // if(is_dir($siteDir)) {
+    //     //     return $this->parseSitePath($path);
+    //     // }
+    //     return null;
+    // }
 
     function parseSitePath(SplFileInfo $file, bool $includeMarkdown = false): array
     {
-        $siteDir = $this->projectDir . '/content/sites';
+        $siteDir = $this->projectDir . '/content/src';
 
         if(is_dir($file->getRealPath())) {
 

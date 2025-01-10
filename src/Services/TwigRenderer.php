@@ -13,9 +13,9 @@ class TwigRenderer
     public function renderBlock(string $content, array $variables): string
     {
         return $this->render(
-            ['template' => $content],
-            'template',
-            ['template' => $variables],
+            templateBundles: ['template.html.twig' => $content],
+            template: 'template.html.twig',
+            variables: $variables,
         );
     }
 
@@ -24,8 +24,12 @@ class TwigRenderer
         if($templateBundles === null || count($templateBundles) === 0) {
             throw new Exception('No template bundles found');
         }
-        
+
         $twig = $this->createEnvironment($templateBundles);
+
+        if(!str_ends_with($template, '.html.twig')) {
+            $template .= '.html.twig';
+        }
 
         return $twig->render($template, $variables);
     }

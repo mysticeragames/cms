@@ -1,20 +1,24 @@
-<h1>Sites</h1>
+{% extends '@cms/default.html.twig' %}
 
-<table>
-    <thead>
-        <tr>
-            <th></th>
-            <th>path</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for site in sites %}
+{%~ block content %}
+    <h1>Sites</h1>
+
+    <table>
+        <thead>
             <tr>
-                <td>
-                    <a href="{{ path('cms.pages.index', { site: site.path })}}">Show</a>
-                </td>
-                <td>{{ site.path }}</td>
+                <th></th>
+                <th>path</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for site in sites %}
+                <tr>
+                    <td>
+                        <a href="{{ path('cms.pages.index', { site: site.path })}}">Show</a>
+                    </td>
+                    <td>{{ site.path }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{%~ endblock %}

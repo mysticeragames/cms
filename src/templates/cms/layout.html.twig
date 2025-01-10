@@ -1,0 +1,42 @@
+{% extends '@cms/base.html.twig' %}
+
+{%~ block styles %}
+<style>
+/* css reset - https://www.joshwcomeau.com/css/custom-css-reset/ */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+body { line-height: 1.5; -webkit-font-smoothing: antialiased; }
+img, picture, video, canvas, svg { display: block; max-width: 100%; }
+input, button, textarea, select { font: inherit; }
+p, h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; }
+p { text-wrap: pretty; }
+h1, h2, h3, h4, h5, h6 { text-wrap: balance; }
+/* end css reset */
+
+* {
+  /* https://rigaux.org/font-family-compatibility-between-linux-.html */
+  font-family: Arial,Helvetica,sans-serif;
+}
+body {
+  background-color: #ebebeb;
+}
+.main {
+    background-color:#fff;
+    width: 98%;
+    height: 100vh;
+    max-width: 1260px;
+    margin: 0 auto;
+    padding: 50px;
+    box-shadow: 0 0 10px #d1d1d1;
+}
+h1 {
+  margin-bottom: 1rem;
+}
+</style>
+{%~ endblock %}
+
+{%~ block body %}
+    <div class="main">
+        {%~ block page_contents %}{%~ endblock %}
+    </div>
+{%~ endblock %}
