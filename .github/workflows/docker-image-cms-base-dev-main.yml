@@ -21,10 +21,10 @@ jobs:
 
 
       - name: Get cms-base version from file
-      run: |
-        CMS_BASE_VERSION=$(cat ./.docker/cms-base/version | xargs)
-        echo "${CMS_BASE_VERSION}"
-        echo "CMS_BASE_VERSION=${CMS_BASE_VERSION}" >> $GITHUB_ENV
+        run: |
+          CMS_BASE_VERSION=$(cat ./.docker/cms-base/version | xargs)
+          echo "${CMS_BASE_VERSION}"
+          echo "CMS_BASE_VERSION=${CMS_BASE_VERSION}" >> $GITHUB_ENV
 
 
       - name: Docker login
