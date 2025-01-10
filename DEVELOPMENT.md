@@ -13,7 +13,7 @@ git rebase main
 # Push changes
 git push -u origin my-branch
 # Make pull request on github.com -> After merge the branch is automatically removed
-https://github.com/mysticeragames/MakeItStatic-CMS/compare
+https://github.com/mysticeragames/MakeItStatic-CMS/compare/main...my-branch
 
 # Switch back to main branch,
 # + Fetch remote branches, and remove non-existing remote branches locally
