@@ -11,7 +11,7 @@ jobs:
     container:
       image: mysticeragames/makeitstatic-cms
       volumes:
-      - ${GITHUB_WORKSPACE}:/var/www/html
+      - .:/var/www/html
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
