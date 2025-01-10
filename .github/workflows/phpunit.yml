@@ -3,30 +3,24 @@ name: PHPUnit Tests
 on:
   pull_request:
 
-env:
-  REGISTRY: docker.io
-  DOCKERHUB_USERNAME: rboonzaijer
-  IMAGE_NAME: mysticeragames/makeitstatic-cms
-
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-
+    container:
+      image: mysticeragames/makeitstatic-cms
+      volumes:
+      - $(pwd):/var/www/html
     steps:
-      - uses: actions/checkout@v4.2.2
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
 
-      - uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ env.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build Docker image
-        run: |
-          docker build --no-cache -t ${{ env.IMAGE_NAME }}:build .
 
       - name: Test
         run: |
-          docker run --rm ${{ env.IMAGE_NAME }}:build php bin/phpunit
+          # COPY --chown=cms ./ /var/www/html/
+          # echo -e "APP_ENV=prod\nAPP_SECRET=" > /var/www/html/.env.local
+          composer install --optimize-autoloader --no-interaction --no-progress
+          composer run post-create-project-cmd
+          php bin/phpunit
