@@ -4,29 +4,29 @@ on:
   pull_request:
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    container:
-      image: mysticeragames/makeitstatic-cms
-      #volumes:
-      #- /my_html:/var/www/html
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
 
 
+      - name: Docker Login
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: docker.io
+          username: rboonzaijer
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+
+      - name: Docker Build
+        run: |
+          docker build --no-cache -t local/test/image:build -f ./.docker/cms/Dockerfile .
+
+
       - name: Test
         run: |
-          pwd
-          ls -la
-          echo "${GITHUB_WORKSPACE}"
-          #ls -la ${GITHUB_WORKSPACE}
-          #cp -r -v -f ${GITHUB_WORKSPACE} /my_html
-
-          # COPY --chown=cms ./ /var/www/html/
-          # echo -e "APP_ENV=prod\nAPP_SECRET=" > /var/www/html/.env.local
-          composer install --optimize-autoloader --no-interaction --no-progress
-          composer run post-create-project-cmd
-          php bin/phpunit
+          docker run --rm local/test/image:build php bin/phpunit
