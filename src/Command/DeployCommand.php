@@ -45,7 +45,7 @@ class DeployCommand extends Command
             throw new \LogicException('This command accepts only an instance of "ConsoleOutputInterface".');
         }
 
-        $rootOutputDir = $this->projectDir . '/generated';
+        $rootOutputDir = $this->projectDir . '/content/dist';
         if(!is_dir($rootOutputDir)) {
 
             // https://symfony.com/doc/current/components/console/helpers/formatterhelper.html
@@ -70,7 +70,7 @@ class DeployCommand extends Command
         ]);
 
         
-        $this->gitHelper->addCommitPush('generated');
+        $this->gitHelper->addCommitPush('published');
 
         
         $output->writeln('--> Done.');

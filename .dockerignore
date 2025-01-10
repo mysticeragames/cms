@@ -2,9 +2,16 @@
 .gitconfig
 .git/
 
-# Ensure the CMS will never commit any test-content (/content, /content2, etc...)
-/content*
-/generated*
+# Ignore content source files
+/content/src/*
+!/content/src/.gitkeep
+
+# Ignore content distribution files
+/content/dist/*
+!/content/dist/.gitkeep
+
+# Ensure the CMS will never commit any test-content ('/content copy', '/content - kopie', etc...)
+/content *
 
 # Generic
 vendor/

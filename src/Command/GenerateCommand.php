@@ -62,7 +62,7 @@ class GenerateCommand extends Command
         }
 
 
-        $rootOutputDir = $this->projectDir . '/generated';
+        $rootOutputDir = $this->projectDir . '/content/dist';
         if(!is_dir($rootOutputDir)) {
 
             // https://symfony.com/doc/current/components/console/helpers/formatterhelper.html

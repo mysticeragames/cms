@@ -1,6 +1,15 @@
 # twig:
 # --> Use twig.php (dynamic paths)
 
+# https://symfony.com/doc/current/reference/configuration/twig.html
+
+twig:
+    file_name_pattern: ['*.twig']
+    default_path: '%kernel.project_dir%/default-content/templates'
+    strict_variables: false # Don't throw errors when a variable does not exist
+    paths:
+        '%kernel.project_dir%/src/templates/cms': 'cms'
+
 when@test:
     twig:
         strict_variables: true

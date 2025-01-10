@@ -1,33 +1,37 @@
-<h1>Pages</h1>
+{% extends '@cms/default.html.twig' %}
 
-<table>
-    <thead>
-        <tr>
-            <th></th>
-            <th>path</th>
-            <th>title</th>
-            <th>slug</th>
-            <th>createdAt</th>
-            <th>updatedAt</th>
-            <th>layout</th>
-            <th>template</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for page in pages %}
+{%~ block content %}
+    <h1>Pages</h1>
+
+    <table>
+        <thead>
             <tr>
-                <td>
-                    <a target="_blank" href="{{ path('render', { site: site, path: page.path })}}">Preview</a>
-                    <a href="{{ path('cms.pages.edit', { site: site, path: page.path })}}">Edit</a>
-                </td>
-                <td>{{ page.path }}</td>
-                <td>{{ page.title }}</td>
-                <td>{{ page.slug }}</td>
-                <td title="{{ page.createdAt }}">{{ page.createdAt|date('Y-m-d') }}</td>
-                <td title="{{ page.updatedAt }}">{{ page.updatedAt|date('Y-m-d') }}</td>
-                <td>{{ page.layout }}</td>
-                <td>{{ page.template }}</td>
+                <th></th>
+                <th>path</th>
+                <th>title</th>
+                <th>slug</th>
+                <th>createdAt</th>
+                <th>updatedAt</th>
+                <th>layout</th>
+                <th>template</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for page in pages %}
+                <tr>
+                    <td>
+                        <a target="_blank" href="{{ path('render', { site: site, path: page.path })}}">Preview</a>
+                        <a href="{{ path('cms.pages.edit', { site: site, path: page.path })}}">Edit</a>
+                    </td>
+                    <td>{{ page.path }}</td>
+                    <td>{{ page.title }}</td>
+                    <td>{{ page.slug }}</td>
+                    <td title="{{ page.createdAt }}">{{ page.createdAt|date('Y-m-d') }}</td>
+                    <td title="{{ page.updatedAt }}">{{ page.updatedAt|date('Y-m-d') }}</td>
+                    <td>{{ page.layout }}</td>
+                    <td>{{ page.template }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{%~ endblock %}

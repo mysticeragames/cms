@@ -28,20 +28,12 @@ class ContentParser
             $variables = $result->getFrontMatter();
         }
 
-        $variables = array_merge([
-            'layout' => 'layout.html.twig',
-            'template' => 'default.html.twig',
-            //'updatedAt' => date("Y-m-d H:i:s", filemtime($filepath))
-        ], $variables);
+        // $variables = array_merge([
+        //     'layout' => 'layout.html.twig',
+        //     'template' => 'default.html.twig',
+        //     //'updatedAt' => date("Y-m-d H:i:s", filemtime($filepath))
+        // ], $variables);
         
-        if(!str_ends_with($variables['layout'], '.html.twig')) {
-            $variables['layout'] .= '.html.twig';
-        }
-
-        if(!str_ends_with($variables['template'], '.html.twig')) {
-            $variables['template'] .= '.html.twig';
-        }
-
         return [
             'content' => $content,
             'variables' => $variables,

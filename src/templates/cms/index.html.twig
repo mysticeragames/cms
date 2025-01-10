@@ -1,3 +1,7 @@
-<h1>CMS</h1>
+{% extends '@cms/default.html.twig' %}
 
-<a href="{{ path('cms.sites.index') }}">Sites</a>
+{%~ block content %}
+    <h1>CMS</h1>
+
+    <a href="{{ path('cms.sites.index') }}">Sites</a>
+{%~ endblock %}

@@ -24,7 +24,7 @@ class PageRepository
 
     private function getContentPagesDirectory(string $site): string
     {
-        return "$this->projectDir/content/sites/$site/pages";
+        return "$this->projectDir/content/src/$site/pages";
     }
 
     public function getPages(string $site, string $path = null): array
