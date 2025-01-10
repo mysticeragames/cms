@@ -21,6 +21,10 @@ https://github.com/mysticeragames/MakeItStatic-CMS/compare/main...my-branch
 # + Fetch remote branches, and remove non-existing remote branches locally
 git checkout main
 git pull
+
+# When message: "hint: You have divergent branches and need to specify how to reconcile them."
+git reset --hard origin/main # NOTE: THIS WILL REMOVE ALL LOCAL CHANGES!
+
 git fetch --prune
 git branch -a
 git branch -D my-branch
