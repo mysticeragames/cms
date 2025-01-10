@@ -3,11 +3,6 @@ name: PHPUnit Tests
 on:
   pull_request:
 
-env:
-  REGISTRY: docker.io
-  DOCKERHUB_USERNAME: rboonzaijer
-  IMAGE_NAME: mysticeragames/makeitstatic-cms
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,18 +10,27 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4.2.2
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
 
-      - uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+
+      - name: Docker Login
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ env.DOCKERHUB_USERNAME }}
+          registry: docker.io
+          username: rboonzaijer
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build Docker image
+
+      - name: Docker Build
         run: |
-          docker build --no-cache -t ${{ env.IMAGE_NAME }}:build .
+          # (temp) cms-base is not available:
+          docker build --no-cache -t test:base ./.docker/cms-base
+          docker build --no-cache -t test:cms --build-arg BASE_IMAGE=test --build-arg BASE_VERSION=base -f ./.docker/cms/Dockerfile .
+
+          # docker build --no-cache -t test:cms -f ./.docker/cms/Dockerfile .
+
 
       - name: Test
         run: |
-          docker run --rm ${{ env.IMAGE_NAME }}:build php bin/phpunit
+          docker run --rm test:cms php bin/phpunit
