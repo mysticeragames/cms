@@ -10,8 +10,8 @@ jobs:
       contents: read
     container:
       image: mysticeragames/makeitstatic-cms
-      volumes:
-      - /my_html:/var/www/html
+      #volumes:
+      #- /my_html:/var/www/html
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
@@ -22,9 +22,9 @@ jobs:
           pwd
           ls -la
           echo "${GITHUB_WORKSPACE}"
-          ls -la ${GITHUB_WORKSPACE}
-          cp -r -v -f ${GITHUB_WORKSPACE} /my_html
-          
+          #ls -la ${GITHUB_WORKSPACE}
+          #cp -r -v -f ${GITHUB_WORKSPACE} /my_html
+
           # COPY --chown=cms ./ /var/www/html/
           # echo -e "APP_ENV=prod\nAPP_SECRET=" > /var/www/html/.env.local
           composer install --optimize-autoloader --no-interaction --no-progress
