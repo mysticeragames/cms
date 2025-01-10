@@ -24,9 +24,13 @@ jobs:
 
       - name: Docker Build
         run: |
-          docker build --no-cache -t local/test/image:build -f ./.docker/cms/Dockerfile .
+          # (temp) cms-base is not available:
+          docker build --no-cache -t test:base ./.docker/cms-base
+          docker build --no-cache -t test:cms --build-arg BASE_IMAGE=test --build-arg BASE_VERSION=base -f ./.docker/cms/Dockerfile .
+
+          # docker build --no-cache -t test:cms -f ./.docker/cms/Dockerfile .
 
 
       - name: Test
         run: |
-          docker run --rm local/test/image:build php bin/phpunit
+          docker run --rm test:cms php bin/phpunit
