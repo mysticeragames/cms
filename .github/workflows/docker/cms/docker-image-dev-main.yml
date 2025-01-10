@@ -1,4 +1,4 @@
-name: Docker Image dev-main
+name: Docker Build/Push CMS -> makeitstatic-cms:dev-main
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
 
 env:
   IMAGE_NAME: mysticeragames/makeitstatic-cms
+  IMAGE_TAG: dev-main
 
 jobs:
   build:
@@ -28,7 +29,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build --no-cache -t ${{ env.IMAGE_NAME }}:build .
+          echo ${{ env.IMAGE_TAG }} > ./.docker/cms-base/version
+          docker build --no-cache -t ${{ env.IMAGE_NAME }}:build -f ./.docker/cms/Dockerfile .
 
 
       - name: PHPUnit Test
@@ -38,7 +40,7 @@ jobs:
 
       - name: Push release
         env:
-          TARGET_IMAGE: ${{ env.IMAGE_NAME }}:dev-main
+          TARGET_IMAGE: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
         run: |
           docker tag ${{ env.IMAGE_NAME }}:build ${{ env.TARGET_IMAGE }}
           docker push ${{ env.TARGET_IMAGE }}

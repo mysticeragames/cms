@@ -1,0 +1,59 @@
+name: Docker Build/Push BASE -> makeitstatic-cms-base:dev-main
+
+on:
+  schedule:
+    - cron: '0 17 * * 3' # “At 17:00 on Wednesday.” - https://crontab.guru/#0_17_*_*_3
+  workflow_dispatch: # Manual
+
+env:
+  IMAGE_NAME: mysticeragames/makeitstatic-cms-base
+  IMAGE_TAG: dev-main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+
+
+      - name: Get cms-base version from file
+      run: |
+        CMS_BASE_VERSION=$(cat ./.docker/cms-base/version | xargs)
+        echo "${CMS_BASE_VERSION}"
+        echo "CMS_BASE_VERSION=${CMS_BASE_VERSION}" >> $GITHUB_ENV
+
+
+      - name: Docker login
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: docker.io
+          username: rboonzaijer
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+
+      - name: Docker build
+        env:
+          TARGET_IMAGE: ${{ env.IMAGE_NAME }}:build
+        run: |
+          echo "${{ env.IMAGE_TAG }}" > version
+          docker build --no-cache -t ${{ env.TARGET_IMAGE }} -f ./.docker/cms-base/Dockerfile ./.docker/cms-base
+
+
+      - name: Docker push
+        env:
+          TARGET_IMAGE: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+        run: |
+          docker tag ${{ env.IMAGE_NAME }}:build ${{ env.TARGET_IMAGE }}
+          docker push ${{ env.TARGET_IMAGE }}
+
+
+      - name: Docker push latest
+        env:
+          TARGET_IMAGE: ${{ env.IMAGE_NAME }}:latest
+        run: |
+          docker tag ${{ env.IMAGE_NAME }}:build ${{ env.TARGET_IMAGE }}
+          docker push ${{ env.TARGET_IMAGE }}

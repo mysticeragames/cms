@@ -5,6 +5,9 @@
 ARG ALPINE_VERSION=3.21
 FROM alpine:${ALPINE_VERSION}
 
+# Set version
+COPY version /etc/cms-base-version
+
 # Set working directory
 WORKDIR /var/www/html
 
@@ -41,18 +44,17 @@ RUN apk add --no-cache \
     supervisor
 
 # Nginx
-COPY .docker/nginx.conf /etc/nginx/nginx.conf
-#COPY .docker/conf.d /etc/nginx/conf.d/
-COPY .docker/conf.d-symfony /etc/nginx/conf.d/
+COPY config/nginx.conf /etc/nginx/nginx.conf
+COPY config/conf.d /etc/nginx/conf.d/
 
 # PHP
 ENV PHP_INI_DIR=/etc/php83
-COPY .docker/fpm-pool.conf ${PHP_INI_DIR}/php-fpm.d/www.conf
-COPY .docker/php.ini ${PHP_INI_DIR}/conf.d/custom.ini
+COPY config/fpm-pool.conf ${PHP_INI_DIR}/php-fpm.d/www.conf
+COPY config/php.ini ${PHP_INI_DIR}/conf.d/custom.ini
 RUN if [ ! -f /usr/bin/php ]; then ln -s /usr/bin/php83 /usr/bin/php; fi
 
 # Supervisor
-COPY .docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Composer
 # https://getcomposer.org/doc/00-intro.md#docker-image
@@ -68,18 +70,6 @@ USER cms
 RUN git config --global init.defaultBranch main && \
     git config --global user.email "MakeItStatic" &&\
     git config --global user.name "MakeItStatic"
-
-# Copy all CMS files
-COPY --chown=cms ./ /var/www/html/
-
-# Make sure the CMS runs in production mode
-RUN echo -e "APP_ENV=prod\nAPP_SECRET=" > /var/www/html/.env.local
-
-# Install all dependencies
-RUN composer install --optimize-autoloader --no-interaction --no-progress
-
-# Run post-install scripts
-RUN composer run post-create-project-cmd
 
 # Indicate which port needs to be connected with EXPOSE metadata
 EXPOSE 8080

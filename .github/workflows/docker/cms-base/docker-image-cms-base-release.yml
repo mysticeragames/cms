@@ -1,0 +1,59 @@
+name: Docker Build/Push BASE RELEASE -> makeitstatic-cms-base:v.v.v
+
+on:
+  # https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#release
+  release:
+    types:
+      - released
+
+env:
+  IMAGE_NAME: mysticeragames/makeitstatic-cms-base
+  #IMAGE_TAG: # Will be fetched from ./.docker/cms-base/version
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+
+
+      - name: Get cms-base version from file
+      run: |
+        CMS_BASE_VERSION=$(cat ./.docker/cms-base/version | xargs)
+        echo "${CMS_BASE_VERSION}"
+        echo "CMS_BASE_VERSION=${CMS_BASE_VERSION}" >> $GITHUB_ENV
+
+
+      - name: Docker login
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: docker.io
+          username: rboonzaijer
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+
+      - name: Docker build
+        env:
+          TARGET_IMAGE: ${{ env.IMAGE_NAME }}:build
+        run: |
+          docker build --no-cache -t ${{ env.TARGET_IMAGE }} -f ./.docker/cms-base/Dockerfile ./.docker/cms-base
+
+
+      - name: Docker push
+        env:
+          TARGET_IMAGE: ${{ env.IMAGE_NAME }}:$CMS_BASE_VERSION}
+        run: |
+          docker tag ${{ env.IMAGE_NAME }}:build ${{ env.TARGET_IMAGE }}
+          docker push ${{ env.TARGET_IMAGE }}
+
+
+      - name: Docker push latest
+        env:
+          TARGET_IMAGE: ${{ env.IMAGE_NAME }}:latest
+        run: |
+          docker tag ${{ env.IMAGE_NAME }}:build ${{ env.TARGET_IMAGE }}
+          docker push ${{ env.TARGET_IMAGE }}
