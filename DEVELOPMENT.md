@@ -11,6 +11,8 @@ git fetch origin main
 git rebase main
 
 # Push changes
+git add .
+git commit -m "updates"
 git push -u origin my-branch
 # Make pull request on github.com -> After merge the branch is automatically removed
 https://github.com/mysticeragames/MakeItStatic-CMS/compare/main...my-branch
@@ -20,6 +22,8 @@ https://github.com/mysticeragames/MakeItStatic-CMS/compare/main...my-branch
 git checkout main
 git pull
 git fetch --prune
+git branch -a
+git branch -D my-branch
 ```
 
 ## TODO LIST
