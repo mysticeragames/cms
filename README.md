@@ -3,8 +3,8 @@
 Flat-File CMS with Static Site Generator
 
 [![GitHub Release](https://img.shields.io/github/v/release/mysticeragames/MakeItStatic-CMS?sort=semver&label=Release)](https://github.com/mysticeragames/MakeItStatic-CMS/releases/latest)
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mysticeragames/MakeItStatic-CMS/docker-image-release.yml?event=release&label=Docker%20Build%20:latest)](https://github.com/mysticeragames/MakeItStatic-CMS/actions/workflows/docker-image-release.yml)
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mysticeragames/MakeItStatic-CMS/docker-image-dev-main.yml?branch=main&label=Docker%20Build%20:dev-main)](https://github.com/mysticeragames/MakeItStatic-CMS/actions/workflows/docker-image-dev-main.yml)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mysticeragames/MakeItStatic-CMS/trigger.release.yml?branch=main&label=Docker%20Release)](https://github.com/mysticeragames/MakeItStatic-CMS/actions/workflows/trigger.release.yml)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mysticeragames/MakeItStatic-CMS/trigger.main.yml?branch=main&label=Docker%20Development%20(dev-main))](https://github.com/mysticeragames/MakeItStatic-CMS/actions/workflows/trigger.main.yml)
 [![Docker Pulls](https://img.shields.io/docker/pulls/mysticeragames/makeitstatic-cms?label=Docker%20Pulls)](https://hub.docker.com/r/mysticeragames/makeitstatic-cms)
 
 ## *WORK IN PROGRESS!*
@@ -12,22 +12,41 @@ Flat-File CMS with Static Site Generator
 # Docker
 
 ```bash
+# Create volume
+docker volume create makeitstatic-cms-content
+
+# Pull latest version
+docker pull mysticeragames/makeitstatic-cms:latest
+
 # Run the CMS
-docker run /
-  -d /
-  --name makeitstatic-cms /
-  --restart unless-stopped /
-  -p 8000:8080 /
-  mysticeragames/makeitstatic-cms:latest
+docker run -d -v makeitstatic-cms-content:/var/www/html/content --name makeitstatic-cms --restart unless-stopped -p 8000:8080 mysticeragames/makeitstatic-cms:latest
 
-# Add a repository to store content
-docker exec makeitstatic-cms sh -c 'REPO_CONTENT=https://github.com/mysticeragames/mysticeragames.com-content.git && git submodule add --force $REPO_CONTENT content && git -C content log --oneline -1 || ( echo "no commits yet" && cp -r ./src/Demo/Content/Minimal/* ./content && git -C content add . && git -C content commit -m "initial" && git -C content push -u origin $(git -C content branch --show-current) && rm -r content && git submodule add --force $REPO_CONTENT content );'
+# Show status
+docker ps -a -f "name=makeitstatic-cms"
 
-# Add a repository to store generated files from deployment
-docker exec makeitstatic-cms sh -c 'REPO_DEPLOY=https://github.com/mysticeragames/mysticeragames.com-generated.git && git submodule add --force $REPO_DEPLOY generated && git -C generated log --oneline -1 || ( echo "no commits yet" && cp -r src/Demo/Generated/* generated && git -C generated add . && git -C generated commit -m "initial" && git -C generated push -u origin $(git -C generated branch --show-current) && rm -r generated && git submodule add --force $REPO_DEPLOY generated )'
+# Show logs
+docker exec makeitstatic-cms tail /var/log/nginx/project_error.log -n 5
+docker exec makeitstatic-cms tail /var/log/nginx/project_access.log -n 5
+
+# Stop container
+docker stop makeitstatic-cms
+
+# Remove container
+docker rm makeitstatic-cms --force
+
+# List volume
+docker volume ls -f name=makeitstatic-cms-content
+
+# Inspect volume
+docker run --rm -v makeitstatic-cms-content:/app:ro alpine:latest find /app -type f
+
+# Backup named volume to my_backup.tar
+docker run --rm -u $(id -u):$(id -g) -v makeitstatic-cms-content:/vol -v $(pwd):/app alpine:latest tar c -f /app/my_backup.tar -C /vol .
+
+# Restore named volume from my_backup.tar
+docker run --rm -u 0:0 -v makeitstatic-cms-content:/vol -v $(pwd):/app alpine:latest tar x -f /app/my_backup.tar -C /vol .
 ```
 
-- http://localhost:8000/---cms
 - http://localhost:8000
 
 ### Update
@@ -36,6 +55,16 @@ docker exec makeitstatic-cms sh -c 'REPO_DEPLOY=https://github.com/mysticeragame
 docker rm makeitstatic-cms --force
 
 docker run --pull always -d --name makeitstatic-cms --restart unless-stopped -p 8000:8080 mysticeragames/makeitstatic-cms:latest
+```
+
+### TEMP...
+
+```bash
+# Add a repository to store content
+docker exec makeitstatic-cms sh -c 'REPO_CONTENT=https://github.com/mysticeragames/mysticeragames.com-content.git && git submodule add --force $REPO_CONTENT content && git -C content log --oneline -1 || ( echo "no commits yet" && cp -r ./src/Demo/Content/Minimal/* ./content && git -C content add . && git -C content commit -m "initial" && git -C content push -u origin $(git -C content branch --show-current) && rm -r content && git submodule add --force $REPO_CONTENT content );'
+
+# Add a repository to store generated files from deployment
+docker exec makeitstatic-cms sh -c 'REPO_DEPLOY=https://github.com/mysticeragames/mysticeragames.com-generated.git && git submodule add --force $REPO_DEPLOY generated && git -C generated log --oneline -1 || ( echo "no commits yet" && cp -r src/Demo/Generated/* generated && git -C generated add . && git -C generated commit -m "initial" && git -C generated push -u origin $(git -C generated branch --show-current) && rm -r generated && git submodule add --force $REPO_DEPLOY generated )'
 ```
 
 ### Requirements
