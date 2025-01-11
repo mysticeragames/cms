@@ -17,6 +17,10 @@ class SiteRepository
     public function getSites(): array
     {
         $siteDir = $this->projectDir . '/content/src';
+        if(!is_dir($siteDir)) {
+            mkdir($siteDir, recursive: true);
+        }
+
         $finder = new Finder();
         $finder->depth(0)->directories()->in($siteDir);
 
