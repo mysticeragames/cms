@@ -36,3 +36,6 @@ node_modules/
 /phpunit.xml
 .phpunit.result.cache
 ###< phpunit/phpunit ###
+
+# phpunit "^11.5.2"
+/.phpunit.cache/
