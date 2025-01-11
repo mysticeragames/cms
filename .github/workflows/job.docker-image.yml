@@ -73,8 +73,12 @@ jobs:
         docker run --rm ${{ env.IMAGE }} sh -c "${COMMANDS}" || exit 1
 
 
+    - name: Run PHP codesniffer
+      run: docker run --rm ${{ env.IMAGE }} php vendor/bin/phpcs
+
+
     - name: Run PHPUnit tests
-      run: docker run --rm ${{ env.IMAGE }} php bin/phpunit
+      run: docker run --rm ${{ env.IMAGE }} php vendor/bin/phpunit
 
 
     - if: ${{ inputs.PUSH == 'true' }}
