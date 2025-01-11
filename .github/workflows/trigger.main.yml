@@ -6,8 +6,8 @@ on:
       - main
 
 jobs:
-  docker-build-push-cms-base:
-    uses: ./.github/workflows/job.docker-build-push-cms-base.yml
+  main:
+    uses: ./.github/workflows/job.docker-image.yml
     with:
       PUSH: 'true'
       RELEASE: 'false'
