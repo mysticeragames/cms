@@ -1,0 +1,15 @@
+name: '[trigger.release] RELEASE new version + latest'
+
+on:
+  release:
+    types:
+      - released
+
+jobs:
+  docker-build-push-cms-base:
+    uses: ./.github/workflows/job.docker-build-push-cms-base.yml
+    with:
+      PUSH: 'false'
+      RELEASE: 'true'
+    secrets:
+      DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}

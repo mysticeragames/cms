@@ -1,0 +1,15 @@
+name: '[trigger.pull-request] PHPUnit Tests'
+
+on:
+  pull_request:
+
+
+
+jobs:
+  docker-build-push-cms-base:
+    uses: ./.github/workflows/job.docker-build-push-cms-base.yml
+    with:
+      PUSH: 'false'
+      RELEASE: 'false'
+    secrets:
+      DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
