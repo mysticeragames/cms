@@ -36,7 +36,11 @@ class PageRepository
 
         if ($finder->hasResults()) {
             foreach ($finder as $file) {
-                if ($file->isFile() && strtolower($file->getExtension()) === 'md' && !str_ends_with($file->getPathname(), PageRepository::EDIT_PATH_SUFFIX)) {
+                if (
+                    $file->isFile() &&
+                    strtolower($file->getExtension()) === 'md' &&
+                    !str_ends_with($file->getPathname(), PageRepository::EDIT_PATH_SUFFIX)
+                ) {
                     $files[] = $this->parsePagePath($site, $file);
                 }
             }
@@ -86,7 +90,7 @@ class PageRepository
         return $this->findPageByPaths($site, $searchPaths, $includeMarkdown);
     }
 
-    function parsePagePath(string $site, SplFileInfo $file, bool $includeMarkdown = false): array
+    private function parsePagePath(string $site, SplFileInfo $file, bool $includeMarkdown = false): array
     {
         if (is_file($file->getRealPath())) {
             $markdown = file_get_contents($file->getRealPath());
@@ -129,7 +133,9 @@ class PageRepository
 
     public function isValidDateString($dateString = null): bool
     {
-        if (is_string($dateString) && !empty($dateString) && preg_match('/^[0-9]{4}\-[0-9]{2}\-[0-9]{2}( [0-9]{2}\:[0-9]{2}(\:[0-9]{2})?)?$/', $dateString)) {
+        $pattern = '/^[0-9]{4}\-[0-9]{2}\-[0-9]{2}( [0-9]{2}\:[0-9]{2}(\:[0-9]{2})?)?$/';
+
+        if (is_string($dateString) && !empty($dateString) && preg_match($pattern, $dateString)) {
             return true;
         }
         return false;

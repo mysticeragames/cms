@@ -25,8 +25,12 @@ class GenerateCommand extends Command
 
     private string $projectDir;
 
-    public function __construct(PageRepository $pageRepository, TwigRenderer $twigRenderer, ContentRenderer $contentRenderer, string $projectDir)
-    {
+    public function __construct(
+        PageRepository $pageRepository,
+        TwigRenderer $twigRenderer,
+        ContentRenderer $contentRenderer,
+        string $projectDir
+    ) {
         // best practices recommend to call the parent constructor first and
         // then set your own properties. That wouldn't work in this case
         // because configure() needs the properties set in this constructor
@@ -51,7 +55,8 @@ class GenerateCommand extends Command
 
         // $this
         //     // ...
-        //     ->addArgument('password', $this->requirePassword ? InputArgument::REQUIRED : InputArgument::OPTIONAL, 'User password')
+        //     ->addArgument('password', $this->requirePassword ?
+        //          InputArgument::REQUIRED : InputArgument::OPTIONAL, 'User password')
         // ;
     }
 
@@ -72,7 +77,8 @@ class GenerateCommand extends Command
             $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
             $output->writeln($formattedBlock);
 
-            $output->writeln("Output directory 'generated' does not exist, create a directory first (mkdir generated) or clone a git submodule");
+            $output->writeln("Output directory 'generated' does not exist, create a " .
+                "directory first (mkdir generated) or clone a git submodule");
 
             // return int(1))
             return Command::FAILURE;

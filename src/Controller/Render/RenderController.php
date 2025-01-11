@@ -17,8 +17,12 @@ class RenderController extends AbstractController
     private PageRepository $pageRepository;
     private ContentRenderer $contentRenderer;
 
-    public function __construct(string $projectDir, ContentParser $contentParser, PageRepository $pageRepository, ContentRenderer $contentRenderer)
-    {
+    public function __construct(
+        string $projectDir,
+        ContentParser $contentParser,
+        PageRepository $pageRepository,
+        ContentRenderer $contentRenderer
+    ) {
         $this->contentParser = $contentParser;
         $this->pageRepository = $pageRepository;
         $this->contentRenderer = $contentRenderer;
@@ -30,7 +34,13 @@ class RenderController extends AbstractController
     //     return $this->renderAsset('/assets/' . $path);
     // }
 
-    #[Route('/---cms/render-edit/{path}', 'cms.pages.render-edit', methods: ['get'], requirements: ['path' => '.+'], priority: 50)]
+    #[Route(
+        '/---cms/render-edit/{path}',
+        'cms.pages.render-edit',
+        methods: ['get'],
+        requirements: ['path' => '.+'],
+        priority: 50
+    )]
     public function renderEditUrl(string $site, string $path = ''): Response
     {
         dump('EDITMODE --- ' . $path);
@@ -56,7 +66,7 @@ class RenderController extends AbstractController
         return $this->renderUrl($site, $path);
     }
 
-    function render404NotFoundHeaderOnly(): Response
+    private function render404NotFoundHeaderOnly(): Response
     {
         return new Response(
             '',
@@ -65,21 +75,21 @@ class RenderController extends AbstractController
         );
     }
 
-    function isAsset(string $path): bool
+    private function isAsset(string $path): bool
     {
         if (str_starts_with($path, 'assets/')) {
             return true;
         }
 
         $pathinfo = pathinfo($path);
-        if (isset($pathinfo['extension']) && strtolower($pathinfo['extension']) !== 'html') { // !in_array(strtolower($pathinfo['extension']), ['html', 'htm'])) {
+        if (isset($pathinfo['extension']) && strtolower($pathinfo['extension']) !== 'html') {
             return true;
         }
 
         return false;
     }
 
-    function renderAsset(string $path): Response
+    private function renderAsset(string $path): Response
     {
         $filepath = $this->getParameter('kernel.project_dir') . '/content/public/' . $path;
         if (!is_file($filepath)) {
@@ -118,7 +128,7 @@ class RenderController extends AbstractController
         return new Response($content);
     }
 
-    function getConfig(): array
+    private function getConfig(): array
     {
         $configPath = $this->getParameter('kernel.project_dir') . '/content/config.md';
         if (file_exists($configPath)) {
@@ -134,7 +144,8 @@ class RenderController extends AbstractController
     //     $files = [];
     //     $directory = $this->getParameter('kernel.project_dir') . '/content/pages';
 
-    //     foreach ( new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $directory, RecursiveDirectoryIterator::SKIP_DOTS ) ) as $file ) {
+    //     foreach ( new RecursiveIteratorIterator( new RecursiveDirectoryIterator(
+    //         $directory, RecursiveDirectoryIterator::SKIP_DOTS ) ) as $file ) {
     //         if($file->isFile() && strtolower($file->getExtension()) === 'md') {
     //             $path = $file->getPathname();
 

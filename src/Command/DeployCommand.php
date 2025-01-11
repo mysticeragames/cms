@@ -55,7 +55,8 @@ class DeployCommand extends Command
             $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
             $output->writeln($formattedBlock);
 
-            $output->writeln("Output directory 'generated' does not exist, create a directory first (mkdir generated) or clone a git submodule");
+            $output->writeln("Output directory 'generated' does not exist, " .
+                "create a directory first (mkdir generated) or clone a git submodule");
 
             // return int(1))
             return Command::FAILURE;

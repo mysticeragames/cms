@@ -4,6 +4,7 @@
 # Test:
 vendor/bin/phpunit
 vendor/bin/phpcs
+vendor/bin/phpcs --warning-severity=0  # show only errors
 # Autofix:
 vendor/bin/phpcbf
 

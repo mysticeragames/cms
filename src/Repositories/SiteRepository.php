@@ -46,7 +46,7 @@ class SiteRepository
     //     return null;
     // }
 
-    function parseSitePath(SplFileInfo $file, bool $includeMarkdown = false): array
+    private function parseSitePath(SplFileInfo $file, bool $includeMarkdown = false): array
     {
         $siteDir = $this->projectDir . '/content/src';
 
