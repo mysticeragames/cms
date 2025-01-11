@@ -1,5 +1,5 @@
 # Use base image: https://hub.docker.com/r/mysticeragames/makeitstatic-cms/tags?name=base-
-ARG BASE_VERSION=0.1.0
+ARG BASE_VERSION=0.1.2
 FROM mysticeragames/makeitstatic-cms:base-${BASE_VERSION}
 
 # Copy all CMS files
