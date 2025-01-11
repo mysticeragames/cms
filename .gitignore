@@ -1,3 +1,7 @@
+# Ignore backup files
+/*.tar
+/*.tar.gz
+
 # Ignore content source files
 /content/src/*
 !/content/src/.gitkeep
