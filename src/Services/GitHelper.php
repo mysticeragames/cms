@@ -12,21 +12,21 @@ class GitHelper
         // Pull
         $process = new Process(['git', '-C', $dir, 'pull']);
         $process->run();
-        if(!$process->isSuccessful()) {
+        if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
     }
 
     public function addCommitPush($dir, $message = null)
     {
-        if(empty($message)) {
+        if (empty($message)) {
             $message = 'deployment ' . date('Y-m-d H:i:s');
         }
 
         // Get current branch
         $process = new Process(['git', '-C', $dir, 'branch', '--show-current']);
         $process->run();
-        if(!$process->isSuccessful()) {
+        if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
         $branch = trim($process->getOutput());
@@ -34,21 +34,21 @@ class GitHelper
         // Add all files in working directory
         $process = new Process(['git', '-C', $dir, 'add', '.']);
         $process->run();
-        if(!$process->isSuccessful()) {
+        if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
 
         // Commit files
         $process = new Process(['git', '-C', $dir, 'commit', '-m', $message]);
         $process->run();
-        if(!$process->isSuccessful()) {
+        if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
 
         // Push
         $process = new Process(['git', '-C', $dir, 'push', '-u', 'origin', $branch]);
         $process->run();
-        if(!$process->isSuccessful()) {
+        if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
     }

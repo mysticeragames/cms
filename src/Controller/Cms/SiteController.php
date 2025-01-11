@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class SiteController extends AbstractController
 {
     private SiteRepository $siteRepository;
-    
+
     public function __construct(SiteRepository $siteRepository)
     {
         $this->siteRepository = $siteRepository;

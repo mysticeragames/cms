@@ -17,7 +17,7 @@ class SiteRepository
     public function getSites(): array
     {
         $siteDir = $this->projectDir . '/content/src';
-        if(!is_dir($siteDir)) {
+        if (!is_dir($siteDir)) {
             mkdir($siteDir, recursive: true);
         }
 
@@ -25,9 +25,9 @@ class SiteRepository
         $finder->depth(0)->directories()->in($siteDir);
 
         $sites = [];
-        if($finder->hasResults()) {
-            foreach($finder as $file) {
-                if($file->isDir()) {
+        if ($finder->hasResults()) {
+            foreach ($finder as $file) {
+                if ($file->isDir()) {
                     $sites[] = $this->parseSitePath($file);
                 }
             }
@@ -50,13 +50,12 @@ class SiteRepository
     {
         $siteDir = $this->projectDir . '/content/src';
 
-        if(is_dir($file->getRealPath())) {
-
+        if (is_dir($file->getRealPath())) {
             // Generate default slug/title (overridable by the variables in the page yaml)
             $path = substr($file->getPathname(), strlen($siteDir) + 1);
             $parts = explode('/', $path);
             $defaultSlug = array_pop($parts);
-            if($defaultSlug === 'index' && isset($parts[0])) {
+            if ($defaultSlug === 'index' && isset($parts[0])) {
                 $defaultSlug = array_pop($parts);
             }
 
@@ -93,7 +92,7 @@ class SiteRepository
 
             // $page['createdAt'] = $this->getValidDateTime($file, $page['createdAt']);
             // $page['updatedAt'] = $this->getValidDateTime($file, $page['updatedAt']);
-            
+
             // if(!isset($page['title'])) {
             //     $page['title'] = ucfirst($page['slug']);
             // }

@@ -23,16 +23,16 @@ class ContentRenderer
         $page = $this->pageRepository->getPage($site, $path);
 
         // Return 404 page
-        if($page === null) {
+        if ($page === null) {
             $filepath = $projectDir . '/content/pages/404.md';
-            if(!is_file($filepath)) {
+            if (!is_file($filepath)) {
                 $filepath = $projectDir . '/default-content/pages/404.md';
             }
         } else {
             $filepath = $page['filePath'];
 
-            if($editMode) {
-                if(!str_ends_with($filepath, PageRepository::EDIT_PATH_SUFFIX)) {
+            if ($editMode) {
+                if (!str_ends_with($filepath, PageRepository::EDIT_PATH_SUFFIX)) {
                     $filepath = $filepath . PageRepository::EDIT_PATH_SUFFIX;
                 }
             }
@@ -47,16 +47,16 @@ class ContentRenderer
         $config = (array)Yaml::parseFile($defaultConfigPath);
 
         $siteConfigPath = "$projectDir/content/src/$site/config.yml";
-        if(file_exists($siteConfigPath)) {
+        if (file_exists($siteConfigPath)) {
             $config = array_replace_recursive($config, (array)Yaml::parseFile($siteConfigPath));
         }
 
         //$yaml = Yaml::dump($array);
 
         $nav = [];
-        if(isset($config['nav'])) {
+        if (isset($config['nav'])) {
             $nav = $config['nav'];
-            if(!is_array($nav)) {
+            if (!is_array($nav)) {
                 $nav = [$nav];
             }
         }
@@ -70,13 +70,13 @@ class ContentRenderer
         $result = $this->contentParser->parse($markdown);
         $content = $result['content'];
         $pageVariables = $result['variables'];
-        
+
         // Merge default variables from config
-        if(isset($config['page']) && is_array($config['page'])) {
+        if (isset($config['page']) && is_array($config['page'])) {
             $pageVariables = array_replace_recursive($config['page'], $pageVariables);
         }
         $siteVariables = [];
-        if(isset($config['site']) && is_array($config['site'])) {
+        if (isset($config['site']) && is_array($config['site'])) {
             $siteVariables = array_replace_recursive($config['site'], $siteVariables);
         }
 
@@ -92,38 +92,38 @@ class ContentRenderer
 
         //dd($content, $twigVariables);
 
-        if(isset($pageVariables['twig']) && $pageVariables['twig'] === true) {
+        if (isset($pageVariables['twig']) && $pageVariables['twig'] === true) {
             $twigRenderer = new TwigRenderer();
             $content = $twigRenderer->renderBlock($content, $twigVariables);
         }
         $twigVariables['content'] = $content;
-        
-        
+
+
         $renderBundles = [];
 
         // Site templates (overrides the theme)
         $siteDirTemplates = "$projectDir/content/$site/templates";
-        if(is_dir($siteDirTemplates)) {
+        if (is_dir($siteDirTemplates)) {
             $renderBundles[] = $siteDirTemplates;
         }
 
         // Theme templates (overrides default templates)
         $theme = false;
-        if(isset($page['theme'])) {
+        if (isset($page['theme'])) {
             $theme = $page['theme'];
-        } elseif(isset($config['theme'])) {
+        } elseif (isset($config['theme'])) {
             $theme = $config['theme'];
         }
-        if(!empty($theme)) {
+        if (!empty($theme)) {
             $themeDir = "$projectDir/content/$site/themes/$theme";
-            if(is_dir($themeDir)) {
+            if (is_dir($themeDir)) {
                 $renderBundles[] = $themeDir;
             }
         }
 
         // Default fallback templates
         $renderBundles[] = "$projectDir/default-content/templates";
-        
+
         return $twigRenderer->render(
             $renderBundles,
             $pageVariables['template'],

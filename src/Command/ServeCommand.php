@@ -50,7 +50,7 @@ class ServeCommand extends Command
 
 
 
-        
+
 
         if (!$output instanceof ConsoleOutputInterface) {
             throw new \LogicException('This command accepts only an instance of "ConsoleOutputInterface".');

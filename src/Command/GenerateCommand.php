@@ -63,8 +63,7 @@ class GenerateCommand extends Command
 
 
         $rootOutputDir = $this->projectDir . '/content/dist';
-        if(!is_dir($rootOutputDir)) {
-
+        if (!is_dir($rootOutputDir)) {
             // https://symfony.com/doc/current/components/console/helpers/formatterhelper.html
             /** @var FormatterHelper $formatter */
             $formatter = $this->getHelper('formatter');
@@ -74,11 +73,11 @@ class GenerateCommand extends Command
             $output->writeln($formattedBlock);
 
             $output->writeln("Output directory 'generated' does not exist, create a directory first (mkdir generated) or clone a git submodule");
-            
+
             // return int(1))
             return Command::FAILURE;
         }
-        
+
         // outputs multiple lines to the console (adding "\n" at the end of each line)
         $output->writeln([
             'Generating site',
@@ -91,7 +90,7 @@ class GenerateCommand extends Command
         //$output->writeln($this->someMethod());
 
         // outputs a message followed by a "\n"
-        
+
         // outputs a message without adding a "\n" at the end of the line
         $output->writeln('Processing');
 
@@ -102,23 +101,23 @@ class GenerateCommand extends Command
 
         $total = count($pages);
 
-        for($i=0; $i<$total; $i++) {
+        for ($i = 0; $i < $total; $i++) {
             $page = $pages[$i];
             $path = $page['path'];
             $outputPath = $rootOutputDir . '/' . $path . '.html';
             $outputDir = dirname($rootOutputDir);
 
-            $section1->overwrite(($i+1) . "/$total");
+            $section1->overwrite(($i + 1) . "/$total");
             $section2->overwrite($path);
 
-            
+
             $content = $this->contentRenderer->render($this->projectDir, $path);
             //$content = $this->twigRenderer->render($path);
 
             //$response = $this->renderController->renderUrl($path);
 
             // Create directory if it does not exist
-            if(!is_dir($outputDir)) {
+            if (!is_dir($outputDir)) {
                 mkdir($outputDir, recursive: true);
             }
 

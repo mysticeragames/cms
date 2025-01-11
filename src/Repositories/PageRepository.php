@@ -30,20 +30,20 @@ class PageRepository
     public function getPages(string $site, string $path = null): array
     {
         $files = [];
-        
+
         $finder = new Finder();
         $finder->files()->in($this->getContentPagesDirectory($site));
 
-        if($finder->hasResults()) {
-            foreach($finder as $file) {
-                if($file->isFile() && strtolower($file->getExtension()) === 'md' && !str_ends_with($file->getPathname(), PageRepository::EDIT_PATH_SUFFIX)) {
+        if ($finder->hasResults()) {
+            foreach ($finder as $file) {
+                if ($file->isFile() && strtolower($file->getExtension()) === 'md' && !str_ends_with($file->getPathname(), PageRepository::EDIT_PATH_SUFFIX)) {
                     $files[] = $this->parsePagePath($site, $file);
                 }
             }
         }
         return $files;
     }
-    
+
     private function createRegexExactPath(string $path)
     {
         return '/^' . preg_quote($path, '/') . '$/';
@@ -52,16 +52,16 @@ class PageRepository
     private function findPageByPaths(string $site, array $searchPaths, bool $includeMarkdown = false)
     {
         $siteDir = $this->getContentPagesDirectory($site);
-        if(!is_dir($siteDir)) {
+        if (!is_dir($siteDir)) {
             return null;
         }
 
-        foreach($searchPaths as $searchPath) {
+        foreach ($searchPaths as $searchPath) {
             $finder = new Finder();
             $finder->path($this->createRegexExactPath($searchPath))->in($siteDir)->files();
 
-            if($finder->hasResults()) {
-                foreach($finder as $file) {
+            if ($finder->hasResults()) {
+                foreach ($finder as $file) {
                     return $this->parsePagePath($site, $file, $includeMarkdown);
                 }
             }
@@ -73,22 +73,22 @@ class PageRepository
     {
         $searchPaths = [];
 
-        if($path === null || $path === '' || rtrim($path, '/') === '' ) {
+        if ($path === null || $path === '' || rtrim($path, '/') === '') {
             $searchPaths[] = 'index.md';
-        } elseif(str_ends_with($path, '.html')) {
+        } elseif (str_ends_with($path, '.html')) {
             $searchPaths[] = substr($path, 0, -strlen('.html')) . '/index.md'; //  my/path.html ->   my/path/index.md
             $searchPaths[] = substr($path, 0, -strlen('.html')) . '.md'; //  my/path.html ->   my/path.md
         } else {
             $searchPaths[] = rtrim($path, '/') . '/index.md';  // my/path/ -> my/path/index.md
             $searchPaths[] = rtrim($path, '/') . '.md'; // my/path/ -> my/path.md
         }
-        
+
         return $this->findPageByPaths($site, $searchPaths, $includeMarkdown);
     }
 
     function parsePagePath(string $site, SplFileInfo $file, bool $includeMarkdown = false): array
     {
-        if(is_file($file->getRealPath())) {
+        if (is_file($file->getRealPath())) {
             $markdown = file_get_contents($file->getRealPath());
             $parsedPage = $this->contentParser->parse($markdown);
             $pageVariables = $parsedPage['variables'];
@@ -97,7 +97,7 @@ class PageRepository
             $path = substr($file->getPathname(), strlen($this->getContentPagesDirectory($site)) + 1, -3);
             $parts = explode('/', $path);
             $defaultSlug = array_pop($parts);
-            if($defaultSlug === 'index' && isset($parts[0])) {
+            if ($defaultSlug === 'index' && isset($parts[0])) {
                 $defaultSlug = array_pop($parts);
             }
 
@@ -114,12 +114,12 @@ class PageRepository
 
             $page['createdAt'] = $this->getValidDateTime($file, $page['createdAt']);
             $page['updatedAt'] = $this->getValidDateTime($file, $page['updatedAt']);
-            
-            if(!isset($page['title'])) {
+
+            if (!isset($page['title'])) {
                 $page['title'] = ucfirst($page['slug']);
             }
 
-            if($includeMarkdown) {
+            if ($includeMarkdown) {
                 $page['__markdown'] = $markdown;
             }
             return $page;
@@ -129,7 +129,7 @@ class PageRepository
 
     public function isValidDateString($dateString = null): bool
     {
-        if(is_string($dateString) && !empty($dateString) && preg_match('/^[0-9]{4}\-[0-9]{2}\-[0-9]{2}( [0-9]{2}\:[0-9]{2}(\:[0-9]{2})?)?$/', $dateString)) {
+        if (is_string($dateString) && !empty($dateString) && preg_match('/^[0-9]{4}\-[0-9]{2}\-[0-9]{2}( [0-9]{2}\:[0-9]{2}(\:[0-9]{2})?)?$/', $dateString)) {
             return true;
         }
         return false;
@@ -137,7 +137,7 @@ class PageRepository
 
     public function getValidDateTime(SplFileInfo $file, $overrideDateTimeString)
     {
-        if($this->isValidDateString($overrideDateTimeString)) {
+        if ($this->isValidDateString($overrideDateTimeString)) {
             return date("Y-m-d H:i:s", strtotime($overrideDateTimeString));
         }
         return date("Y-m-d H:i:s", $file->getMTime());

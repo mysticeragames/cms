@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 // https://symfony.com/doc/current/testing.html#integration-tests
 // The KernelTestCase also makes sure your kernel is rebooted for each test. This assures that each test is run independently from each other.
