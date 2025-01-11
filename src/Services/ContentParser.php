@@ -33,7 +33,7 @@ class ContentParser
         //     'template' => 'default.html.twig',
         //     //'updatedAt' => date("Y-m-d H:i:s", filemtime($filepath))
         // ], $variables);
-        
+
         return [
             'content' => $content,
             'variables' => $variables,

@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class PageController extends AbstractController
 {
     private PageRepository $pageRepository;
-    
+
     public function __construct(PageRepository $pageRepository)
     {
         $this->pageRepository = $pageRepository;
@@ -22,7 +22,7 @@ class PageController extends AbstractController
     public function index(Request $request): Response
     {
         $site = $request->get('site');
-        
+
         return $this->render('@cms/pages/index.html.twig', [
             'site' => $site,
             'pages' => $this->pageRepository->getPages($site),

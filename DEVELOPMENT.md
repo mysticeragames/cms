@@ -1,6 +1,13 @@
 # Development
 
 ```bash
+# Test:
+vendor/bin/phpunit
+vendor/bin/phpcs
+vendor/bin/phpcs --warning-severity=0  # show only errors
+# Autofix:
+vendor/bin/phpcbf
+
 # Start new branch
 git checkout main
 git pull

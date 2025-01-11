@@ -21,13 +21,13 @@ class TwigRenderer
 
     public function render(array $templateBundles, string $template, $variables = []): string
     {
-        if($templateBundles === null || count($templateBundles) === 0) {
+        if ($templateBundles === null || count($templateBundles) === 0) {
             throw new Exception('No template bundles found');
         }
 
         $twig = $this->createEnvironment($templateBundles);
 
-        if(!str_ends_with($template, '.html.twig')) {
+        if (!str_ends_with($template, '.html.twig')) {
             $template .= '.html.twig';
         }
 
@@ -38,7 +38,7 @@ class TwigRenderer
      * Create an environment from array template bundles
      *
      * See: https://twig.symfony.com/doc/3.x/api.html#twig-loader-chainloader
-     * 
+     *
      * Usage, array based:
      * createEnvironment([
      *   [ // custom override templates
@@ -54,24 +54,24 @@ class TwigRenderer
      *   ],
      *   '403.html.twig'  => '403 Forbidden',
      * ]);
-     * 
+     *
      * Or, file based:
      * createEnvironment([
      *   '/absolute/folder/site/templates',
      *   '/absolute/folder/theme/templates',
      *   '/absolute/folder/default/templates',
      * ]);
-     * 
+     *
      * @param string[][] $templateBundles
      * @return Environment
      */
     public function createEnvironment(array $templateBundles): Environment
     {
         $loaders = [];
-        
-        foreach($templateBundles as $index => $templateBundle) {
-            if(!is_array($templateBundle)) {
-                if(is_numeric($index)) {
+
+        foreach ($templateBundles as $index => $templateBundle) {
+            if (!is_array($templateBundle)) {
+                if (is_numeric($index)) {
                     // Numeric index: path
                     $loaders[] = new FilesystemLoader($templateBundle);
                 } else {
@@ -79,7 +79,7 @@ class TwigRenderer
                     $loaders[] = new ArrayLoader([$index => $templateBundle]);
                 }
             } else {
-                if(isset($templateBundle[0])) {
+                if (isset($templateBundle[0])) {
                     // Numeric index: path
                     $loaders[] = new FilesystemLoader($templateBundle);
                 } else {

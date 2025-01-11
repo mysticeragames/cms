@@ -46,8 +46,7 @@ class DeployCommand extends Command
         }
 
         $rootOutputDir = $this->projectDir . '/content/dist';
-        if(!is_dir($rootOutputDir)) {
-
+        if (!is_dir($rootOutputDir)) {
             // https://symfony.com/doc/current/components/console/helpers/formatterhelper.html
             /** @var FormatterHelper $formatter */
             $formatter = $this->getHelper('formatter');
@@ -56,12 +55,13 @@ class DeployCommand extends Command
             $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
             $output->writeln($formattedBlock);
 
-            $output->writeln("Output directory 'generated' does not exist, create a directory first (mkdir generated) or clone a git submodule");
-            
+            $output->writeln("Output directory 'generated' does not exist, " .
+                "create a directory first (mkdir generated) or clone a git submodule");
+
             // return int(1))
             return Command::FAILURE;
         }
-        
+
         // outputs multiple lines to the console (adding "\n" at the end of each line)
         $output->writeln([
             'Deploying site',
@@ -69,10 +69,10 @@ class DeployCommand extends Command
             '',
         ]);
 
-        
+
         $this->gitHelper->addCommitPush('published');
 
-        
+
         $output->writeln('--> Done.');
 
 
