@@ -39,3 +39,4 @@ node_modules/
 
 # phpunit "^11.5.2"
 /.phpunit.cache/
+/reports/
