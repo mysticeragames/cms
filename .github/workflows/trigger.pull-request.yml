@@ -12,4 +12,4 @@ jobs:
       PUSH: 'false'
       RELEASE: 'false'
     secrets:
-      DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
