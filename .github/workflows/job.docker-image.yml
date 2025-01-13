@@ -3,7 +3,7 @@ name: '[job] Docker image'
 on:
   workflow_call:
     secrets:
-      DOCKER_TOKEN:
+      DOCKERHUB_TOKEN:
         required: true
     inputs:
       PUSH:
@@ -43,7 +43,7 @@ jobs:
       # No need to use docker/login-action, it uses the same method (only silent):
       # https://github.com/docker/login-action/blob/v3.3.0/src/docker.ts#L35-L37
     - name: Docker login
-      run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u rboonzaijer --password-stdin
+      run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u rboonzaijer --password-stdin
 
 
     - name: Docker build
