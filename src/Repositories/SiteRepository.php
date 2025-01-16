@@ -22,7 +22,7 @@ class SiteRepository
         }
 
         $finder = new Finder();
-        $finder->depth(0)->directories()->in($siteDir);
+        $finder->depth(0)->sortByName()->directories()->in($siteDir);
 
         $sites = [];
         if ($finder->hasResults()) {

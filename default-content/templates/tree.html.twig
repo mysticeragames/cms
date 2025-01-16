@@ -1,0 +1,20 @@
+
+{% set treeClassNames = [] %}
+{% if treeDepth is null %}
+    {% set treeDepth = 0 %}
+    {% set treeClassNames = treeClassNames|push('tree') %}
+{% endif %}
+{% set treeClassNames = treeClassNames|push('level-' ~ treeDepth) %}
+
+<ul class="{{ treeClassNames|join(' ') }}">
+    {% for page in pages %}
+        {% set hasChildren = page.children|length > 0 %}
+        <li{% if hasChildren %} class="has-children"{% endif %}>
+            {{ page.name }} [{{ page.path }}]
+            
+            {% if page.children | length > 0 %}
+                {% include 'tree.html.twig' with {'pages': page.children, 'treeDepth': treeDepth + 1 } %}
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>

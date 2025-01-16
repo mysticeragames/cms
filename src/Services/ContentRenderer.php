@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Repositories\PageRepository;
+use App\Twig\CustomTwigFilters;
+use App\Twig\CustomTwigFunctions;
 use Symfony\Component\Yaml\Yaml;
 
 class ContentRenderer
@@ -43,8 +45,13 @@ class ContentRenderer
         // from array:
         // $yaml = Yaml::dump($array);
 
+        $config = [
+            'site' => [
+                'slug' => $site,
+            ]
+        ];
         $defaultConfigPath = "$projectDir/default-content/config.yml";
-        $config = (array)Yaml::parseFile($defaultConfigPath);
+        $config = array_replace_recursive($config, (array)Yaml::parseFile($defaultConfigPath));
 
         $siteConfigPath = "$projectDir/content/src/$site/config.yml";
         if (file_exists($siteConfigPath)) {
@@ -84,6 +91,7 @@ class ContentRenderer
             'site' => $siteVariables,
             'page' => $pageVariables,
             'config' => $config,
+            'pagePath' => $path,
         ];
 
         // The markdown is converted to HTML, now also render twig variables
@@ -92,9 +100,17 @@ class ContentRenderer
 
         //dd($content, $twigVariables);
 
+        $twigExtensions = [];
+        $twigExtensions[] = new CustomTwigFunctions(
+            $this->pageRepository,
+            $twigVariables
+        );
+        $twigExtensions[] = new CustomTwigFilters();
+        //$twigExtensions[] = new CustomTwigTokenParser();
+
         if (isset($pageVariables['twig']) && $pageVariables['twig'] === true) {
             $twigRenderer = new TwigRenderer();
-            $content = $twigRenderer->renderBlock($content, $twigVariables);
+            $content = $twigRenderer->renderBlock($content, $twigVariables, $twigExtensions);
         }
         $twigVariables['content'] = $content;
 
@@ -127,7 +143,8 @@ class ContentRenderer
         return $twigRenderer->render(
             $renderBundles,
             $pageVariables['template'],
-            $twigVariables
+            $twigVariables,
+            $twigExtensions
         );
     }
 }

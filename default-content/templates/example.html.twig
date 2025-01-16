@@ -1,0 +1,57 @@
+{% extends page.layout ~ (page.layout ends with '.html.twig' ? '' : '.html.twig') %}
+
+{%~ block page_contents %}
+    {{ content|raw }}
+
+    <h2>pages()</h2>
+    <ul>
+        {% for p in pages() %}
+            <li>
+                {{ p.title }}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>pages() | sort((a, b) => a.createdAt <=> b.createdAt)</h2>
+    <ul>
+        {% for p in pages() | sort((a, b) => a.createdAt <=> b.createdAt) %}
+            <li>
+                {{ p.createdAt }} {{ p.title }} [{{ p.path }}]
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>pages() | sort((b, a) => a.createdAt <=> b.createdAt)</h2>
+    <ul>
+        {% for p in pages() | sort((b, a) => a.createdAt <=> b.createdAt) %}
+            <li>
+                {{ p.createdAt }} {{ p.title }} [{{ p.path }}]
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>pages() | tree</h2>
+    {% include 'tree.html.twig' with {'pages': pages() | tree} %}
+
+    <h2>childPages()</h2>
+    <ul>
+        {% for p in childPages() %}
+            <li>
+                {{ p.title }}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>childPages() | sort((a, b) => a.createdAt <=> b.createdAt) </h2>
+    <ul>
+        {% for p in childPages() | sort((a, b) => a.createdAt <=> b.createdAt) %}
+            <li>
+                {{ p.title }}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>childPages() | tree </h2>
+    {% include 'tree.html.twig' with {'pages': childPages() | tree} %}
+
+{%~ endblock %}

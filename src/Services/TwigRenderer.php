@@ -4,28 +4,41 @@ namespace App\Services;
 
 use Exception;
 use Twig\Environment;
+use Twig\Extension\AbstractExtension;
 use Twig\Loader\ArrayLoader;
 use Twig\Loader\ChainLoader;
 use Twig\Loader\FilesystemLoader;
+use Twig\TokenParser\AbstractTokenParser;
 
 class TwigRenderer
 {
-    public function renderBlock(string $content, array $variables): string
+    /**
+     * @param array<AbstractExtension|AbstractTokenParser> $extensions
+     */
+    public function renderBlock(string $content, array $variables, array $extensions = []): string
     {
         return $this->render(
             templateBundles: ['template.html.twig' => $content],
             template: 'template.html.twig',
             variables: $variables,
+            extensions: $extensions
         );
     }
 
-    public function render(array $templateBundles, string $template, array $variables = []): string
-    {
+    /**
+     * @param array<AbstractExtension|AbstractTokenParser> $extensions
+     */
+    public function render(
+        array $templateBundles,
+        string $template,
+        array $variables = [],
+        array $extensions = []
+    ): string {
         if (count($templateBundles) === 0) {
             throw new Exception('No template bundles found');
         }
 
-        $twig = $this->createEnvironment($templateBundles);
+        $twig = $this->createEnvironment($templateBundles, $extensions);
 
         if (!str_ends_with($template, '.html.twig')) {
             $template .= '.html.twig';
@@ -62,10 +75,10 @@ class TwigRenderer
      *   '/absolute/folder/default/templates',
      * ]);
      *
-     * @param array<mixed> $templateBundles
+     * @param array<AbstractExtension|AbstractTokenParser> $extensions
      * @return Environment
      */
-    public function createEnvironment(array $templateBundles): Environment
+    public function createEnvironment(array $templateBundles, array $extensions): Environment
     {
         $loaders = [];
 
@@ -90,7 +103,17 @@ class TwigRenderer
         }
 
         $loader = new ChainLoader($loaders);
-
-        return new Environment($loader);
+        $environment = new Environment($loader, [
+            'debug' => true,
+        ]);
+        $environment->addExtension(new \Twig\Extension\DebugExtension());
+        foreach ($extensions as $extension) {
+            if ($extension instanceof AbstractExtension) {
+                $environment->addExtension($extension);
+            } elseif ($extension instanceof AbstractTokenParser) {
+                $environment->addTokenParser($extension);
+            }
+        }
+        return $environment;
     }
 }
