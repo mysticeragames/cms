@@ -32,7 +32,7 @@ class PageRepository
         $files = [];
 
         $finder = new Finder();
-        $finder->files()->in($this->getContentPagesDirectory($site));
+        $finder->files()->sortByName()->in($this->getContentPagesDirectory($site));
 
         if ($finder->hasResults()) {
             foreach ($finder as $file) {
