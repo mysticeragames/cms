@@ -6,3 +6,6 @@ parameters:
         - public/
         - src/
         - tests/
+
+    ignoreErrors:
+        - identifier: missingType.iterableValue # TODO: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type - https://phpstan.org/error-identifiers/missingType.iterableValue

@@ -7,7 +7,7 @@ use Symfony\Component\Process\Process;
 
 class GitHelper
 {
-    public function pull($dir)
+    public function pull(string $dir): void
     {
         // Pull
         $process = new Process(['git', '-C', $dir, 'pull']);
@@ -17,7 +17,7 @@ class GitHelper
         }
     }
 
-    public function addCommitPush($dir, $message = null)
+    public function addCommitPush(string $dir, ?string $message = null): void
     {
         if (empty($message)) {
             $message = 'deployment ' . date('Y-m-d H:i:s');

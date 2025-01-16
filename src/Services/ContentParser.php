@@ -40,12 +40,12 @@ class ContentParser
         ];
     }
 
-    public function getConverter()
+    public function getConverter(): MarkdownConverter
     {
         return $this->converter;
     }
 
-    private function createConverter($config = [])
+    private function createConverter(array $config = []): MarkdownConverter
     {
         // Configure the Environment with all the CommonMark parsers/renderers
         $environment = new Environment($config);

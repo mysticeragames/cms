@@ -13,17 +13,13 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/render', priority: -100)]
 class RenderController extends AbstractController
 {
-    private ContentParser $contentParser;
     private PageRepository $pageRepository;
     private ContentRenderer $contentRenderer;
 
     public function __construct(
-        string $projectDir,
-        ContentParser $contentParser,
         PageRepository $pageRepository,
         ContentRenderer $contentRenderer
     ) {
-        $this->contentParser = $contentParser;
         $this->pageRepository = $pageRepository;
         $this->contentRenderer = $contentRenderer;
     }
@@ -126,17 +122,6 @@ class RenderController extends AbstractController
         $content = $this->contentRenderer->render($this->getParameter('kernel.project_dir'), $site, $path, $editMode);
 
         return new Response($content);
-    }
-
-    private function getConfig(): array
-    {
-        $configPath = $this->getParameter('kernel.project_dir') . '/content/config.md';
-        if (file_exists($configPath)) {
-            $markdown = file_get_contents($configPath);
-
-            return $this->contentParser->parse($markdown)['variables'];
-        }
-        return [];
     }
 
     // function scanPageFiles(): array

@@ -19,9 +19,9 @@ class TwigRenderer
         );
     }
 
-    public function render(array $templateBundles, string $template, $variables = []): string
+    public function render(array $templateBundles, string $template, array $variables = []): string
     {
-        if ($templateBundles === null || count($templateBundles) === 0) {
+        if (count($templateBundles) === 0) {
             throw new Exception('No template bundles found');
         }
 
@@ -62,7 +62,7 @@ class TwigRenderer
      *   '/absolute/folder/default/templates',
      * ]);
      *
-     * @param string[][] $templateBundles
+     * @param array<mixed> $templateBundles
      * @return Environment
      */
     public function createEnvironment(array $templateBundles): Environment
