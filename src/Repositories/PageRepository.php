@@ -27,7 +27,7 @@ class PageRepository
         return "$this->projectDir/content/src/$site/pages";
     }
 
-    public function getPages(string $site, string $path = null): array
+    public function getPages(string $site, ?string $path = null): array
     {
         $files = [];
 
@@ -48,12 +48,12 @@ class PageRepository
         return $files;
     }
 
-    private function createRegexExactPath(string $path)
+    private function createRegexExactPath(string $path): string
     {
         return '/^' . preg_quote($path, '/') . '$/';
     }
 
-    private function findPageByPaths(string $site, array $searchPaths, bool $includeMarkdown = false)
+    private function findPageByPaths(string $site, array $searchPaths, bool $includeMarkdown = false): ?array
     {
         $siteDir = $this->getContentPagesDirectory($site);
         if (!is_dir($siteDir)) {
@@ -73,11 +73,11 @@ class PageRepository
         return null;
     }
 
-    public function getPage(string $site, string $path, bool $includeMarkdown = false)
+    public function getPage(string $site, string $path, bool $includeMarkdown = false): ?array
     {
         $searchPaths = [];
 
-        if ($path === null || $path === '' || rtrim($path, '/') === '') {
+        if ($path === '' || rtrim($path, '/') === '') {
             $searchPaths[] = 'index.md';
         } elseif (str_ends_with($path, '.html')) {
             $searchPaths[] = substr($path, 0, -strlen('.html')) . '/index.md'; //  my/path.html ->   my/path/index.md
@@ -90,7 +90,7 @@ class PageRepository
         return $this->findPageByPaths($site, $searchPaths, $includeMarkdown);
     }
 
-    private function parsePagePath(string $site, SplFileInfo $file, bool $includeMarkdown = false): array
+    private function parsePagePath(string $site, SplFileInfo $file, bool $includeMarkdown = false): ?array
     {
         if (is_file($file->getRealPath())) {
             $markdown = file_get_contents($file->getRealPath());
@@ -131,19 +131,19 @@ class PageRepository
         return null;
     }
 
-    public function isValidDateString($dateString = null): bool
+    public function isValidDateString(?string $dateString = null): bool
     {
         $pattern = '/^[0-9]{4}\-[0-9]{2}\-[0-9]{2}( [0-9]{2}\:[0-9]{2}(\:[0-9]{2})?)?$/';
 
-        if (is_string($dateString) && !empty($dateString) && preg_match($pattern, $dateString)) {
+        if ($dateString !== null && !empty($dateString) && preg_match($pattern, $dateString)) {
             return true;
         }
         return false;
     }
 
-    public function getValidDateTime(SplFileInfo $file, $overrideDateTimeString)
+    public function getValidDateTime(SplFileInfo $file, ?string $overrideDateTimeString = null): string
     {
-        if ($this->isValidDateString($overrideDateTimeString)) {
+        if ($overrideDateTimeString !== null && $this->isValidDateString($overrideDateTimeString)) {
             return date("Y-m-d H:i:s", strtotime($overrideDateTimeString));
         }
         return date("Y-m-d H:i:s", $file->getMTime());

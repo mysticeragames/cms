@@ -42,7 +42,7 @@ class PageController extends AbstractController
 
         return $this->render('@cms/pages/edit.html.twig', [
             'site' => $site,
-            'page' => $this->pageRepository->getPage($path, true),
+            'page' => $this->pageRepository->getPage($site, $path),
         ]);
     }
 

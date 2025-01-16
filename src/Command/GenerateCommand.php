@@ -6,10 +6,12 @@
 namespace App\Command;
 
 use App\Repositories\PageRepository;
+use App\Repositories\SiteRepository;
 use App\Services\ContentRenderer;
 use App\Services\TwigRenderer;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\FormatterHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
@@ -20,14 +22,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 class GenerateCommand extends Command
 {
     private PageRepository $pageRepository;
-    private TwigRenderer $twigRenderer;
+    private SiteRepository $siteRepository;
     private ContentRenderer $contentRenderer;
 
     private string $projectDir;
 
     public function __construct(
         PageRepository $pageRepository,
-        TwigRenderer $twigRenderer,
+        SiteRepository $siteRepository,
         ContentRenderer $contentRenderer,
         string $projectDir
     ) {
@@ -39,7 +41,7 @@ class GenerateCommand extends Command
         parent::__construct();
 
         $this->pageRepository = $pageRepository;
-        $this->twigRenderer = $twigRenderer;
+        $this->siteRepository = $siteRepository;
         $this->contentRenderer = $contentRenderer;
         $this->projectDir = $projectDir;
     }
@@ -72,7 +74,6 @@ class GenerateCommand extends Command
             // https://symfony.com/doc/current/components/console/helpers/formatterhelper.html
             /** @var FormatterHelper $formatter */
             $formatter = $this->getHelper('formatter');
-
             $errorMessages = ['Error!', 'Something went wrong'];
             $formattedBlock = $formatter->formatBlock($errorMessages, 'error');
             $output->writeln($formattedBlock);
@@ -100,35 +101,43 @@ class GenerateCommand extends Command
         // outputs a message without adding a "\n" at the end of the line
         $output->writeln('Processing');
 
-        $pages = $this->pageRepository->getPages();
-
         $section1 = $output->section();
         $section2 = $output->section();
 
-        $total = count($pages);
+        $sites = $this->siteRepository->getSites();
+        foreach ($sites as $siteObject) {
+            $site = $siteObject['slug'];
 
-        for ($i = 0; $i < $total; $i++) {
-            $page = $pages[$i];
-            $path = $page['path'];
-            $outputPath = $rootOutputDir . '/' . $path . '.html';
-            $outputDir = dirname($rootOutputDir);
+            $siteOutputDir = $rootOutputDir . '/' . $site;
 
-            $section1->overwrite(($i + 1) . "/$total");
-            $section2->overwrite($path);
+            $pages = $this->pageRepository->getPages($site);
+
+            $total = count($pages);
+
+            for ($i = 0; $i < $total; $i++) {
+                $page = $pages[$i];
+                $path = $page['path'];
+                $outputPath = $siteOutputDir . '/' . $path . '.html';
+                $outputDir = dirname($outputPath);
+
+                $section1->overwrite(($i + 1) . "/$total");
+                $section2->overwrite($path);
 
 
-            $content = $this->contentRenderer->render($this->projectDir, $path);
-            //$content = $this->twigRenderer->render($path);
+                $content = $this->contentRenderer->render($this->projectDir, $site, $path);
+                //$content = $this->twigRenderer->render($path);
 
-            //$response = $this->renderController->renderUrl($path);
+                //$response = $this->renderController->renderUrl($path);
 
-            // Create directory if it does not exist
-            if (!is_dir($outputDir)) {
-                mkdir($outputDir, recursive: true);
+                // Create directory if it does not exist
+                if (!is_dir($outputDir)) {
+                    mkdir($outputDir, recursive: true);
+                }
+
+                // Write file
+                file_put_contents($outputPath, $content);
             }
-
-            // Write file
-            file_put_contents($outputPath, $content);
+            $section2->overwrite('--> site: Done.');
         }
         $section2->overwrite('--> Done.');
 
