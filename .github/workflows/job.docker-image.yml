@@ -74,11 +74,7 @@ jobs:
 
 
     - name: Run PHP codesniffer
-      run: docker run --rm ${{ env.IMAGE }} php vendor/bin/phpcs
-
-
-    - name: Run PHPUnit tests
-      run: docker run --rm ${{ env.IMAGE }} php vendor/bin/phpunit
+      run: docker run --rm ${{ env.IMAGE }} composer test
 
 
     - if: ${{ inputs.PUSH == 'true' }}
