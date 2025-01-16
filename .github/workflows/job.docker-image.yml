@@ -73,7 +73,7 @@ jobs:
         docker run --rm ${{ env.IMAGE }} sh -c "${COMMANDS}" || exit 1
 
 
-    - name: Run PHP codesniffer
+    - name: Run tests
       run: docker run --rm ${{ env.IMAGE }} composer test
 
 
