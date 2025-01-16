@@ -51,6 +51,9 @@ class CustomTwigFunctions extends AbstractExtension
                 str_starts_with($p['path'], $page)
                 && $p['path'] !== $page
             ) {
+                // Create relative path
+                $p['pathOriginal'] = $p['path'];
+                $p['path'] = substr($p['path'], strlen($page));
                 $childPages[] = $p;
             }
         }

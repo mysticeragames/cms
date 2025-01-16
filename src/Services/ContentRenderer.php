@@ -105,10 +105,8 @@ class ContentRenderer
             $this->pageRepository,
             $twigVariables
         );
-        $twigExtensions[] = new CustomTwigFilters(
-            $this->pageRepository,
-            $twigVariables
-        );
+        $twigExtensions[] = new CustomTwigFilters();
+        //$twigExtensions[] = new CustomTwigTokenParser();
 
         if (isset($pageVariables['twig']) && $pageVariables['twig'] === true) {
             $twigRenderer = new TwigRenderer();

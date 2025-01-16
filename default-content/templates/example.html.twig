@@ -12,6 +12,27 @@
         {% endfor %}
     </ul>
 
+    <h2>pages() | sort((a, b) => a.createdAt <=> b.createdAt)</h2>
+    <ul>
+        {% for p in pages() | sort((a, b) => a.createdAt <=> b.createdAt) %}
+            <li>
+                {{ p.createdAt }} {{ p.title }} [{{ p.path }}]
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>pages() | sort((b, a) => a.createdAt <=> b.createdAt)</h2>
+    <ul>
+        {% for p in pages() | sort((b, a) => a.createdAt <=> b.createdAt) %}
+            <li>
+                {{ p.createdAt }} {{ p.title }} [{{ p.path }}]
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>pages() | tree</h2>
+    {% include 'tree.html.twig' with {'pages': pages() | tree} %}
+
     <h2>childPages()</h2>
     <ul>
         {% for p in childPages() %}
@@ -31,12 +52,6 @@
     </ul>
 
     <h2>childPages() | tree </h2>
-    <ul>
-        {% for index,p in childPages() | tree %}
-            <li>
-                {{ dump(p) }}
-            </li>
-        {% endfor %}
-    </ul>
+    {% include 'tree.html.twig' with {'pages': childPages() | tree} %}
 
 {%~ endblock %}

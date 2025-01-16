@@ -124,55 +124,63 @@ class TreeServiceTest extends TestCase
         );
     }
 
-    // public function testTreeShouldNotCreateParents(): void
-    // {
-    //     $pages = [
-    //         ['path' => 'news/2024/post1', 'title' => 'Post1'],
-    //         ['path' => 'news/2024/post2', 'title' => 'Post2'],
-    //         ['path' => 'news/2025/post3', 'title' => 'Post3'],
-    //     ];
+    public function testTreeShouldNotCreateParents(): void
+    {
+        $pages = [
+            ['path' => 'news/2024/post1', 'title' => 'Post1'],
+            ['path' => 'news/2024/post2', 'title' => 'Post2'],
+            ['path' => 'news/2025/post3', 'title' => 'Post3'],
+        ];
 
-    //     $treeService = new TreeService();
-    //     $actual = $treeService->buildTree($pages, createParents: false);
+        $treeService = new TreeService();
+        $actual = $treeService->buildTree($pages);
 
-    //     $expected = [
-    //         [
-    //             'path' => 'news/2024',
-    //             'name' => '2024',
-    //             'title' => null,
-    //             'children' => [
-    //                 [
-    //                     'path' => 'news/2024/post1',
-    //                     'name' => 'post1',
-    //                     'title' => 'Post1',
-    //                     'children' => [],
-    //                 ],
-    //                 [
-    //                     'path' => 'news/2024/post2',
-    //                     'name' => 'post2',
-    //                     'title' => 'Post2',
-    //                     'children' => [],
-    //                 ],
-    //             ],
-    //         ],
-    //         [
-    //             'path' => 'news/2025',
-    //             'name' => '2025',
-    //             'title' => null,
-    //             'children' => [
-    //                 [
-    //                     'path' => 'news/2025/post3',
-    //                     'name' => 'post3',
-    //                     'title' => 'Post3',
-    //                     'children' => [],
-    //                 ],
-    //             ],
-    //         ]
-    //     ];
+        // It will create the non-existing path 'news'
+        $expected = [
+            [
+                'path' => 'news',
+                'name' => 'news',
+                'title' => null,
+                'children' => [
+                    [
+                        'path' => 'news/2024',
+                        'name' => '2024',
+                        'title' => null,
+                        'children' => [
+                            [
+                                'path' => 'news/2024/post1',
+                                'name' => 'post1',
+                                'title' => 'Post1',
+                                'children' => [],
+                            ],
+                            [
+                                'path' => 'news/2024/post2',
+                                'name' => 'post2',
+                                'title' => 'Post2',
+                                'children' => [],
+                            ],
+                        ],
+                    ],
+                    [
+                        'path' => 'news/2025',
+                        'name' => '2025',
+                        'title' => null,
+                        'children' => [
+                            [
+                                'path' => 'news/2025/post3',
+                                'name' => 'post3',
+                                'title' => 'Post3',
+                                'children' => [],
+                            ],
+                        ],
+                    ]
+                ],
+            ],
+        ];
 
-    //     $this->assertJsonStringEqualsJsonString(
-    //         json_encode($expected, JSON_PRETTY_PRINT),
-    //         json_encode($actual, JSON_PRETTY_PRINT)
-    //     );
-    // }
+        $this->assertJsonStringEqualsJsonString(
+            json_encode($expected, JSON_PRETTY_PRINT),
+            json_encode($actual, JSON_PRETTY_PRINT)
+        );
+    }
 }

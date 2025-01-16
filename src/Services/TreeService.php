@@ -14,7 +14,6 @@ class TreeService
         string $keyChildren = 'children',
         bool $sort = true,
         ?string $sortBy = null,
-        bool $createParents = false,
     ): array {
         $tree = [];
         $pathMap = [];
@@ -52,7 +51,7 @@ class TreeService
             $availableKeys[$availableKey] = null;
         }
 
-        // Step 2: Dynamically create missing parent paths
+        // Step 2: Dynamically create missing paths
         foreach ($pages as $page) {
             $parts = explode('/', $page[$keyPath]);
             $currentPath = '';

@@ -8,11 +8,12 @@ use Twig\Extension\AbstractExtension;
 use Twig\Loader\ArrayLoader;
 use Twig\Loader\ChainLoader;
 use Twig\Loader\FilesystemLoader;
+use Twig\TokenParser\AbstractTokenParser;
 
 class TwigRenderer
 {
     /**
-     * @param array<int, AbstractExtension> $extensions
+     * @param array<AbstractExtension|AbstractTokenParser> $extensions
      */
     public function renderBlock(string $content, array $variables, array $extensions = []): string
     {
@@ -25,7 +26,7 @@ class TwigRenderer
     }
 
     /**
-     * @param array<int, AbstractExtension> $extensions
+     * @param array<AbstractExtension|AbstractTokenParser> $extensions
      */
     public function render(
         array $templateBundles,
@@ -74,7 +75,7 @@ class TwigRenderer
      *   '/absolute/folder/default/templates',
      * ]);
      *
-     * @param array<mixed> $templateBundles
+     * @param array<AbstractExtension|AbstractTokenParser> $extensions
      * @return Environment
      */
     public function createEnvironment(array $templateBundles, array $extensions): Environment
@@ -107,7 +108,11 @@ class TwigRenderer
         ]);
         $environment->addExtension(new \Twig\Extension\DebugExtension());
         foreach ($extensions as $extension) {
-            $environment->addExtension($extension);
+            if ($extension instanceof AbstractExtension) {
+                $environment->addExtension($extension);
+            } elseif ($extension instanceof AbstractTokenParser) {
+                $environment->addTokenParser($extension);
+            }
         }
         return $environment;
     }
