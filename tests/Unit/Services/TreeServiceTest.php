@@ -1,5 +1,12 @@
 <?php
 
+/*
+
+vendor/bin/phpunit --testsuite unit --filter TreeServiceTest
+vendor/bin/phpunit --testsuite unit --filter TreeServiceTest testMyMethod
+
+*/
+
 declare(strict_types=1);
 
 // https://symfony.com/doc/current/testing.html#integration-tests

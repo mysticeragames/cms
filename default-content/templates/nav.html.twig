@@ -4,7 +4,6 @@
 {% endif %}
 {% set treeClassNames = treeClassNames|push('level-' ~ treeDepth) %}
 
-{%~ apply spaceless %}
 <ul class="{{ treeClassNames|join(' ') }}">
     {% for page in pages %}
         {% set isCurrent = (page.path == currentPagePath) %}
@@ -39,4 +38,3 @@
         </li>
     {% endfor %}
 </ul>
-{%~ endapply %}

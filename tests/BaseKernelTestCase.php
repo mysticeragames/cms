@@ -1,5 +1,12 @@
 <?php
 
+/*
+
+vendor/bin/phpunit --testsuite unit --filter BaseKernelTestCase
+vendor/bin/phpunit --testsuite unit --filter BaseKernelTestCase testMyMethod
+
+*/
+
 namespace App\Tests;
 
 use App\Helpers\DateHelper;

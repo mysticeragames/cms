@@ -1,5 +1,12 @@
 <?php
 
+/*
+
+vendor/bin/phpunit --testsuite unit --filter TwigRendererTest
+vendor/bin/phpunit --testsuite unit --filter TwigRendererTest testMyMethod
+
+*/
+
 declare(strict_types=1);
 
 // https://symfony.com/doc/current/testing.html#integration-tests

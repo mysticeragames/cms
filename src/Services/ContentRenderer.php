@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Repositories\PageRepository;
 use App\Twig\CustomTwigFilters;
 use App\Twig\CustomTwigFunctions;
+use App\Twig\CustomTwigTests;
 use DOMDocument;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\String\Inflector\EnglishInflector;
@@ -110,6 +111,7 @@ class ContentRenderer
             $twigVariables
         );
         $twigExtensions[] = new CustomTwigFilters();
+        $twigExtensions[] = new CustomTwigTests();
         //$twigExtensions[] = new CustomTwigTokenParser();
 
         if (isset($pageVariables['twig']) && $pageVariables['twig'] === true) {

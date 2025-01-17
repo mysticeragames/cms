@@ -3,18 +3,20 @@
     <head>
         {%~ block head %}
         <meta charset="UTF-8">
-        <title>{%~ block title %}
-{%~ apply spaceless %}
-    {% if site.title_separated and not page.title is empty and not site.title is empty %}
-        {% if page.title %}{{ page.title }}{{ site.title_separator }}{% endif %}
+        <title>
+{%- block title -%}
+    {% if site is defined and site is array %}
+        {% if site.title_separated and not page.title is empty and not site.title is empty %}
+            {% if page.title %}{{ page.title }}{{ site.title_separator }}{% endif %}
+            {{~ site.title }}
+        {% elseif page.title %}
+        {{~ page.title }}
+        {% else %}
         {{~ site.title }}
-    {% elseif page.title %}
-    {{~ page.title }}
-    {% else %}
-    {{~ site.title }}
+        {% endif %}
     {% endif %}
-{% endapply %}
-{%~ endblock %}</title>
+{%- endblock -%}
+        </title>
         {%~ endblock %}
         {%~ block styles %}{%~ endblock %}
         {%~ block scripts %}{%~ endblock %}

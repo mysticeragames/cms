@@ -1,5 +1,12 @@
 <?php
 
+/*
+
+vendor/bin/phpunit --testsuite integration --filter KernelTest
+vendor/bin/phpunit --testsuite integration --filter KernelTest testMyMethod
+
+*/
+
 namespace App\Tests\Integration;
 
 use App\Kernel;

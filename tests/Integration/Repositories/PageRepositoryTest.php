@@ -1,8 +1,11 @@
 <?php
 
-// vendor/bin/phpunit --filter PageRepositoryTest --list-tests
-// vendor/bin/phpunit --filter PageRepositoryTest
-// vendor/bin/phpunit --filter PageRepositoryTest::testGetPages
+/*
+
+vendor/bin/phpunit --testsuite integration --filter PageRepositoryTest
+vendor/bin/phpunit --testsuite integration --filter PageRepositoryTest testMyMethod
+
+*/
 
 namespace App\Tests\Integration\Repositories;
 
