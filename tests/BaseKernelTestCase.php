@@ -22,6 +22,7 @@ class BaseKernelTestCase extends KernelTestCase
 
     protected function setUp(): void
     {
+        // setUp before every test function (so: multiple times in 1 class)
         self::bootKernel();
 
         $this->projectDir = self::getContainer()->getParameter('kernel.project_dir');
@@ -30,41 +31,44 @@ class BaseKernelTestCase extends KernelTestCase
 
         if (self::$initialized === false) {
             self::$initialized = true;
+            // this part below is setup once per class
 
-            $testContentDir = __DIR__ . '/content';
-
-            $reflector = new \ReflectionClass(get_called_class());
-            $testContentDir = dirname($reflector->getFileName()) . '/content';
-
-            if (is_dir($testContentDir)) {
-                // Copy test content (once)
-                $fs = new Filesystem();
-                $fs->mirror(
-                    $this->projectDir . '/tests/Integration/Repositories/PageRepository/content',
-                    $this->getSiteRootPath(),
-                    options: [
-                        'override' => true,
-                        'copy_on_windows' => true,
-                        'delete' => true,
-                    ]
-                );
-            }
+            $this->copyTestContentIfExists();
         }
     }
 
     protected function tearDown(): void
     {
+        // teardown after every test function (so: multiple times in 1 class)
         parent::tearDown();
-
-        //$this->removeTestContent();
     }
 
-    // private function removeTestContent()
-    // {
-    //     dump('remove');
-    //     // Remove test content
-    //     $projectDir = self::getContainer()->getParameter('kernel.project_dir');
-    //     $fs = new Filesystem();
-    //     $fs->remove($projectDir . '/content/src/' . $this->site);
-    // }
+    private function copyTestContentIfExists(): void
+    {
+        $this->removeExistingTestContent();
+
+        $reflector = new \ReflectionClass(get_called_class());
+        $testContentDir = substr($reflector->getFileName(), 0, -strlen('.php')) . 'Content';
+
+        if (is_dir($testContentDir)) {
+            // Copy test content (once)
+            $fs = new Filesystem();
+            $fs->mirror(
+                $testContentDir,
+                $this->getSiteRootPath(),
+                options: [
+                    'override' => true,
+                    'copy_on_windows' => true,
+                    'delete' => true,
+                ]
+            );
+        }
+    }
+
+    private function removeExistingTestContent(): void
+    {
+        // Remove test content
+        $fs = new Filesystem();
+        $fs->remove($this->getSiteRootPath());
+    }
 }

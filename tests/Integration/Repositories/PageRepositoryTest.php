@@ -1,10 +1,13 @@
 <?php
 
+// vendor/bin/phpunit --filter PageRepositoryTest --list-tests
+// vendor/bin/phpunit --filter PageRepositoryTest
+// vendor/bin/phpunit --filter PageRepositoryTest::testGetPages
+
 namespace App\Tests\Integration\Repositories;
 
 use App\Repositories\PageRepository;
 use App\Tests\BaseKernelTestCase;
-use DateTime;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(PageRepository::class)]
