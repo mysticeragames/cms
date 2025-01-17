@@ -5,7 +5,6 @@
 namespace App\Twig;
 
 use App\Repositories\PageRepository;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -21,9 +20,9 @@ class CustomTwigFunctions extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('pages', [$this, 'twigGetPages']),
-            new TwigFunction('childPages', [$this, 'twigGetChildPages']),
-            new TwigFunction('path', [$this, 'twigPath']),
+            new TwigFunction('staticPages', [$this, 'twigGetPages']),
+            new TwigFunction('staticChildPages', [$this, 'twigGetChildPages']),
+            new TwigFunction('staticPath', [$this, 'twigPath']),
         ];
     }
 

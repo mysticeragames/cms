@@ -23,7 +23,7 @@
         {% endif %}
 
         <li{% if liClass|length > 0 %} class="{{ liClass|join(' ') }}"{% endif %}>
-            <a data-path="{{ page.path }}" data-paths="{{ page.pagePath }}" href="{{ path(page.path) }}">
+            <a data-path="{{ page.path }}" data-paths="{{ page.pagePath }}" href="{{ staticPath(page.path) }}">
             {% if page.title %}
                 {{ page.title }}
             {% else %}

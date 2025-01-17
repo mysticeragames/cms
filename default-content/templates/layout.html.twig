@@ -74,7 +74,7 @@ nav li.current > a {
 {%~ block body %}
     <div class="main">
         <nav>
-          {% include 'nav.html.twig' with { 'pages': pages() | tree, 'currentPagePath': pagePath } %}
+          {% include 'nav.html.twig' with { 'pages': staticPages() | tree, 'currentPagePath': pagePath } %}
         </nav>
 
         <div class="content">
