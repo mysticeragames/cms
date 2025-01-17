@@ -5,6 +5,9 @@ namespace App\Services;
 use App\Repositories\PageRepository;
 use App\Twig\CustomTwigFilters;
 use App\Twig\CustomTwigFunctions;
+use DOMDocument;
+use Symfony\Component\Filesystem\Path;
+use Symfony\Component\String\Inflector\EnglishInflector;
 use Symfony\Component\Yaml\Yaml;
 
 class ContentRenderer
@@ -113,6 +116,118 @@ class ContentRenderer
             $twigRenderer = new TwigRenderer();
             $content = $twigRenderer->renderBlock($content, $twigVariables, $twigExtensions);
         }
+
+
+        // Replace links
+        // TODO: Smarter replace: first look in the child pages (each time 1 level deeper)
+        // TODO: Smarter replace: only then look in sibling pages
+        // TODO: Smarter replace: only then look in all other pages
+        // TODO: Faster replace: cache the pages
+        // TODO: Faster replace: Do we need 'DOMDocument'??? (is it faster without?)
+
+        $linkFinderHref = '?';
+
+        if (strstr($content, '<a href="' . $linkFinderHref . '"') !== false) {
+            // Find urls
+            $inflector = new EnglishInflector();
+
+
+            $allPages = $this->pageRepository->getPages($site);
+            $allPageInfos = [];
+            foreach ($allPages as $allPage) {
+                $allPageInfos[$allPage['path']] = array_merge(
+                    [
+                    $allPage['path'],
+                    $allPage['name'],
+                    $allPage['slug'],
+                    $allPage['title'],
+                    ],
+                    $inflector->singularize($allPage['path']),
+                    $inflector->singularize($allPage['name']),
+                    $inflector->singularize($allPage['slug']),
+                    $inflector->singularize($allPage['title']),
+                    $inflector->pluralize($allPage['path']),
+                    $inflector->pluralize($allPage['name']),
+                    $inflector->pluralize($allPage['slug']),
+                    $inflector->pluralize($allPage['title']),
+                );
+            }
+
+
+            $replacements = [];
+
+            $dom = new DOMDocument();
+            $dom->loadHTML($content);
+            foreach ($dom->getElementsByTagName('a') as $a) {
+                foreach ($a->attributes as $attribute) {
+                    $foundResults = [];
+                    $href = $a->getAttribute('href');
+                    $text = '';
+
+                    //if (str_starts_with($href, $linkFinderHref)) {
+                    if ($href ===  $linkFinderHref) {
+                        $text = trim((string) $a->nodeValue);
+
+                        foreach ($allPageInfos as $allPageInfoPath => $allPageInfo) {
+                            if (in_array(strtolower($text), $allPageInfo)) {
+                                $foundResults[] = $allPageInfoPath;
+                            }
+                        }
+
+                        if (count($foundResults) === 0) {
+                            foreach ($allPageInfos as $allPageInfoPath => $allPageInfo) {
+                                foreach ($allPageInfo as $allPageInfo2) {
+                                    if (str_ends_with(strtolower($allPageInfo2), strtolower($text))) {
+                                        $foundResults[] = $allPageInfoPath;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (count($foundResults) > 0) {
+                        // TODO: Comes from the twig filter...
+                        // TODO: Make a global method for this...
+
+                        $foundResult = array_shift($foundResults);
+                        $absolutePath = Path::makeAbsolute(
+                            $foundResult,
+                            '/render//' . $site . '/'
+                        );
+
+                        $replacements['<a href="' . $linkFinderHref . '">' . $text . '</a>'] =
+                        '<a href="' . $absolutePath . '">' . $text . '</a>';
+
+                        // TODO: also set attributes if more then 1 page is found.
+                        // Then it's easily noticable in the CMS or on the live website (with CSS).
+
+                        // foreach((array)$foundResults as $foundResult) {
+                        //     $absolutePath = Path::makeAbsolute(
+                        //         $foundResult,
+                        //         '/render//' . $site . '/'
+                        //     );
+                        //     $replacements['<a href="' . $linkFinderHref . '">' . $text . '</a>'] =
+                        //     '<a href="' . $absolutePath . '">' . $text . '</a>';
+                        // }
+
+
+
+                        // $replacements['<a href="' . $linkFinderHref . '">' . $text . '</a>'] =
+                        // '<a href="' . $absolutePath . '">' . $text . '</a>';
+                    }
+                }
+            }
+
+            //dump($replacements);
+
+            foreach ($replacements as $source => $target) {
+                $content = str_replace($source, $target, $content);
+            }
+        }
+
+
+
         $twigVariables['content'] = $content;
 
 

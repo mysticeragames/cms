@@ -46,12 +46,12 @@
     <ul>
         {% for p in staticChildPages() | sort((a, b) => a.createdAt <=> b.createdAt) %}
             <li>
-                {{ p.title }}
+                <a href="{{ p.path }}">{{ p.title }}</a>
             </li>
         {% endfor %}
     </ul>
 
-    <h2>staticChildPages() | tree </h2>
-    {% include 'tree.html.twig' with {'pages': staticChildPages() | tree} %}
+    <h2>staticChildPages() | tree('childpath') </h2>
+    {% include 'tree.html.twig' with {'pages': staticChildPages() | tree('childpath') } %}
 
 {%~ endblock %}

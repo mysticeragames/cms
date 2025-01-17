@@ -107,6 +107,7 @@ class PageRepository
 
             $page = array_merge([
                 'path' => $path,
+                'name' => basename($path),
                 'filePath' => $file->getRealPath(),
                 'createdAt' => null,
                 'updatedAt' => null,
