@@ -90,6 +90,10 @@
             "@php vendor/bin/phpcs",
             "@php vendor/bin/phpstan analyse src tests",
             "@php vendor/bin/phpunit"
+        ],
+        "fix": [
+            "@php vendor/bin/phpcbf || true",
+            "composer test"
         ]
     },
     "conflict": {
