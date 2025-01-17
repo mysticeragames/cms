@@ -4,6 +4,7 @@
 {% endif %}
 {% set treeClassNames = treeClassNames|push('level-' ~ treeDepth) %}
 
+{%~ apply spaceless %}
 <ul class="{{ treeClassNames|join(' ') }}">
     {% for page in pages %}
         {% set isCurrent = (page.path == currentPagePath) %}
@@ -23,17 +24,19 @@
         {% endif %}
 
         <li{% if liClass|length > 0 %} class="{{ liClass|join(' ') }}"{% endif %}>
-            <a data-path="{{ page.path }}" data-paths="{{ page.pagePath }}" href="{{ staticPath(page.path) }}">
-            {% if page.title %}
-                {{ page.title }}
-            {% else %}
-                {{ page.name|capitalize }}
-            {% endif %}
+
+            <a href="{{ staticPath(page.path) }}">
+            {%- if page.title -%}
+                {{~ page.title -}}
+            {%- else -%}
+                {{~ page.name|capitalize -}}
+            {%- endif -%}
             </a>
-            
+
             {% if page.children | length > 0 %}
                 {% include 'nav.html.twig' with {'pages': page.children, 'currentPagePath': currentPagePath, 'treeDepth': treeDepth + 1 } %}
             {% endif %}
         </li>
     {% endfor %}
 </ul>
+{%~ endapply %}
