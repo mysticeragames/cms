@@ -10,8 +10,15 @@
     {% for page in pages %}
         {% set hasChildren = page.children|length > 0 %}
         <li{% if hasChildren %} class="has-children"{% endif %}>
-            {{ page.name }} [{{ page.path }}]
-            
+
+            <a href="{{ staticPath(page.path) }}">
+                {%- if page.title -%}
+                    {{~ page.title -}}
+                {%- else -%}
+                    {{~ page.name|capitalize -}}
+                {%- endif -%}
+            </a>
+
             {% if page.children | length > 0 %}
                 {% include 'tree.html.twig' with {'pages': page.children, 'treeDepth': treeDepth + 1 } %}
             {% endif %}

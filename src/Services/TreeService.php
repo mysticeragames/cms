@@ -25,7 +25,7 @@ class TreeService
             if ($page[$keyPath] !== 'index' && str_ends_with($page[$keyPath], '/index')) {
                 $pathWithoutIndex = substr($page[$keyPath], 0, -strlen('/index'));
                 if (!array_key_exists($pathWithoutIndex, $allPaths)) {
-                    $page['path'] = $pathWithoutIndex;
+                    $page[$keyPath] = $pathWithoutIndex;
                     $fixedPages[] = $page;
                 }
             } else {

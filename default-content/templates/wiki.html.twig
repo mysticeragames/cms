@@ -1,0 +1,15 @@
+{% extends page.layout ~ (page.layout ends with '.html.twig' ? '' : '.html.twig') %}
+
+{%~ block page_contents %}
+    <h2>WIKI</h2>
+
+    {{ content|raw }}
+
+    {% if page.stats | length > 0 %}
+        <h2>Stats</h2>
+        {% for key, value in page.stats %}
+            {{ key }} = {{ value }}
+        {% endfor %}
+    {% endif %}
+    
+{%~ endblock %}
