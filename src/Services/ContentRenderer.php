@@ -128,7 +128,6 @@ class ContentRenderer
         $linkFinderHref = '?';
 
         if (strstr($content, '<a href="' . $linkFinderHref . '"') !== false) {
-
             // Find urls
             $inflector = new EnglishInflector();
 
@@ -175,7 +174,7 @@ class ContentRenderer
                             }
                         }
 
-                        if(count($foundResults) === 0) {
+                        if (count($foundResults) === 0) {
                             foreach ($allPageInfos as $allPageInfoPath => $allPageInfo) {
                                 foreach ($allPageInfo as $allPageInfo2) {
                                     if (str_ends_with(strtolower($allPageInfo2), strtolower($text))) {
@@ -202,7 +201,7 @@ class ContentRenderer
 
                         // TODO: also set attributes if more then 1 page is found.
                         // Then it's easily noticable in the CMS or on the live website (with CSS).
-                        
+
                         // foreach((array)$foundResults as $foundResult) {
                         //     $absolutePath = Path::makeAbsolute(
                         //         $foundResult,
@@ -212,7 +211,7 @@ class ContentRenderer
                         //     '<a href="' . $absolutePath . '">' . $text . '</a>';
                         // }
 
-                        
+
 
                         // $replacements['<a href="' . $linkFinderHref . '">' . $text . '</a>'] =
                         // '<a href="' . $absolutePath . '">' . $text . '</a>';
