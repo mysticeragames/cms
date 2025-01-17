@@ -3,7 +3,6 @@
 namespace App\Controller\Render;
 
 use App\Repositories\PageRepository;
-use App\Services\ContentParser;
 use App\Services\ContentRenderer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,11 +23,21 @@ class RenderController extends AbstractController
         $this->contentRenderer = $contentRenderer;
     }
 
-    // #[Route('/assets/{path}', 'asset', methods: ['get'], requirements: ['path' => '.+'], priority: -200)]
-    // function renderAssetPath(string $site, string $path): Response
-    // {
-    //     return $this->renderAsset('/assets/' . $path);
-    // }
+    #[Route('/{site}/{path}', 'render', methods: ['get'], requirements: ['path' => '.+'])]
+    public function renderPage(string $site, string $path, bool $editMode = false): Response
+    {
+        if (str_starts_with($path, 'assets/')) {
+            $assetPath =  $this->getParameter('kernel.project_dir') . '/content/src/public/' . $path;
+            if (!file_exists($assetPath)) {
+                return $this->render404NotFoundHeaderOnly();
+            }
+            return $this->renderAsset($path);
+        }
+
+        $content = $this->contentRenderer->render($this->getParameter('kernel.project_dir'), $site, $path, $editMode);
+
+        return new Response($content);
+    }
 
     #[Route(
         '/---cms/render-edit/{path}',
@@ -52,46 +61,11 @@ class RenderController extends AbstractController
             }
         }
 
-        return $this->renderUrl($site, $path, true);
+        return $this->renderPage($site, $path, true);
     }
 
-    ##[Route('/{site}/{path}', 'render', methods: ['get'], requirements: ['path' => '.+'], priority: -100)]
-    #[Route('/{site}/{path}', 'render', methods: ['get'], requirements: ['path' => '.+'])]
-    public function runUrl(string $site, string $path = ''): Response
+    private function renderAsset(string $filepath): Response
     {
-        return $this->renderUrl($site, $path);
-    }
-
-    private function render404NotFoundHeaderOnly(): Response
-    {
-        return new Response(
-            '',
-            Response::HTTP_NOT_FOUND,
-            ['content-type' => 'text/plain'],
-        );
-    }
-
-    private function isAsset(string $path): bool
-    {
-        if (str_starts_with($path, 'assets/')) {
-            return true;
-        }
-
-        $pathinfo = pathinfo($path);
-        if (isset($pathinfo['extension']) && strtolower($pathinfo['extension']) !== 'html') {
-            return true;
-        }
-
-        return false;
-    }
-
-    private function renderAsset(string $path): Response
-    {
-        $filepath = $this->getParameter('kernel.project_dir') . '/content/public/' . $path;
-        if (!is_file($filepath)) {
-            return $this->render404NotFoundHeaderOnly();
-        }
-
         $mimeType = null;
 
         $pathinfo = pathinfo($filepath);
@@ -112,36 +86,12 @@ class RenderController extends AbstractController
         return $response;
     }
 
-    public function renderUrl(string $site, string $path, bool $editMode = false): Response
+    private function render404NotFoundHeaderOnly(): Response
     {
-        // Render public asset
-        if ($this->isAsset($path)) {
-            return $this->renderAsset($path);
-        }
-
-        $content = $this->contentRenderer->render($this->getParameter('kernel.project_dir'), $site, $path, $editMode);
-
-        return new Response($content);
+        return new Response(
+            '',
+            Response::HTTP_NOT_FOUND,
+            ['content-type' => 'text/plain'],
+        );
     }
-
-    // function scanPageFiles(): array
-    // {
-    //     $files = [];
-    //     $directory = $this->getParameter('kernel.project_dir') . '/content/pages';
-
-    //     foreach ( new RecursiveIteratorIterator( new RecursiveDirectoryIterator(
-    //         $directory, RecursiveDirectoryIterator::SKIP_DOTS ) ) as $file ) {
-    //         if($file->isFile() && strtolower($file->getExtension()) === 'md') {
-    //             $path = $file->getPathname();
-
-    //             $files[] = [
-    //                 //'file' => $file,
-    //                 'url' => substr($path, strlen($directory) + 1, -3) . '.html',
-    //                 'filepath' => $file->getPathname(),
-    //                 'updatedAt' => date("Y-m-d H:i:s", $file->getMTime()),
-    //             ];
-    //         }
-    //     }
-    //     return $files;
-    // }
 }
