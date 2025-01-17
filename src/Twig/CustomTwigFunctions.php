@@ -5,6 +5,8 @@
 namespace App\Twig;
 
 use App\Repositories\PageRepository;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -21,7 +23,43 @@ class CustomTwigFunctions extends AbstractExtension
         return [
             new TwigFunction('pages', [$this, 'twigGetPages']),
             new TwigFunction('childPages', [$this, 'twigGetChildPages']),
+            new TwigFunction('path', [$this, 'twigPath']),
         ];
+    }
+
+    public function twigPath(mixed $path = null): string
+    {
+        if ($path === null) {
+            $path = '';
+        }
+
+        // $relativePath = $filesystem->makePathRelative(
+        //     '/render/demo-site/' . $this->twigVariables['site']['slug'] . '/' . $path,
+        //     '/render/demo-site/' . $this->twigVariables['site']['slug'] . '/' . $this->twigVariables['pagePath']
+        // );
+
+        // $relativePath = $filesystem->makePathRelative(
+        //     '/a/b/' . $this->twigVariables['site']['slug'] . '/' . $path,
+        //     '/a/b/' . $this->twigVariables['site']['slug'] . '/' . $this->twigVariables['pagePath']
+        // );
+
+        $absolutePath = Path::makeAbsolute(
+            $path,
+            '/render//' . $this->twigVariables['site']['slug'] . '/'
+        );
+
+        // $currentAbsolutePath = Path::makeAbsolute(
+        //     $this->twigVariables['pagePath'],
+        //     '/render//' . $this->twigVariables['site']['slug'] . '/'
+        // );
+
+        // $filesystem = new Filesystem();
+        // $relativePath = $filesystem->makePathRelative(
+        //     $absolutePath,
+        //     $currentAbsolutePath,
+        // );
+        //return rtrim($relativePath, '/');
+        return $absolutePath;
     }
 
     public function twigGetPages(mixed $site = null): array

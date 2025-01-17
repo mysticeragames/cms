@@ -1,0 +1,39 @@
+{% set treeClassNames = [] %}
+{% if treeDepth is null %}
+    {% set treeDepth = 0 %}
+{% endif %}
+{% set treeClassNames = treeClassNames|push('level-' ~ treeDepth) %}
+
+<ul class="{{ treeClassNames|join(' ') }}">
+    {% for page in pages %}
+        {% set isCurrent = (page.path == currentPagePath) %}
+        {% set isParent = (not isCurrent and page.children|length > 0 and currentPagePath starts with page.path) %}
+
+        {% set hasChildren = page.children|length > 0 %}
+
+        {% set liClass = [] %}
+        {% if isParent %}
+            {% set liClass = liClass|push('current-parent') %}
+        {% endif %}
+        {% if isCurrent %}
+            {% set liClass = liClass|push('current') %}
+        {% endif %}
+        {% if hasChildren %}
+            {% set liClass = liClass|push('has-children') %}
+        {% endif %}
+
+        <li{% if liClass|length > 0 %} class="{{ liClass|join(' ') }}"{% endif %}>
+            <a data-path="{{ page.path }}" data-paths="{{ page.pagePath }}" href="{{ path(page.path) }}">
+            {% if page.title %}
+                {{ page.title }}
+            {% else %}
+                {{ page.name|capitalize }}
+            {% endif %}
+            </a>
+            
+            {% if page.children | length > 0 %}
+                {% include 'nav.html.twig' with {'pages': page.children, 'currentPagePath': currentPagePath, 'treeDepth': treeDepth + 1 } %}
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>

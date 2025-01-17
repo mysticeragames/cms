@@ -91,8 +91,9 @@ class ContentRenderer
             'site' => $siteVariables,
             'page' => $pageVariables,
             'config' => $config,
-            'pagePath' => $path,
+            'pagePath' => rtrim($path, '/'),
         ];
+        //dd($twigVariables);
 
         // The markdown is converted to HTML, now also render twig variables
         //$twig = new TwigEnvironment(new TwigArrayLoader(['___render_template' => $content]));
