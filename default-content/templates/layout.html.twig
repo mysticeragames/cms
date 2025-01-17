@@ -21,22 +21,64 @@ body {
   background-color: #ebebeb;
 }
 .main {
-    background-color:#fff;
-    width: 100%;
-    min-height: 100vh;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 50px;
-    box-shadow: 0 0 10px #d1d1d1;
+  display: flex;
+  background-color: #fff;
+  width: 100%;
+  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-shadow: 0 0 10px #d1d1d1;
 }
+
+.main > nav {
+  flex-grow: 0;
+  padding: 10px 50px;
+  width: 350px;
+  flex-shrink: 0;
+}
+.main > .content {
+  padding: 50px;
+}
+
 h1 {
   margin-bottom: 1rem;
 }
+
+nav {
+  padding: 10px;
+  background-color:rgb(244 244 244);
+  box-shadow: 2px 0 5px rgb(174, 174, 174);
+}
+nav ul {
+  list-style: none outside none;
+  padding-inline-start: 10px;
+}
+nav a {
+  color: #266e95;
+  text-decoration: none;
+}
+nav a:hover {
+  color: #3d96c7;
+  text-decoration: underline;
+}
+nav li.current-parent > a {
+  font-style: italic;
+}
+nav li.current > a {
+  font-weight: bold;
+}
+
 </style>
 {%~ endblock %}
 
 {%~ block body %}
     <div class="main">
-        {%~ block page_contents %}{%~ endblock %}
+        <nav>
+          {% include 'nav.html.twig' with { 'pages': staticPages() | tree, 'currentPagePath': pagePath } %}
+        </nav>
+
+        <div class="content">
+          {%~ block page_contents %}{%~ endblock %}
+        </div>
     </div>
 {%~ endblock %}

@@ -183,4 +183,29 @@ class TreeServiceTest extends TestCase
             json_encode($actual, JSON_PRETTY_PRINT)
         );
     }
+
+    public function testDontRenderIndex(): void
+    {
+        $pages = [
+            ['path' => 'news', 'title' => 'News'],
+            ['path' => 'news/index', 'title' => 'News'],
+        ];
+
+        $treeService = new TreeService();
+        $actual = $treeService->buildTree($pages);
+
+        $expected = [
+            [
+                'path' => 'news',
+                'name' => 'news',
+                'title' => 'News',
+                'children' => []
+            ]
+        ];
+
+        $this->assertJsonStringEqualsJsonString(
+            json_encode($expected, JSON_PRETTY_PRINT),
+            json_encode($actual, JSON_PRETTY_PRINT)
+        );
+    }
 }
