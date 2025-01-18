@@ -23,7 +23,7 @@ class RenderController extends AbstractController
         $this->contentRenderer = $contentRenderer;
     }
 
-    #[Route('/{site}/{path}', 'render', methods: ['get'], requirements: ['path' => '.+'])]
+    #[Route('/{site}/{path}', 'render', methods: ['get'], requirements: ['path' => '(.+)?'])]
     public function renderPage(string $site, string $path, bool $editMode = false): Response
     {
         if (str_starts_with($path, 'assets/')) {
