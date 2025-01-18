@@ -7,6 +7,11 @@ Flat-File CMS with Static Site Generator
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mysticeragames/MakeItStatic-CMS/trigger.main.yml?branch=main&label=Docker%20Development%20(dev-main))](https://github.com/mysticeragames/MakeItStatic-CMS/actions/workflows/trigger.main.yml)
 [![Docker Pulls](https://img.shields.io/docker/pulls/mysticeragames/makeitstatic-cms?label=Docker%20Pulls)](https://hub.docker.com/r/mysticeragames/makeitstatic-cms)
 
+## Related
+
+[MakeItStatic-Docker](https://github.com/mysticeragames/MakeItStatic-Docker) |
+[MakeItStatic-CI](https://github.com/mysticeragames/MakeItStatic-CI)
+
 ## *WORK IN PROGRESS!*
 
 # Docker
