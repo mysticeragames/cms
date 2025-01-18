@@ -19,8 +19,8 @@ docker run --rm \
 # can also use other tags (by default: use cms:dev-main to test against the latest main branch)
 # mysticeragames/makeitstatic-cms:latest
 # mysticeragames/makeitstatic-cms:dev-main
-# mysticeragames/makeitstatic-cms:base-dev-main
-# mysticeragames/makeitstatic-cms:base-0.1.2
+# mysticeragames/makeitstatic-cms-base:dev-main
+# mysticeragames/makeitstatic-cms-base:0.1.2
 
 # Show reports (WSL2)
 powershell.exe -c reports/coverage/index.html
