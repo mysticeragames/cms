@@ -7,7 +7,7 @@ on:
 
 jobs:
   trigger-release:
-    uses: ./.github/workflows/job.docker-image.yml
+    uses: mysticeragames/MakeItStatic-CI/.github/workflows/job.docker-image-makeitstatic-cms.yml@main
     with:
       PUSH: 'false'
       RELEASE: 'true'
