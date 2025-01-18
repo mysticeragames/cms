@@ -2,13 +2,18 @@
 
 Flat-File CMS with Static Site Generator
 
-[![GitHub Release](https://img.shields.io/github/v/release/mysticeragames/MakeItStatic-CMS?sort=semver&label=Release)](https://github.com/mysticeragames/MakeItStatic-CMS/releases/latest)
-[![GitHub Release Date](https://img.shields.io/github/release-date/mysticeragames/makeitstatic-cms?label=Released%20At)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mysticeragames/MakeItStatic-CMS/trigger.release.yml)](https://github.com/mysticeragames/MakeItStatic-CMS/actions/workflows/trigger.release.yml)
+[![GitHub Release Date](https://img.shields.io/github/release-date/mysticeragames/makeitstatic-cms)
 ](https://github.com/mysticeragames/MakeItStatic-CMS/releases/latest)
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mysticeragames/MakeItStatic-CMS/trigger.release.yml?label=Docker%20Release)](https://github.com/mysticeragames/MakeItStatic-CMS/actions/workflows/trigger.release.yml)
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mysticeragames/MakeItStatic-CMS/trigger.main.yml?branch=main&label=Develop%20(dev-main))](https://github.com/mysticeragames/MakeItStatic-CMS/actions/workflows/trigger.main.yml)
-[![Docker Image Size](https://img.shields.io/docker/image-size/mysticeragames/makeitstatic-cms?label=Docker%20Size)](https://hub.docker.com/r/mysticeragames/makeitstatic-cms/tags)
-[![Docker Pulls](https://img.shields.io/docker/pulls/mysticeragames/makeitstatic-cms?label=Docker%20Pulls)](https://hub.docker.com/r/mysticeragames/makeitstatic-cms/tags)
+[![GitHub Release](https://img.shields.io/github/v/release/mysticeragames/MakeItStatic-CMS)](https://github.com/mysticeragames/MakeItStatic-CMS/releases/latest)
+[![Docker Image Size](https://img.shields.io/docker/image-size/mysticeragames/makeitstatic-cms)](https://hub.docker.com/r/mysticeragames/makeitstatic-cms/tags)
+[![Docker Pulls](https://img.shields.io/docker/pulls/mysticeragames/makeitstatic-cms)](https://hub.docker.com/r/mysticeragames/makeitstatic-cms/tags)
+![GitHub License](https://img.shields.io/github/license/mysticeragames/makeitstatic-cms)
+
+### Development
+
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mysticeragames/MakeItStatic-CMS/trigger.main.yml?branch=main&label=build%20(dev-main))](https://github.com/mysticeragames/MakeItStatic-CMS/actions/workflows/trigger.main.yml)
+[![GitHub commits since latest release (branch)](https://img.shields.io/github/commits-since/mysticeragames/makeitstatic-cms/latest/main)](https://github.com/mysticeragames/MakeItStatic-CMS/commits/main/)
 
 ## Related
 
@@ -28,7 +33,13 @@ docker pull mysticeragames/makeitstatic-cms:latest
 
 # Run the CMS
 docker run -d -v makeitstatic-cms-content:/var/www/html/content --name makeitstatic-cms --restart unless-stopped -p 8000:8080 mysticeragames/makeitstatic-cms:latest
+```
 
+- http://localhost:8000
+
+## Other Docker commands
+
+```bash
 # Show status
 docker ps -a -f "name=makeitstatic-cms"
 
@@ -54,8 +65,6 @@ docker run --rm -u $(id -u):$(id -g) -v makeitstatic-cms-content:/vol -v $(pwd):
 # Restore named volume from my_backup.tar
 docker run --rm -u 0:0 -v makeitstatic-cms-content:/vol -v $(pwd):/app alpine:latest tar x -f /app/my_backup.tar -C /vol .
 ```
-
-- http://localhost:8000
 
 ### Update
 
