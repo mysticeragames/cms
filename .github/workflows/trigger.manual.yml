@@ -1,4 +1,4 @@
-name: '[trigger.manual] Build+push cms:dev-{ref_name}'
+name: '[trigger.manual] Manual Build+push'
 
 on:
   workflow_dispatch:
@@ -6,10 +6,15 @@ on:
 
 
 jobs:
-  manual:
-    uses: mysticeragames/MakeItStatic-CI/.github/workflows/job.docker-image-makeitstatic-cms.yml@main
+  docker-image:
+    uses: mysticeragames/MakeItStatic-CI/.github/workflows/job.docker-image.yml@main
+    permissions:
+      contents: read
     with:
       PUSH: 'true'
       RELEASE: 'false'
+      TARGET_IMAGE: 'mysticeragames/makeitstatic-cms'
+      COMPOSER_TEST: 'true'
     secrets:
+      DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
