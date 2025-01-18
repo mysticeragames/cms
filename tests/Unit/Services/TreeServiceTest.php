@@ -1,5 +1,12 @@
 <?php
 
+/*
+
+vendor/bin/phpunit --testsuite unit --filter TreeServiceTest
+vendor/bin/phpunit --testsuite unit --filter TreeServiceTest testMyMethod
+
+*/
+
 declare(strict_types=1);
 
 // https://symfony.com/doc/current/testing.html#integration-tests
@@ -9,14 +16,13 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Services;
 
 use App\Services\TreeService;
-use App\Services\TwigRenderer;
+use App\Tests\Base\BaseUnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
 
 // https://docs.phpunit.de/en/11.5/code-coverage.html#targeting-units-of-code
 
 #[CoversClass(TreeService::class)]
-class TreeServiceTest extends TestCase
+class TreeServiceTest extends BaseUnitTestCase
 {
     public function testTree(): void
     {

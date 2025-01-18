@@ -1,5 +1,12 @@
 <?php
 
+/*
+
+vendor/bin/phpunit --testsuite unit --filter TwigRendererTest
+vendor/bin/phpunit --testsuite unit --filter TwigRendererTest testMyMethod
+
+*/
+
 declare(strict_types=1);
 
 // https://symfony.com/doc/current/testing.html#integration-tests
@@ -9,9 +16,9 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Services;
 
 use App\Services\TwigRenderer;
+use App\Tests\Base\BaseUnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
-use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 // https://docs.phpunit.de/en/11.5/code-coverage.html#targeting-units-of-code
@@ -19,7 +26,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 #[CoversClass(TwigRenderer::class)]
 ##[UsesClass(TwigRenderer::class)]
 #class TwigRendererTest extends KernelTestCase
-class TwigRendererTest extends TestCase
+class TwigRendererTest extends BaseUnitTestCase
 {
     public function testRenderBlock(): void
     {
