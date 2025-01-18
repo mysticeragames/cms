@@ -10,14 +10,14 @@ vendor/bin/phpunit --testsuite functional --filter SiteControllerTest testMyMeth
 namespace App\Tests\Functional\Controller;
 
 use App\Controller\Cms\SiteController;
+use App\Tests\Base\BaseFunctionalTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 
 // https://symfony.com/doc/current/testing.html#application-tests
 
 #[CoversClass(SiteController::class)]
-class SiteControllerTest extends WebTestCase
+class SiteControllerTest extends BaseFunctionalTestCase
 {
     public function testIndex(): void
     {

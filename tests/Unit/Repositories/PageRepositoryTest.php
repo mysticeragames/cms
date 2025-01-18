@@ -12,11 +12,11 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Services;
 
 use App\Repositories\PageRepository;
+use App\Tests\Base\BaseUnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
 
 #[CoversClass(PageRepository::class)]
-class PageRepositoryTest extends TestCase
+class PageRepositoryTest extends BaseUnitTestCase
 {
     public function testExample(): void
     {

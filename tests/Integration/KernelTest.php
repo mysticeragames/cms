@@ -10,11 +10,12 @@ vendor/bin/phpunit --testsuite integration --filter KernelTest testMyMethod
 namespace App\Tests\Integration;
 
 use App\Kernel;
+use App\Tests\Base\BaseIntegrationTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 #[CoversClass(Kernel::class)]
-class KernelTest extends KernelTestCase
+class KernelTest extends BaseIntegrationTestCase
 {
     protected function setUp(): void
     {

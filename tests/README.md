@@ -11,6 +11,22 @@ composer test
 composer fix
 ```
 
+## Requirements
+
+- These requirements are checked automatically by `AllTestsRequireSpecificSetupTest.php`
+- All tests should extend one of these base classes: `BaseUnitTestCase`, `BaseIntegrationTestCase`, or `BaseFunctionalTestCase`
+- All tests should start with a very specific comment, to quickly start the test when looking at the file:
+    ```php
+    <?php
+
+    /*
+
+    vendor/bin/phpunit --testsuite unit --filter DateHelperTest
+    vendor/bin/phpunit --testsuite unit --filter DateHelperTest testMyMethod
+
+    */
+    ```
+
 ## PHPUnit commands
 
 ```bash
@@ -22,6 +38,8 @@ vendor/bin/phpunit --list-suites
 
 # Run testsuite
 vendor/bin/phpunit --testsuite unit
+vendor/bin/phpunit --testsuite integration
+vendor/bin/phpunit --testsuite functional
 
 # List all tests
 vendor/bin/phpunit --list-tests

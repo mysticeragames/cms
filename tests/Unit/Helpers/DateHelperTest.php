@@ -16,13 +16,13 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Services;
 
 use App\Helpers\DateHelper;
+use App\Tests\Base\BaseUnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
 
 // https://docs.phpunit.de/en/11.5/code-coverage.html#targeting-units-of-code
 
 #[CoversClass(DateHelper::class)]
-class DateHelperTest extends TestCase
+class DateHelperTest extends BaseUnitTestCase
 {
     public function testValidDates(): void
     {

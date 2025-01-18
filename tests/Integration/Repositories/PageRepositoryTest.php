@@ -9,20 +9,23 @@ vendor/bin/phpunit --testsuite integration --filter PageRepositoryTest testMyMet
 
 namespace App\Tests\Integration\Repositories;
 
+use App\Helpers\DateHelper;
 use App\Repositories\PageRepository;
-use App\Tests\BaseKernelTestCase;
+use App\Tests\Base\BaseIntegrationTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(PageRepository::class)]
-class PageRepositoryTest extends BaseKernelTestCase
+class PageRepositoryTest extends BaseIntegrationTestCase
 {
     public function testGetPages(): void
     {
-        $pages = $this->pageRepository->getPages($this->site);
+        $pages = $this->pageRepository->getPages($this->getTestSiteName());
+
+        $dateHelper = new DateHelper();
 
         foreach ($pages as $page) {
-            $this->assertTrue($this->dateHelper->isValidDate($page['createdAt']));
-            $this->assertTrue($this->dateHelper->isValidDate($page['updatedAt']));
+            $this->assertTrue($dateHelper->isValidDate($page['createdAt']));
+            $this->assertTrue($dateHelper->isValidDate($page['updatedAt']));
         }
 
         $about = $pages[0];
@@ -30,11 +33,12 @@ class PageRepositoryTest extends BaseKernelTestCase
         $post = $pages[3];
         $another = $pages[2];
 
+        //dd($this->getTestSiteRootPath());
         foreach (
             [
             "path" => "about",
             "name" => "about",
-            "filePath" => $this->getSiteRootPath() . '/pages/about.md',
+            "filePath" => $this->getTestSiteRootPath() . '/pages/about.md',
             "slug" => "about",
             "title" => "About",
             ] as $key => $value
@@ -46,7 +50,7 @@ class PageRepositoryTest extends BaseKernelTestCase
             [
             "path" => "index",
             "name" => "index",
-            "filePath" => $this->getSiteRootPath() . '/pages/index.md',
+            "filePath" => $this->getTestSiteRootPath() . '/pages/index.md',
             "slug" => "index",
             "title" => "Home",
             ] as $key => $value
@@ -58,7 +62,7 @@ class PageRepositoryTest extends BaseKernelTestCase
             [
             "path" => "news/post 1",
             "name" => "post 1",
-            "filePath" => $this->getSiteRootPath() . '/pages/news/post 1.md',
+            "filePath" => $this->getTestSiteRootPath() . '/pages/news/post 1.md',
             "slug" => "post 1",
             "title" => "My Post",
             ] as $key => $value
@@ -70,12 +74,17 @@ class PageRepositoryTest extends BaseKernelTestCase
             [
             "path" => "news/another",
             "name" => "another",
-            "filePath" => $this->getSiteRootPath() . '/pages/news/another.md',
+            "filePath" => $this->getTestSiteRootPath() . '/pages/news/another.md',
             "slug" => "another",
             "title" => "another-page",
             ] as $key => $value
         ) {
             $this->assertEquals($value, $another[$key], $key);
         }
+    }
+
+    public function testTest(): void
+    {
+        $this->assertNotEmpty($this->getProjectDir());
     }
 }
