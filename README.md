@@ -3,9 +3,12 @@
 Flat-File CMS with Static Site Generator
 
 [![GitHub Release](https://img.shields.io/github/v/release/mysticeragames/MakeItStatic-CMS?sort=semver&label=Release)](https://github.com/mysticeragames/MakeItStatic-CMS/releases/latest)
+[![GitHub Release Date](https://img.shields.io/github/release-date/mysticeragames/makeitstatic-cms?label=Released%20At)
+](https://github.com/mysticeragames/MakeItStatic-CMS/releases/latest)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mysticeragames/MakeItStatic-CMS/trigger.release.yml?label=Docker%20Release)](https://github.com/mysticeragames/MakeItStatic-CMS/actions/workflows/trigger.release.yml)
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mysticeragames/MakeItStatic-CMS/trigger.main.yml?branch=main&label=Docker%20Development%20(dev-main))](https://github.com/mysticeragames/MakeItStatic-CMS/actions/workflows/trigger.main.yml)
-[![Docker Pulls](https://img.shields.io/docker/pulls/mysticeragames/makeitstatic-cms?label=Docker%20Pulls)](https://hub.docker.com/r/mysticeragames/makeitstatic-cms)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mysticeragames/MakeItStatic-CMS/trigger.main.yml?branch=main&label=Develop%20(dev-main))](https://github.com/mysticeragames/MakeItStatic-CMS/actions/workflows/trigger.main.yml)
+[![Docker Image Size](https://img.shields.io/docker/image-size/mysticeragames/makeitstatic-cms?label=Docker%20Size)](https://hub.docker.com/r/mysticeragames/makeitstatic-cms/tags)
+[![Docker Pulls](https://img.shields.io/docker/pulls/mysticeragames/makeitstatic-cms?label=Docker%20Pulls)](https://hub.docker.com/r/mysticeragames/makeitstatic-cms/tags)
 
 ## Related
 
