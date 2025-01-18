@@ -1,4 +1,4 @@
-name: '[trigger.pull-request] PHPUnit Tests'
+name: '[trigger.pull-request]'
 
 on:
   pull_request:
@@ -6,12 +6,20 @@ on:
 
 
 jobs:
-  lint-github-actions:
-    uses: mysticeragames/MakeItStatic-CI/.github/workflows/job.lint-github-action.yml@main
-  pull-request:
-    uses: mysticeragames/MakeItStatic-CI/.github/workflows/job.docker-image-makeitstatic-cms.yml@main
+  docker-image:
+    uses: mysticeragames/MakeItStatic-CI/.github/workflows/job.docker-image.yml@main
+    permissions:
+      contents: read
     with:
       PUSH: 'false'
       RELEASE: 'false'
+      TARGET_IMAGE: 'mysticeragames/makeitstatic-cms'
+      COMPOSER_TEST: 'true'
     secrets:
+      DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  lint-github-actions:
+    uses: mysticeragames/MakeItStatic-CI/.github/workflows/job.lint-github-action.yml@main
+    permissions:
+      contents: read

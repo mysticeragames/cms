@@ -1,4 +1,4 @@
-name: '[trigger.main] Pushed/merged to main (cms:dev-main)'
+name: '[trigger.main] Pushed/merged to main'
 
 on:
   push:
@@ -6,10 +6,20 @@ on:
       - main
 
 jobs:
-  main:
-    uses: mysticeragames/MakeItStatic-CI/.github/workflows/job.docker-image-makeitstatic-cms.yml@main
+  docker-image:
+    uses: mysticeragames/MakeItStatic-CI/.github/workflows/job.docker-image.yml@main
+    permissions:
+      contents: read
     with:
       PUSH: 'true'
       RELEASE: 'false'
+      TARGET_IMAGE: 'mysticeragames/makeitstatic-cms'
+      COMPOSER_TEST: 'true'
     secrets:
+      DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  lint-github-actions:
+    uses: mysticeragames/MakeItStatic-CI/.github/workflows/job.lint-github-action.yml@main
+    permissions:
+      contents: read
