@@ -94,6 +94,12 @@
         "fix": [
             "@php vendor/bin/phpcbf || true",
             "composer test"
+        ],
+        "git-prune": [
+            "git branch -a",
+            "git fetch --prune",
+            "git branch | grep -v \"main\" | xargs git branch -d || true",
+            "git branch -a"
         ]
     },
     "conflict": {
