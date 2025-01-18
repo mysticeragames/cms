@@ -18,16 +18,22 @@ Flat-File CMS with Static Site Generator
 ## Related
 
 [MakeItStatic-Docker](https://github.com/mysticeragames/MakeItStatic-Docker) |
-[MakeItStatic-CI](https://github.com/mysticeragames/MakeItStatic-CI)
+[MakeItStatic-CI](https://github.com/mysticeragames/MakeItStatic-CI) | [Docker Hub](https://hub.docker.com/u/mysticeragames)
 
 ## *WORK IN PROGRESS!*
 
 # Docker
 
-```bash
-# Create volume
-docker volume create makeitstatic-cms-content
+## Initial setup
 
+```bash
+# Create volume for content
+docker volume create makeitstatic-cms-content
+```
+
+## Run latest CMS
+
+```bash
 # Pull latest version
 docker pull mysticeragames/makeitstatic-cms:latest
 
@@ -37,7 +43,16 @@ docker run -d -v makeitstatic-cms-content:/var/www/html/content --name makeitsta
 
 - http://localhost:8000
 
-## Other Docker commands
+## Update CMS
+
+```bash
+# Stop and remove your running container (your content will still be in the volume)
+docker rm makeitstatic-cms --force
+
+# Now re-run the commands above again (Run latest CMS)
+```
+
+### Other Docker commands
 
 ```bash
 # Show status
@@ -64,14 +79,6 @@ docker run --rm -u $(id -u):$(id -g) -v makeitstatic-cms-content:/vol -v $(pwd):
 
 # Restore named volume from my_backup.tar
 docker run --rm -u 0:0 -v makeitstatic-cms-content:/vol -v $(pwd):/app alpine:latest tar x -f /app/my_backup.tar -C /vol .
-```
-
-### Update
-
-```bash
-docker rm makeitstatic-cms --force
-
-docker run --pull always -d --name makeitstatic-cms --restart unless-stopped -p 8000:8080 mysticeragames/makeitstatic-cms:latest
 ```
 
 ### TEMP...
