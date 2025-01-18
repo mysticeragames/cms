@@ -7,7 +7,7 @@ on:
 
 jobs:
   lint-github-actions:
-    uses: mysticeragames/MakeItStatic-CI/.github/workflows/job.lint-github-action.yml
+    uses: mysticeragames/MakeItStatic-CI/.github/workflows/job.lint-github-action.yml@main
   pull-request:
     uses: mysticeragames/MakeItStatic-CI/.github/workflows/job.docker-image-makeitstatic-cms.yml@main
     with:
