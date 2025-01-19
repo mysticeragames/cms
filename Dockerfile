@@ -1,6 +1,6 @@
 # Use base image: https://hub.docker.com/r/mysticeragames/makeitstatic-cms-base/tags
-ARG BASE_VERSION=0.1.5
-FROM mysticeragames/makeitstatic-cms-base:${BASE_VERSION}
+#ARG BASE_VERSION=0.1.5 # Use hardcoded version for dependabot (will it see updates??)
+FROM mysticeragames/makeitstatic-cms-base:0.1.5
 
 # Copy all CMS files
 COPY --chown=cms ./ /var/www/html/
