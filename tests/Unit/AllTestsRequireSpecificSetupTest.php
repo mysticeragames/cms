@@ -14,6 +14,7 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\String\UnicodeString;
 
 #[CoversNothing]
 class AllTestsRequireSpecificSetupTest extends TestCase
@@ -21,6 +22,7 @@ class AllTestsRequireSpecificSetupTest extends TestCase
     public function testRequireComments(): void
     {
         $dirnames = [
+            'EndToEnd',
             'Functional',
             'Integration',
             'Unit',
@@ -38,7 +40,7 @@ vendor/bin/phpunit --testsuite {{suite}} --filter {{filter}} testMyMethod
 EOD;
 
         foreach ($dirnames as $dirname) {
-            $suite = strtolower($dirname);
+            $suite = (new UnicodeString($dirname))->kebab();
 
             $fs = new Filesystem();
             $finder = new Finder();
