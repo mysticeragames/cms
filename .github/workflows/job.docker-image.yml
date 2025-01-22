@@ -66,14 +66,13 @@ jobs:
       with:
         load: true
         target: final_test
-        tags: |
-          "${{ env.IMAGE_DEV }}-test"
+        tags: local/docker/image:test
         cache-from: type=registry,ref=${{ inputs.TARGET_IMAGE }}:buildcache
         cache-to: type=registry,ref=${{ inputs.TARGET_IMAGE }}:buildcache,mode=max
 
 
     - name: Run tests
-      run: docker run --rm ${{ env.IMAGE_DEV }}-test composer test
+      run: docker run --rm local/docker/image:test composer test
 
 
     - if: ${{ inputs.PUSH_DEV == 'yes' || inputs.PUSH_RELEASE == 'yes' }}
