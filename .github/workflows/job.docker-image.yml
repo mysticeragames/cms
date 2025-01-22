@@ -28,10 +28,20 @@ jobs:
     env:
       # Remove special characters in tag name
       IMAGE_DEV: "${{ inputs.TARGET_IMAGE }}:dev-$( echo \"${{ github.ref_name }}\" | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      IMAGE_TEST: "${{ inputs.TARGET_IMAGE }}:test-$( echo \"${{ github.ref_name }}\" | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
       IMAGE_RELEASE: "${{ inputs.TARGET_IMAGE }}:$( echo \"${{ github.event.release.name }}\" | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
       IMAGE_LATEST: "${{ inputs.TARGET_IMAGE }}:latest"
 
     steps:
+
+    - name: Debug
+      run: |
+        echo "github.ref_name=${{ github.ref_name }}"
+        echo "github.event.release.name=${{ github.event.release.name }}"
+        echo "env.IMAGE_DEV=${{ env.IMAGE_DEV }}"
+        echo "env.IMAGE_TEST=${{ env.IMAGE_TEST }}"
+        echo "env.IMAGE_RELEASE=${{ env.IMAGE_RELEASE }}"
+        echo "env.IMAGE_LATEST=${{ env.IMAGE_LATEST }}"
 
       # Use a hash (commit) and not a short release-version to make sure it has not been tampered with
       # Release versions can easily be removed and re-uploaded. Hashes not so easily...
@@ -56,15 +66,13 @@ jobs:
         load: true
         target: final_test
         tags: |
-          ${{ env.IMAGE_DEV }}-test
-          ${{ env.IMAGE_RELEASE }}-test
-          ${{ env.IMAGE_LATEST }}-test
+          ${{ env.IMAGE_TEST }}
         cache-from: type=registry,ref=${{ inputs.TARGET_IMAGE }}:buildcache
         cache-to: type=registry,ref=${{ inputs.TARGET_IMAGE }}:buildcache,mode=max
 
 
     - name: Run tests
-      run: docker run --rm ${{ env.IMAGE_DEV }}-test composer test
+      run: docker run --rm ${{ env.IMAGE_TEST }} composer test
 
 
     - if: ${{ inputs.PUSH_DEV == 'yes' || inputs.PUSH_RELEASE == 'yes' }}
@@ -94,4 +102,3 @@ jobs:
 
         docker tag ${{ env.IMAGE_DEV }} ${{ env.IMAGE_LATEST }}
         docker push ${{ env.IMAGE_LATEST }}
-
