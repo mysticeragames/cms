@@ -72,7 +72,7 @@ jobs:
 
 
     - name: Run tests
-      run:
+      run: |
         docker run --rm local/docker/image:test vendor/bin/phpcs
         docker run --rm local/docker/image:test vendor/bin/phpstan --memory-limit=512M analyse src tests
         docker run --rm local/docker/image:test vendor/bin/phpunit
