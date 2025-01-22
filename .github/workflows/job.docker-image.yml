@@ -72,7 +72,10 @@ jobs:
 
 
     - name: Run tests
-      run: docker run --rm local/docker/image:test composer test
+      run:
+        docker run --rm local/docker/image:test vendor/bin/phpcs
+        docker run --rm local/docker/image:test vendor/bin/phpstan --memory-limit=512M analyse src tests
+        docker run --rm local/docker/image:test vendor/bin/phpunit
 
 
     - if: ${{ inputs.PUSH_DEV == 'yes' || inputs.PUSH_RELEASE == 'yes' }}

@@ -11,7 +11,12 @@
 
 # see all images:   docker images mysticeragames/local
 # run shell:        docker run --rm -it mysticeragames/local:minimal sh -c 'php -m && php -v && git -v'
-# run phpunit:      docker run --rm -it mysticeragames/local:final_test php bin/phpunit
+
+# run phpcs:        docker run --rm -it mysticeragames/local:final_test php vendor/bin/phpcs
+# run phpstan:      docker run --rm -it mysticeragames/local:final_test php vendor/bin/phpstan --memory-limit=512M analyse src tests
+# run phpunit:      docker run --rm -it mysticeragames/local:final_test php vendor/bin/phpunit
+
+# run phpunit:      docker run --rm -it mysticeragames/local:final_test composer test
 # run test image:   docker run --rm -it -p 8080:8080 mysticeragames/local:final_test
 # run production:   docker run --rm -it -p 8080:8080 mysticeragames/local:final_prod
 # remove all:       docker rmi $(docker images -q mysticeragames/local:*)
