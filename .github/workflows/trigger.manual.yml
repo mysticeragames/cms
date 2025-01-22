@@ -11,8 +11,8 @@ jobs:
     permissions:
       contents: read
     with:
-      PUSH: 'true'
-      RELEASE: 'false'
+      PUSH_DEV: 'yes'
+      PUSH_RELEASE: 'no'
       TARGET_IMAGE: 'mysticeragames/apptest'
     secrets:
       DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}

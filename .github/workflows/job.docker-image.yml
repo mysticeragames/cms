@@ -8,12 +8,12 @@ on:
       DOCKERHUB_TOKEN:
         required: true
     inputs:
-      PUSH:
+      PUSH_DEV:
         type: string
-        default: 'true'
-      RELEASE:
+        default: 'yes'
+      PUSH_RELEASE:
         type: string
-        default: 'false'
+        default: 'no'
       TARGET_IMAGE:
         type: string
         required: true
@@ -27,8 +27,8 @@ jobs:
 
     env:
       # Remove special characters in tag name
-      IMAGE_DEV: "${{ inputs.TARGET_IMAGE }}:dev-$( echo ${{ github.ref_name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
-      IMAGE_RELEASE: "${{ inputs.TARGET_IMAGE }}:$( echo ${{ github.event.release.name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      IMAGE_DEV: "${{ inputs.TARGET_IMAGE }}:dev-$( echo \"${{ github.ref_name }}\" | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      IMAGE_RELEASE: "${{ inputs.TARGET_IMAGE }}:$( echo \"${{ github.event.release.name }}\" | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
       IMAGE_LATEST: "${{ inputs.TARGET_IMAGE }}:latest"
 
     steps:
@@ -67,7 +67,7 @@ jobs:
       run: docker run --rm ${{ env.IMAGE_DEV }}-test composer test
 
 
-    - if: ${{ inputs.PUSH == 'true' || inputs.RELEASE == 'true' }}
+    - if: ${{ inputs.PUSH_DEV == 'yes' || inputs.PUSH_RELEASE == 'yes' }}
       name: Build production image
       uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d # https://github.com/docker/build-push-action/releases/tag/v6.12.0
       with:
@@ -81,23 +81,17 @@ jobs:
         cache-to: type=registry,ref=${{ inputs.TARGET_IMAGE }}:buildcache,mode=max
 
 
-    - if: ${{ inputs.PUSH == 'true' }}
-      name: Push Docker image
-      uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d # https://github.com/docker/build-push-action/releases/tag/v6.12.0
-      with:
-        push: true
-        tags: ${{ env.IMAGE_DEV }}
-        cache-from: type=registry,ref=${{ inputs.TARGET_IMAGE }}:buildcache
-        cache-to: type=registry,ref=${{ inputs.TARGET_IMAGE }}:buildcache,mode=max
-  
+    - if: ${{ inputs.PUSH_DEV == 'yes' }}
+      name: Docker push dev
+      run: docker push ${{ env.IMAGE_DEV }}
 
-    - if: ${{ inputs.RELEASE == 'true' }}
-      name: Release Docker image
-      uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d # https://github.com/docker/build-push-action/releases/tag/v6.12.0
-      with:
-        push: true
-        tags: |
-          ${{ env.IMAGE_RELEASE }}
-          ${{ env.IMAGE_LATEST }}
-        cache-from: type=registry,ref=${{ inputs.TARGET_IMAGE }}:buildcache
-        cache-to: type=registry,ref=${{ inputs.TARGET_IMAGE }}:buildcache,mode=max
+
+    - if: ${{ inputs.PUSH_RELEASE == 'yes' }}
+      name: Docker push release + latest
+      run: |
+        docker tag ${{ env.IMAGE_DEV }} ${{ env.IMAGE_RELEASE }}
+        docker push ${{ env.IMAGE_RELEASE }}
+
+        docker tag ${{ env.IMAGE_DEV }} ${{ env.IMAGE_LATEST }}
+        docker push ${{ env.IMAGE_LATEST }}
+

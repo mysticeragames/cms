@@ -11,7 +11,7 @@ jobs:
       contents: read
     steps:
 
-        
+
       # Use a hash (commit) and not a short release-version to make sure it has not been tampered with
       # Release versions can easily be removed and re-uploaded. Hashes not so easily...
       # More info: https://blog.rafaelgss.dev/why-you-should-pin-actions-by-commit-hash
@@ -29,3 +29,5 @@ jobs:
     - name: Check workflow files
       run: ${{ steps.get_actionlint.outputs.executable }} -color
       shell: bash
+
+    # lint locally: docker run --rm -v $(pwd):/repo --workdir /repo rhysd/actionlint:latest -color
