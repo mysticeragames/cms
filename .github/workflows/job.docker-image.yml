@@ -82,21 +82,23 @@ jobs:
       with:
         load: true
         target: final_prod
-        tags: ${{ env.IMAGE_DEV }}
+        tags: local/docker/image:build
         cache-from: type=registry,ref=${{ inputs.TARGET_IMAGE }}:buildcache
         cache-to: type=registry,ref=${{ inputs.TARGET_IMAGE }}:buildcache,mode=max
 
 
     - if: ${{ inputs.PUSH_DEV == 'yes' }}
       name: Docker push dev
-      run: docker push ${{ env.IMAGE_DEV }}
+      run: |
+        docker tag local/docker/image:build ${{ env.IMAGE_DEV }}
+        docker push ${{ env.IMAGE_DEV }}
 
 
     - if: ${{ inputs.PUSH_RELEASE == 'yes' }}
       name: Docker push release + latest
       run: |
-        docker tag ${{ env.IMAGE_DEV }} ${{ env.IMAGE_RELEASE }}
+        docker tag local/docker/image:build ${{ env.IMAGE_RELEASE }}
         docker push ${{ env.IMAGE_RELEASE }}
 
-        docker tag ${{ env.IMAGE_DEV }} ${{ env.IMAGE_LATEST }}
+        docker tag local/docker/image:build ${{ env.IMAGE_LATEST }}
         docker push ${{ env.IMAGE_LATEST }}
