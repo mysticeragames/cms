@@ -1,0 +1,31 @@
+name: '[job] Lint github action'
+
+on:
+  workflow_call:
+
+jobs:
+  lint:
+    name: Lint github action
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+
+        
+      # Use a hash (commit) and not a short release-version to make sure it has not been tampered with
+      # Release versions can easily be removed and re-uploaded. Hashes not so easily...
+      # More info: https://blog.rafaelgss.dev/why-you-should-pin-actions-by-commit-hash
+    - name: Checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # https://github.com/actions/checkout/releases/tag/v4.2.2
+
+
+    # https://github.com/rhysd/actionlint/blob/main/docs/usage.md#use-actionlint-on-github-actions
+    - name: Download actionlint
+      id: get_actionlint
+      run: bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+      shell: bash
+
+
+    - name: Check workflow files
+      run: ${{ steps.get_actionlint.outputs.executable }} -color
+      shell: bash
