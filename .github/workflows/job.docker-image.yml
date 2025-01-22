@@ -82,10 +82,7 @@ jobs:
       with:
         load: true
         target: final_prod
-        tags: |
-          "${{ env.IMAGE_DEV }}"
-          "${{ env.IMAGE_RELEASE }}"
-          "${{ env.IMAGE_LATEST }}"
+        tags: ${{ env.IMAGE_DEV }}
         cache-from: type=registry,ref=${{ inputs.TARGET_IMAGE }}:buildcache
         cache-to: type=registry,ref=${{ inputs.TARGET_IMAGE }}:buildcache,mode=max
 
