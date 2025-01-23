@@ -1,0 +1,119 @@
+name: '[job] Docker image'
+
+on:
+  workflow_call:
+    inputs:
+      DOCKERHUB_USER:
+        type: string
+        default: rboonzaijer
+      DOCKER_PUSH_DEV:
+        type: number
+        default: 0
+      DOCKER_PUSH_RELEASE:
+        type: number
+        default: 0
+      TARGET_IMAGE_PROD:
+        type: string
+        default: mysticeragames/makeitstatic-cms
+      TARGET_IMAGE_TEST:
+        type: string
+        default: mysticeragames/makeitstatic-cms-test
+      TARGET_IMAGE_CACHE:
+        type: string
+        default: mysticeragames/makeitstatic-cms-buildcache
+    secrets:
+      DOCKERHUB_TOKEN:
+        required: true
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    env:
+      # - Remove special characters in tag name with sed
+      # - 2 images: prod/test (test has phpunit/chromedriver/etc) - push to a different repository (*-test) but using the same tag
+      IMAGE_DEV_PROD:     "${{ inputs.TARGET_IMAGE_PROD }}:dev-$( echo ${{ github.ref_name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      IMAGE_DEV_TEST:     "${{ inputs.TARGET_IMAGE_TEST }}:dev-$( echo ${{ github.ref_name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      IMAGE_RELEASE_PROD: "${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ github.event.release.name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      IMAGE_RELEASE_TEST: "${{ inputs.TARGET_IMAGE_TEST }}:$( echo ${{ github.event.release.name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      IMAGE_LATEST_PROD:  "${{ inputs.TARGET_IMAGE_PROD }}:latest"
+      IMAGE_LATEST_TEST:  "${{ inputs.TARGET_IMAGE_TEST }}:latest"
+
+      # The build cache is used to cache Docker layers, used to speed up the build process.
+      # If the image gets too big, it can be removed from Docker Hub,
+      #   it will create a new cache automatically, the first build after removal will only be slower.
+      IMAGE_BUILD_CACHE:  "${{ inputs.TARGET_IMAGE_CACHE }}:latest"
+    steps:
+
+
+      # Use a hash (commit) and not a short release-version to make sure it has not been tampered with
+      # Release versions can easily be removed and re-uploaded. Hashes not so easily...
+      # More info: https://blog.rafaelgss.dev/why-you-should-pin-actions-by-commit-hash
+    - name: Checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # https://github.com/actions/checkout/releases/tag/v4.2.2
+
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # https://github.com/docker/login-action/releases/tag/v3.3.0
+      with:
+        username: ${{ inputs.DOCKERHUB_USER }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@6524bf65af31da8d45b59e8c27de4bd072b392f5 # https://github.com/docker/setup-buildx-action/releases/tag/v3.8.0
+
+
+    - name: Build test image
+      uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d # https://github.com/docker/build-push-action/releases/tag/v6.12.0
+      with:
+        load: true
+        target: final_test
+        tags: local/docker/image:test
+        cache-from: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}
+        cache-to: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }},mode=max
+
+
+    - name: Run tests
+      run: |
+        docker run --rm local/docker/image:test vendor/bin/phpcs
+        docker run --rm local/docker/image:test vendor/bin/phpstan --memory-limit=512M analyse src tests
+        docker run --rm local/docker/image:test vendor/bin/phpunit
+
+
+    - if: ${{ inputs.DOCKER_PUSH_DEV == 1 || inputs.DOCKER_PUSH_RELEASE == 1 }}
+      name: Build production image
+      uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d # https://github.com/docker/build-push-action/releases/tag/v6.12.0
+      with:
+        load: true
+        target: final_prod
+        tags: local/docker/image:prod
+        cache-from: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}
+        cache-to: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }},mode=max
+
+
+    - if: ${{ inputs.DOCKER_PUSH_DEV == 1 }}
+      name: Docker push developer image
+      run: |
+        docker tag local/docker/image:prod ${{ env.IMAGE_DEV_PROD }}
+        docker push ${{ env.IMAGE_DEV_PROD }}
+
+        docker tag local/docker/image:test ${{ env.IMAGE_DEV_TEST }}
+        docker push ${{ env.IMAGE_DEV_TEST }}
+
+
+    - if: ${{ inputs.DOCKER_PUSH_RELEASE == 1 }}
+      name: Docker push release + latest
+      run: |
+        docker tag local/docker/image:prod ${{ env.IMAGE_RELEASE_PROD }}
+        docker tag local/docker/image:prod ${{ env.IMAGE_LATEST_PROD }}
+        docker push ${{ env.IMAGE_RELEASE_PROD }}
+        docker push ${{ env.IMAGE_LATEST_PROD }}
+        
+        docker tag local/docker/image:test ${{ env.IMAGE_RELEASE_TEST }}
+        docker tag local/docker/image:test ${{ env.IMAGE_LATEST_TEST }}
+        docker push ${{ env.IMAGE_RELEASE_TEST }}
+        docker push ${{ env.IMAGE_LATEST_TEST }}
