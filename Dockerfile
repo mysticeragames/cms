@@ -41,10 +41,15 @@ WORKDIR /var/www/html
 RUN addgroup -g 1112 ${APP_GROUP} && \
     adduser -D -G ${APP_GROUP} -u 1111 -h /home/${APP_USER} -s /bin/sh ${APP_USER}
 
+# Fix vulnerability (Found with Docker Scout)
+# https://security.alpinelinux.org/vuln/CVE-2024-50349
+# Install fixed git from edge/main repository
+RUN apk add --no-cache git=2.48.1-r0 --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main
+
 # Install packages
 RUN apk add --no-cache \
     curl \
-    git \
+    # git \
     nginx \
     php${PHP_VERSION_SHORT} \
     php${PHP_VERSION_SHORT}-ctype \
