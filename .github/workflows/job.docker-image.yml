@@ -48,7 +48,7 @@ jobs:
       # The build cache is used to cache Docker layers, used to speed up the build process.
       # If the image gets too big, it can be removed from Docker Hub,
       #   it will create a new cache automatically, the first build after removal will only be slower.
-      IMAGE_BUILD_CACHE:  "${{ inputs.TARGET_IMAGE_CACHE }}:${{ inputs.TARGET_IMAGE_CACHE_TAG }}"
+      IMAGE_BUILD_CACHE:  "${{ inputs.TARGET_IMAGE_CACHE }}:cache-$( echo ${{ inputs.TARGET_IMAGE_CACHE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
     steps:
 
 
