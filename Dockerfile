@@ -111,10 +111,6 @@ RUN composer install --prefer-dist --no-interaction --optimize-autoloader --no-p
 FROM build_prod AS build_test
 COPY --from=build_prod /var/www/html/vendor vendor
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-progress --no-scripts
-RUN apk add --no-cache \
-    php${PHP_VERSION_SHORT}-pecl-xdebug \
-    php${PHP_VERSION_SHORT}-phar \
-    chromium-chromedriver
 
 
 
@@ -145,13 +141,18 @@ HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8250/fpm-pin
 
 
 
-
 ################################################################################
 # Final test image
 # This will be the final test image
 ################################################################################
 
 FROM minimal AS final_test
+
+# Install packages
+RUN apk add --no-cache \
+    php${PHP_VERSION_SHORT}-pecl-xdebug \
+    php${PHP_VERSION_SHORT}-phar \
+    chromium-chromedriver
 
 # Use test config
 COPY .docker/test/99-xdebug.ini ${PHP_INI_DIR}/conf.d/99-xdebug.ini
