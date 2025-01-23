@@ -47,11 +47,10 @@ docker rm makeitstatic-cms --force
 
 [![GitHub commits since latest release (branch)](https://img.shields.io/github/commits-since/mysticeragames/makeitstatic-cms/latest/main)](https://github.com/mysticeragames/MakeItStatic-CMS/commits/main/)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mysticeragames/MakeItStatic-CMS/trigger.main.yml?branch=main&label=build%20(dev-main))](https://github.com/mysticeragames/MakeItStatic-CMS/actions/workflows/trigger.main.yml)
-[![Docker Image Size](https://img.shields.io/docker/image-size/mysticeragames/makeitstatic-cms-test?label=image%20size%20(test))](https://hub.docker.com/r/mysticeragames/makeitstatic-cms-test/tags)
-[![Docker Pulls](https://img.shields.io/docker/pulls/mysticeragames/makeitstatic-cms-test?label=docker%20pulls%20(test))](https://hub.docker.com/r/mysticeragames/makeitstatic-cms-test/tags)
+[![Docker Image Size](https://img.shields.io/docker/image-size/mysticeragames/makeitstatic-cms-dev?label=image%20size%20(dev))](https://hub.docker.com/r/mysticeragames/makeitstatic-cms-dev/tags)
+[![Docker Pulls](https://img.shields.io/docker/pulls/mysticeragames/makeitstatic-cms-dev?label=docker%20pulls%20(dev))](https://hub.docker.com/r/mysticeragames/makeitstatic-cms-dev/tags)
 
-- dev-main: Latest build image from main branch: [hub.docker.com/r/mysticeragames/makeitstatic-cms/tags?name=dev-main](https://hub.docker.com/r/mysticeragames/makeitstatic-cms/tags?name=dev-main)
-- *-test: Test images (including phpunit/xdebug/etc...): [hub.docker.com/r/mysticeragames/makeitstatic-cms-test/tags](https://hub.docker.com/r/mysticeragames/makeitstatic-cms-test/tags)
+- dev-main: Latest build image from main branch: [hub.docker.com/r/mysticeragames/makeitstatic-cms-dev/tags?name=dev-main](https://hub.docker.com/r/mysticeragames/makeitstatic-cms/tags?name=dev-main)
 
 ### Other Docker commands
 

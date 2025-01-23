@@ -17,10 +17,13 @@ on:
         default: "dev-${{ github.ref_name }}"
       TARGET_IMAGE_PROD:
         type: string
-        default: mysticeragames/makeitstatic-cms
+        default: mysticeragames/makeitstatic-cms-dev
+
+      # The test-image doesn't need to be pushed, use it only for local testing
       TARGET_IMAGE_TEST:
         type: string
-        default: mysticeragames/makeitstatic-cms-test
+        #default: mysticeragames/makeitstatic-cms-test
+        default: local/docker/build:test
 
       # The build cache is used to cache Docker layers, used to speed up the build process
       TARGET_IMAGE_CACHE:
