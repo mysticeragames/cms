@@ -108,7 +108,9 @@ jobs:
         timeout 15s sh -c 'until docker ps | grep -w running_test_container | grep -q healthy; do echo "Waiting for container to be healthy..."; sleep 1; done'
 
         # try to see if the container is really serving the CMS (otherwise try to remove the container, and exit with errorcode 1)
-        curl --silent http://localhost:8250 | grep "<h1>CMzS</h1>" || (docker rm running_test_container --force; exit 1)
+        curl --silent http://localhost:8250 | grep "<!-- MakeItStatic-CMS - https://makeitstatic.com -->" || (docker rm running_test_container --force; echo "ERROR: It seems the container is not serving any webapp???"; exit 1)
+
+        echo "Success - the container is serving the webapp"
 
         # stop/remove the container
         docker rm running_test_container --force
@@ -161,4 +163,3 @@ jobs:
         platforms: linux/arm64
         cache-from: type=registry,ref=${{ steps.vars.outputs.IMAGE_BUILD_CACHE }}-prod_linux_arm64
         cache-to: type=registry,ref=${{ steps.vars.outputs.IMAGE_BUILD_CACHE }}-prod_linux_arm64,mode=max
-
