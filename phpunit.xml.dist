@@ -50,9 +50,9 @@
             <directory>tests/Functional</directory>
         </testsuite>
 
-        <!-- <testsuite name="end-to-end">
+        <testsuite name="end-to-end">
             <directory>tests/EndToEnd</directory>
-        </testsuite> -->
+        </testsuite>
     </testsuites>
 
     <groups>

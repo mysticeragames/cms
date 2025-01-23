@@ -12,6 +12,5 @@ jobs:
       contents: read
     with:
       DOCKER_PUSH: 1
-      TARGET_IMAGE_CACHE_TAG: ${{ github.ref_name }}
     secrets:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
