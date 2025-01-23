@@ -50,7 +50,7 @@ RUN apk add --no-cache \
     php${PHP_VERSION_SHORT}-ctype \
     php${PHP_VERSION_SHORT}-curl \
     php${PHP_VERSION_SHORT}-dom \
-    #php${PHP_VERSION_SHORT}-fpm \
+    php${PHP_VERSION_SHORT}-fpm \
     php${PHP_VERSION_SHORT}-iconv \
     php${PHP_VERSION_SHORT}-mbstring \
     php${PHP_VERSION_SHORT}-openssl \
