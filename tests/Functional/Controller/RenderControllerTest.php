@@ -10,15 +10,18 @@ vendor/bin/phpunit --testsuite functional --filter RenderControllerTest testMyMe
 namespace App\Tests\Functional\Controller;
 
 use App\Controller\Render\RenderController;
+use App\Helpers\ProjectDirHelper;
 use App\Tests\Base\BaseFunctionalTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Routing\RouterInterface;
 
 // https://symfony.com/doc/current/testing.html#application-tests
 
-#[CoversClass(RenderController::class)]
+##[CoversClass(RenderController::class)]
+#[CoversNothing]
 class RenderControllerTest extends BaseFunctionalTestCase
 {
     public static function additionProvider(): array

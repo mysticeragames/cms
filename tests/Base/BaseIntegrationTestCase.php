@@ -13,19 +13,10 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 class BaseIntegrationTestCase extends KernelTestCase implements IBaseTestCase
 {
     //protected bool $initialized = false;
-    protected PageRepository $pageRepository;
 
     protected function setUp(): void
     {
         self::bootKernel();
-
-        $this->pageRepository = self::getContainer()->get(PageRepository::class);
-
-        // dump('');
-        // dump($this->projectDir);
-        // dump(dirname(dirname(__DIR__)));
-        // dd('.');
-
         $this->setupTestContent();
     }
 
