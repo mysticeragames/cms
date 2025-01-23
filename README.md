@@ -35,7 +35,7 @@ docker run -d --rm \
 ```
 
 - Navigate to your CMS, connect your GIT repositories and start working:
-- **http://localhost:8100**
+- **http://localhost:8250**
 
 ## Done? Destroy the container
 
