@@ -11,9 +11,7 @@ jobs:
     permissions:
       contents: read
     with:
-      DOCKER_PUSH_DEV: 1
-      DOCKER_PUSH_RELEASE: 0
-      TARGET_IMAGE_CACHE_TAG: main
+      DOCKER_PUSH: 1
     secrets:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 

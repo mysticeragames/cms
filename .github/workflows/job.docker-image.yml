@@ -6,12 +6,15 @@ on:
       DOCKERHUB_USER:
         type: string
         default: rboonzaijer
-      DOCKER_PUSH_DEV:
+      DOCKER_PUSH:
         type: number
         default: 0
-      DOCKER_PUSH_RELEASE:
-        type: number
-        default: 0
+      TARGET_IMAGE_TAG:
+        type: string
+        default: "dev-${{ github.ref_name }}"
+      TARGET_IMAGE_CACHE_TAG:
+        type: string
+        default: "dev-${{ github.ref_name }}"
       TARGET_IMAGE_PROD:
         type: string
         default: mysticeragames/makeitstatic-cms
@@ -21,9 +24,6 @@ on:
       TARGET_IMAGE_CACHE:
         type: string
         default: mysticeragames/makeitstatic-cms-buildcache
-      TARGET_IMAGE_CACHE_TAG:
-        type: string
-        default: latest
     secrets:
       DOCKERHUB_TOKEN:
         required: true
@@ -38,12 +38,15 @@ jobs:
     env:
       # - Remove special characters in tag name with sed
       # - 2 images: prod/test (test has phpunit/chromedriver/etc) - push to a different repository (*-test) but using the same tag
-      IMAGE_DEV_PROD:     "${{ inputs.TARGET_IMAGE_PROD }}:dev-$( echo ${{ github.ref_name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
-      IMAGE_DEV_TEST:     "${{ inputs.TARGET_IMAGE_TEST }}:dev-$( echo ${{ github.ref_name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
-      IMAGE_RELEASE_PROD: "${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ github.event.release.name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
-      IMAGE_RELEASE_TEST: "${{ inputs.TARGET_IMAGE_TEST }}:$( echo ${{ github.event.release.name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
-      IMAGE_LATEST_PROD:  "${{ inputs.TARGET_IMAGE_PROD }}:latest"
-      IMAGE_LATEST_TEST:  "${{ inputs.TARGET_IMAGE_TEST }}:latest"
+      #IMAGE_DEV_PROD:     "${{ inputs.TARGET_IMAGE_PROD }}:dev-$( echo ${{ github.ref_name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      #IMAGE_DEV_TEST:     "${{ inputs.TARGET_IMAGE_TEST }}:dev-$( echo ${{ github.ref_name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      #IMAGE_RELEASE_PROD: "${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ github.event.release.name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      #IMAGE_RELEASE_TEST: "${{ inputs.TARGET_IMAGE_TEST }}:$( echo ${{ github.event.release.name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      
+      IMAGE_PROD: "${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      IMAGE_TEST: "${{ inputs.TARGET_IMAGE_TEST }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      #IMAGE_PROD_LATEST:  "${{ inputs.TARGET_IMAGE_PROD }}:latest"
+      #IMAGE_TEST_LATEST:  "${{ inputs.TARGET_IMAGE_TEST }}:latest"
 
       # The build cache is used to cache Docker layers, used to speed up the build process.
       # If the image gets too big, it can be removed from Docker Hub,
@@ -70,99 +73,78 @@ jobs:
       uses: docker/setup-buildx-action@6524bf65af31da8d45b59e8c27de4bd072b392f5 # https://github.com/docker/setup-buildx-action/releases/tag/v3.8.0
 
 
-    - name: Build test image
+    - name: Build test image (linux/amd64,linux/arm64)
       uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d # https://github.com/docker/build-push-action/releases/tag/v6.12.0
       with:
-        load: true
+        push: true
         target: final_test
-        tags: local/docker/image:test
+        tags: ${{ env.IMAGE_TEST }}
         platforms: linux/amd64,linux/arm64
         cache-from: |
           type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-test_linux_amd64
           type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-test_linux_arm64
 
-    - name: Cache test_linux_amd64
+
+    - name: Cache test image (linux/amd64)
       uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d # https://github.com/docker/build-push-action/releases/tag/v6.12.0
       with:
         load: true
         target: final_test
-        tags: local/docker/image:test
+        tags: ${{ env.IMAGE_TEST }}
         platforms: linux/amd64
         cache-from: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-test_linux_amd64
         cache-to: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-test_linux_amd64,mode=max
 
-    - name: Cache test_linux_arm64
+    - name: Cache test image (linux/arm64)
       uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d # https://github.com/docker/build-push-action/releases/tag/v6.12.0
       with:
         load: true
         target: final_test
-        tags: local/docker/image:test
+        tags: ${{ env.IMAGE_TEST }}
         platforms: linux/arm64
         cache-from: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-test_linux_arm64
         cache-to: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-test_linux_arm64,mode=max
 
 
-    - name: Run tests
+    - name: Run tests (linux/amd64)
       run: |
-        docker run --rm local/docker/image:test vendor/bin/phpcs
-        docker run --rm local/docker/image:test vendor/bin/phpstan --memory-limit=512M analyse src tests
-        docker run --rm local/docker/image:test vendor/bin/phpunit
+        docker images
+        docker run --rm ${{ env.IMAGE_TEST }} vendor/bin/phpcs
+        docker run --rm ${{ env.IMAGE_TEST }} vendor/bin/phpstan --memory-limit=512M analyse src tests
+        docker run --rm ${{ env.IMAGE_TEST }} vendor/bin/phpunit
 
 
-    - if: ${{ inputs.DOCKER_PUSH_DEV == 1 || inputs.DOCKER_PUSH_RELEASE == 1 }}
-      name: Build production image
-      uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d # https://github.com/docker/build-push-action/releases/tag/v6.12.0
-      with:
-        load: true
-        target: final_prod
-        tags: local/docker/image:prod
-        platforms: linux/amd64,linux/arm64
-        cache-from: |
-          type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-prod_linux_amd64
-          type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-prod_linux_arm64
-
-    - if: ${{ inputs.DOCKER_PUSH_DEV == 1 || inputs.DOCKER_PUSH_RELEASE == 1 }}
-      name: Cache prod_linux_amd64
-      uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d # https://github.com/docker/build-push-action/releases/tag/v6.12.0
-      with:
-        load: true
-        target: final_prod
-        tags: local/docker/image:prod
-        platforms: linux/amd64
-        cache-from: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-prod_linux_amd64
-        cache-to: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-prod_linux_amd64,mode=max
-
-    - if: ${{ inputs.DOCKER_PUSH_DEV == 1 || inputs.DOCKER_PUSH_RELEASE == 1 }}
-      name: Cache prod_linux_arm64
-      uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d # https://github.com/docker/build-push-action/releases/tag/v6.12.0
-      with:
-        load: true
-        target: final_prod
-        tags: local/docker/image:prod
-        platforms: linux/arm64
-        cache-from: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-prod_linux_arm64
-        cache-to: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-prod_linux_arm64,mode=max
+    # - if: ${{ inputs.DOCKER_PUSH == 1 }}
+    #   name: Build production image
+    #   uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d # https://github.com/docker/build-push-action/releases/tag/v6.12.0
+    #   with:
+    #     load: true
+    #     target: final_prod
+    #     tags: local/docker/image:prod
+    #     platforms: linux/amd64
+    #     #cache-from: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-prod_linux_amd64
+    #     #cache-to: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-prod_linux_amd64,mode=max
 
 
-    - if: ${{ inputs.DOCKER_PUSH_DEV == 1 }}
-      name: Docker push developer image
-      run: |
-        docker tag local/docker/image:prod ${{ env.IMAGE_DEV_PROD }}
-        docker push ${{ env.IMAGE_DEV_PROD }}
+    # - if: ${{ inputs.DOCKER_PUSH_DEV == 1 }}
+    #   name: Docker push developer image
+    #   run: |
+    #     docker tag local/docker/image:prod ${{ env.IMAGE_DEV_PROD }}
+    #     docker push ${{ env.IMAGE_DEV_PROD }}
 
-        docker tag local/docker/image:test ${{ env.IMAGE_DEV_TEST }}
-        docker push ${{ env.IMAGE_DEV_TEST }}
+    #     docker tag local/docker/image:test_linux_amd64 ${{ env.IMAGE_DEV_TEST }}
+    #     docker push ${{ env.IMAGE_DEV_TEST }}
 
 
-    - if: ${{ inputs.DOCKER_PUSH_RELEASE == 1 }}
-      name: Docker push release + latest
-      run: |
-        docker tag local/docker/image:prod ${{ env.IMAGE_RELEASE_PROD }}
-        docker tag local/docker/image:prod ${{ env.IMAGE_LATEST_PROD }}
-        docker push ${{ env.IMAGE_RELEASE_PROD }}
-        docker push ${{ env.IMAGE_LATEST_PROD }}
+    # - if: ${{ inputs.DOCKER_PUSH_RELEASE == 1 }}
+    #   name: Docker push release + latest
+    #   run: |
+    #     docker tag local/docker/image:prod ${{ env.IMAGE_RELEASE_PROD }}
+    #     docker tag local/docker/image:prod ${{ env.IMAGE_LATEST_PROD }}
+    #     docker push ${{ env.IMAGE_RELEASE_PROD }}
+    #     docker push ${{ env.IMAGE_LATEST_PROD }}
         
-        docker tag local/docker/image:test ${{ env.IMAGE_RELEASE_TEST }}
-        docker tag local/docker/image:test ${{ env.IMAGE_LATEST_TEST }}
-        docker push ${{ env.IMAGE_RELEASE_TEST }}
-        docker push ${{ env.IMAGE_LATEST_TEST }}
+    #     docker tag local/docker/image:test_linux_amd64 ${{ env.IMAGE_RELEASE_TEST }}
+    #     docker tag local/docker/image:test_linux_amd64 ${{ env.IMAGE_LATEST_TEST }}
+    #     docker push ${{ env.IMAGE_RELEASE_TEST }}
+    #     docker push ${{ env.IMAGE_LATEST_TEST }}
