@@ -64,18 +64,17 @@ jobs:
       id: vars
       run: |
         {
-          echo "IMAGE_PROD=${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )" >> "$GITHUB_OUTPUT";
-          echo "IMAGE_TEST=${{ inputs.TARGET_IMAGE_TEST }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )" >> "$GITHUB_OUTPUT";
-          echo "IMAGE_BUILD_CACHE=${{ inputs.TARGET_IMAGE_CACHE }}:cache-$( echo ${{ inputs.TARGET_IMAGE_CACHE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )"
+          echo "IMAGE_PRODz=${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )" >> "$GITHUB_OUTPUT";
+          echo "IMAGE_TESTz=${{ inputs.TARGET_IMAGE_TEST }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )" >> "$GITHUB_OUTPUT";
+          echo "IMAGE_BUILD_CACHEz=${{ inputs.TARGET_IMAGE_CACHE }}:cache-$( echo ${{ inputs.TARGET_IMAGE_CACHE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )"
         } >> "$GITHUB_OUTPUT"
 
     - name: Debug variables
       env:
-        IMAGE_TEST: ${{ steps.vars.outputs.IMAGE_TEST }}
-        IMAGE_BUILD_CACHE: ${{ steps.vars.outputs.IMAGE_BUILD_CACHE }}
+        IMAGE_TESTz: ${{ steps.vars.outputs.IMAGE_TESTz }}
       run: |
-        echo "IMAGE_PROD=${{ steps.vars.outputs.IMAGE_PROD }}"
-        echo "IMAGE_TEST=${{ env.IMAGE_TEST }}"
+        echo "IMAGE_PRODz=${{ steps.vars.outputs.IMAGE_PRODz }}"
+        echo "IMAGE_TESTz=${{ env.IMAGE_TESTz }}"
         asdf
 
       # Use a hash (commit) and not a short release-version to make sure it has not been tampered with
