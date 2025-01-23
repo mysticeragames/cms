@@ -90,6 +90,7 @@
             "git init && git add . && git commit --quiet -m 'initial'"
         ],
         "test": [
+            "docker run --rm -v $(pwd):/repo --workdir /repo rhysd/actionlint:latest -color",
             "@php vendor/bin/phpcs",
             "@php vendor/bin/phpstan analyse src tests",
             "@php vendor/bin/phpunit"
