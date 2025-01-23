@@ -17,13 +17,7 @@ on:
         default: "dev-${{ github.ref_name }}"
       TARGET_IMAGE_PROD:
         type: string
-        default: mysticeragames/makeitstatic-cms-dev
-
-      # # The test-image doesn't need to be pushed, use it only for local testing
-      # TARGET_IMAGE_TEST:
-      #   type: string
-      #   #default: mysticeragames/makeitstatic-cms-test
-      #   default: local/docker/build
+        default: mysticeragames/makeitstatic-cms
 
       # The build cache is used to cache Docker layers, used to speed up the build process
       TARGET_IMAGE_CACHE:
@@ -45,6 +39,7 @@ jobs:
     - name: Set variables
       id: vars
       # Remove special characters in tag name with sed
+      # The test-image doesn't need to be pushed, use it only for local testing
       run: |
         {
           echo "IMAGE_PROD=${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )";

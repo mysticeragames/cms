@@ -14,7 +14,7 @@ docker run --rm \
     -e UID=$(id -u) \
     -e GID=$(id -g) \
     -v $(pwd):/var/www/html \
-    mysticeragames/makeitstatic-cms-dev:dev-main sh -c "mkdir -p ./reports/ && chown -R $UID:$GID ./reports && rm -rf ./reports/* && XDEBUG_MODE=coverage php bin/phpunit --testdox-html ./reports/testdox.html --log-junit ./reports/junit.xml --log-events-text ./reports/log-events.txt --log-teamcity ./reports/log-teamcity.txt --log-events-verbose-text ./reports/log-events-verbose.txt --coverage-html ./reports/coverage && chown -R $UID:$GID ./reports"
+    mysticeragames/makeitstatic-cms:dev-main sh -c "mkdir -p ./reports/ && chown -R $UID:$GID ./reports && rm -rf ./reports/* && XDEBUG_MODE=coverage php bin/phpunit --testdox-html ./reports/testdox.html --log-junit ./reports/junit.xml --log-events-text ./reports/log-events.txt --log-teamcity ./reports/log-teamcity.txt --log-events-verbose-text ./reports/log-events-verbose.txt --coverage-html ./reports/coverage && chown -R $UID:$GID ./reports"
 
 
 # Show reports (WSL2)
