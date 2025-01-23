@@ -11,9 +11,9 @@ jobs:
     permissions:
       contents: read
     with:
-      PUSH_DEV: 'no'
-      PUSH_RELEASE: 'yes'
-      TARGET_IMAGE: 'mysticeragames/apptest'
+      DOCKER_PUSH_DEV: 0
+      DOCKER_PUSH_RELEASE: 1
+      TARGET_IMAGE: mysticeragames/makeitstatic-cms
+      DOCKERHUB_USER: rboonzaijer
     secrets:
-      DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
