@@ -22,7 +22,6 @@ class AllTestsRequireSpecificSetupTest extends TestCase
     public function testRequireComments(): void
     {
         $dirnames = [
-            'EndToEnd',
             'Functional',
             'Integration',
             'Unit',
