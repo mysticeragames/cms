@@ -35,13 +35,11 @@
         "twig/twig": "^3.18"
     },
     "require-dev": {
-        "dbrekelmans/bdi": "^1.4",
         "phpstan/phpstan": "^2.1.2",
         "phpunit/phpunit": "^11.5.3",
-        "squizlabs/php_codesniffer": "^3.11.2",
+        "squizlabs/php_codesniffer": "^3.11.3",
         "symfony/browser-kit": "7.2.*",
         "symfony/css-selector": "7.2.*",
-        "symfony/panther": "^2.1.1",
         "symfony/phpunit-bridge": "^7.2",
         "symfony/string": "7.2.*"
     },
@@ -94,11 +92,6 @@
             "@php vendor/bin/phpcs",
             "@php vendor/bin/phpstan analyse src tests",
             "@php vendor/bin/phpunit"
-        ],
-        "test-local": [
-            "@php vendor/bin/phpunit --testsuite=unit",
-            "@php vendor/bin/phpunit --testsuite=integration",
-            "@php vendor/bin/phpunit --testsuite=functional"
         ],
         "fix": [
             "@php vendor/bin/phpcbf || true",

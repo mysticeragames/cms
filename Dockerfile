@@ -152,7 +152,6 @@ FROM minimal AS final_test
 RUN apk add --no-cache \
     php${PHP_VERSION_SHORT}-pecl-xdebug \
     php${PHP_VERSION_SHORT}-phar
-    #chromium-chromedriver
 
 # Use test config
 COPY .docker/test/99-xdebug.ini ${PHP_INI_DIR}/conf.d/99-xdebug.ini
