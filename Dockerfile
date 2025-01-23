@@ -48,6 +48,7 @@ RUN apk add --no-cache \
     nginx \
     php${PHP_VERSION_SHORT} \
     php${PHP_VERSION_SHORT}-ctype \
+    php${PHP_VERSION_SHORT}-curl \
     php${PHP_VERSION_SHORT}-dom \
     php${PHP_VERSION_SHORT}-fpm \
     php${PHP_VERSION_SHORT}-iconv \
@@ -110,10 +111,6 @@ RUN composer install --prefer-dist --no-interaction --optimize-autoloader --no-p
 FROM build_prod AS build_test
 COPY --from=build_prod /var/www/html/vendor vendor
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-progress --no-scripts
-RUN apk add --no-cache \
-    php${PHP_VERSION_SHORT}-pecl-xdebug \
-    php${PHP_VERSION_SHORT}-phar \
-    chromium-chromedriver
 
 
 
@@ -140,8 +137,7 @@ RUN mkdir -p ./var/log ./var/cache && \
 USER ${APP_USER}
 EXPOSE 8250
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
-HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8250/fpm-ping || exit 1
-
+HEALTHCHECK --timeout=10s --interval=5s --start-interval=2s CMD curl --silent --fail http://127.0.0.1:8250/fpm-ping || exit 1
 
 
 
@@ -151,6 +147,11 @@ HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8250/fpm-pin
 ################################################################################
 
 FROM minimal AS final_test
+
+# Install packages
+RUN apk add --no-cache \
+    php${PHP_VERSION_SHORT}-pecl-xdebug \
+    php${PHP_VERSION_SHORT}-phar
 
 # Use test config
 COPY .docker/test/99-xdebug.ini ${PHP_INI_DIR}/conf.d/99-xdebug.ini
@@ -171,4 +172,4 @@ RUN mkdir -p ./var/log ./var/cache && \
 USER ${APP_USER}
 EXPOSE 8250
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
-HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8250/fpm-ping || exit 1
+HEALTHCHECK --timeout=10s --interval=5s --start-interval=2s CMD curl --silent --fail http://127.0.0.1:8250/fpm-ping || exit 1

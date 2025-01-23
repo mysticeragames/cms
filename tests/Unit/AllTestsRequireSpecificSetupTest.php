@@ -14,6 +14,7 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\String\UnicodeString;
 
 #[CoversNothing]
 class AllTestsRequireSpecificSetupTest extends TestCase
@@ -38,7 +39,7 @@ vendor/bin/phpunit --testsuite {{suite}} --filter {{filter}} testMyMethod
 EOD;
 
         foreach ($dirnames as $dirname) {
-            $suite = strtolower($dirname);
+            $suite = (new UnicodeString($dirname))->kebab();
 
             $fs = new Filesystem();
             $finder = new Finder();
