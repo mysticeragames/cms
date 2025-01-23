@@ -35,7 +35,7 @@ jobs:
     permissions:
       contents: read
 
-    env:
+    #env:
       # - Remove special characters in tag name with sed
       # - 2 images: prod/test (test has phpunit/chromedriver/etc) - push to a different repository (*-test) but using the same tag
       #IMAGE_DEV_PROD:     "${{ inputs.TARGET_IMAGE_PROD }}:dev-$( echo ${{ github.ref_name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
@@ -43,15 +43,15 @@ jobs:
       #IMAGE_RELEASE_PROD: "${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ github.event.release.name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
       #IMAGE_RELEASE_TEST: "${{ inputs.TARGET_IMAGE_TEST }}:$( echo ${{ github.event.release.name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
       
-      IMAGE_PROD: "${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
-      IMAGE_TEST: "${{ inputs.TARGET_IMAGE_TEST }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      #IMAGE_PROD: "${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      #IMAGE_TEST: "${{ inputs.TARGET_IMAGE_TEST }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
       #IMAGE_PROD_LATEST:  "${{ inputs.TARGET_IMAGE_PROD }}:latest"
       #IMAGE_TEST_LATEST:  "${{ inputs.TARGET_IMAGE_TEST }}:latest"
 
       # The build cache is used to cache Docker layers, used to speed up the build process.
       # If the image gets too big, it can be removed from Docker Hub,
       #   it will create a new cache automatically, the first build after removal will only be slower.
-      IMAGE_BUILD_CACHE:  "${{ inputs.TARGET_IMAGE_CACHE }}:cache-$( echo ${{ inputs.TARGET_IMAGE_CACHE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      #IMAGE_BUILD_CACHE:  "${{ inputs.TARGET_IMAGE_CACHE }}:cache-$( echo ${{ inputs.TARGET_IMAGE_CACHE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
 
     # outputs:
     #   abctest: ${{ steps.vars.outputs.ABC }}
@@ -64,18 +64,17 @@ jobs:
       id: vars
       run: |
         {
-          echo "IMAGE_PRODz=${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )" >> "$GITHUB_OUTPUT";
-          echo "IMAGE_TESTz=${{ inputs.TARGET_IMAGE_TEST }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )" >> "$GITHUB_OUTPUT";
-          echo "IMAGE_BUILD_CACHEz=${{ inputs.TARGET_IMAGE_CACHE }}:cache-$( echo ${{ inputs.TARGET_IMAGE_CACHE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )"
+          echo "IMAGE_PROD=${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )" >> "$GITHUB_OUTPUT";
+          echo "IMAGE_TEST=${{ inputs.TARGET_IMAGE_TEST }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )" >> "$GITHUB_OUTPUT";
+          echo "IMAGE_BUILD_CACHE=${{ inputs.TARGET_IMAGE_CACHE }}:cache-$( echo ${{ inputs.TARGET_IMAGE_CACHE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )"
         } >> "$GITHUB_OUTPUT"
 
     - name: Debug variables
-      env:
-        IMAGE_TESTz: ${{ steps.vars.outputs.IMAGE_TESTz }}
       run: |
-        echo "IMAGE_PRODz=${{ steps.vars.outputs.IMAGE_PRODz }}"
-        echo "IMAGE_TESTz=${{ env.IMAGE_TESTz }}"
-        asdf
+        echo "IMAGE_PROD=${{ steps.vars.outputs.IMAGE_PROD }}"
+        echo "IMAGE_TEST=${{ steps.vars.outputs.IMAGE_TEST }}"
+        echo "IMAGE_BUILD_CACHE=${{ steps.vars.outputs.IMAGE_BUILD_CACHE }}"
+
 
       # Use a hash (commit) and not a short release-version to make sure it has not been tampered with
       # Release versions can easily be removed and re-uploaded. Hashes not so easily...
@@ -100,11 +99,11 @@ jobs:
       with:
         push: true
         target: final_test
-        tags: ${{ env.IMAGE_TEST }}
+        tags: ${{ steps.vars.outputs.IMAGE_TEST }}
         platforms: linux/amd64,linux/arm64
         cache-from: |
-          type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-test_linux_amd64
-          type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-test_linux_arm64
+          type=registry,ref=${{ steps.vars.outputs.IMAGE_BUILD_CACHE }}-test_linux_amd64
+          type=registry,ref=${{ steps.vars.outputs.IMAGE_BUILD_CACHE }}-test_linux_arm64
 
 
     - name: Cache test image (linux/amd64)
@@ -112,28 +111,28 @@ jobs:
       with:
         load: true
         target: final_test
-        tags: ${{ env.IMAGE_TEST }}
+        tags: ${{ steps.vars.outputs.IMAGE_TEST }}
         platforms: linux/amd64
-        cache-from: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-test_linux_amd64
-        cache-to: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-test_linux_amd64,mode=max
+        cache-from: type=registry,ref=${{ steps.vars.outputs.IMAGE_BUILD_CACHE }}-test_linux_amd64
+        cache-to: type=registry,ref=${{ steps.vars.outputs.IMAGE_BUILD_CACHE }}-test_linux_amd64,mode=max
 
     - name: Cache test image (linux/arm64)
       uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d # https://github.com/docker/build-push-action/releases/tag/v6.12.0
       with:
         load: true
         target: final_test
-        tags: ${{ env.IMAGE_TEST }}
+        tags: ${{ steps.vars.outputs.IMAGE_TEST }}
         platforms: linux/arm64
-        cache-from: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-test_linux_arm64
-        cache-to: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}-test_linux_arm64,mode=max
+        cache-from: type=registry,ref=${{ steps.vars.outputs.IMAGE_BUILD_CACHE }}-test_linux_arm64
+        cache-to: type=registry,ref=${{ steps.vars.outputs.IMAGE_BUILD_CACHE }}-test_linux_arm64,mode=max
 
 
     - name: Run tests (linux/amd64)
       run: |
         docker images
-        docker run --rm ${{ env.IMAGE_TEST }} vendor/bin/phpcs
-        docker run --rm ${{ env.IMAGE_TEST }} vendor/bin/phpstan --memory-limit=512M analyse src tests
-        docker run --rm ${{ env.IMAGE_TEST }} vendor/bin/phpunit
+        docker run --rm ${{ steps.vars.outputs.IMAGE_TEST }} vendor/bin/phpcs
+        docker run --rm ${{ steps.vars.outputs.IMAGE_TEST }} vendor/bin/phpstan --memory-limit=512M analyse src tests
+        docker run --rm ${{ steps.vars.outputs.IMAGE_TEST }} vendor/bin/phpunit
 
 
     # - if: ${{ inputs.DOCKER_PUSH == 1 }}
