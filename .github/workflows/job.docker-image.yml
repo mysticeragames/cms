@@ -129,10 +129,10 @@ jobs:
 
     - name: Run tests (linux/amd64)
       run: |
-        docker images
-        docker run --rm ${{ steps.vars.outputs.IMAGE_TEST }} vendor/bin/phpcs
-        docker run --rm ${{ steps.vars.outputs.IMAGE_TEST }} vendor/bin/phpstan --memory-limit=512M analyse src tests
-        docker run --rm ${{ steps.vars.outputs.IMAGE_TEST }} vendor/bin/phpunit
+        docker images ${{ steps.vars.outputs.IMAGE_TEST }}
+        docker run --rm --platform linux/amd64 ${{ steps.vars.outputs.IMAGE_TEST }} vendor/bin/phpcs
+        docker run --rm --platform linux/amd64 ${{ steps.vars.outputs.IMAGE_TEST }} vendor/bin/phpstan --memory-limit=512M analyse src tests
+        docker run --rm --platform linux/amd64 ${{ steps.vars.outputs.IMAGE_TEST }} vendor/bin/phpunit
 
 
     # - if: ${{ inputs.DOCKER_PUSH == 1 }}
