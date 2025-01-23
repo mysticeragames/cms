@@ -27,23 +27,21 @@ jobs:
       contents: read
 
     env:
-      # Remove special characters in tag name
-      IMAGE_DEV: "${{ inputs.TARGET_IMAGE }}:dev-$( echo ${{ github.ref_name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
-      IMAGE_RELEASE: "${{ inputs.TARGET_IMAGE }}:$( echo ${{ github.event.release.name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
-      IMAGE_LATEST: "${{ inputs.TARGET_IMAGE }}:latest"
+      # - Remove special characters in tag name with sed
+      # - 2 images: prod/test (test has phpunit/chromedriver/etc) - push to a different repository (*-test) but using the same tag
+      IMAGE_DEV_PROD:          "${{ inputs.TARGET_IMAGE }}:dev-$( echo ${{ github.ref_name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      IMAGE_DEV_TEST:     "${{ inputs.TARGET_IMAGE }}-test:dev-$( echo ${{ github.ref_name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      IMAGE_RELEASE_PROD:      "${{ inputs.TARGET_IMAGE }}:$( echo ${{ github.event.release.name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      IMAGE_RELEASE_TEST: "${{ inputs.TARGET_IMAGE }}-test:$( echo ${{ github.event.release.name }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+      IMAGE_LATEST_PROD:       "${{ inputs.TARGET_IMAGE }}:latest"
+      IMAGE_LATEST_TEST:  "${{ inputs.TARGET_IMAGE }}-test:latest"
 
+      # The build cache is used to cache Docker layers, used to speed up the build process.
+      # If the image gets too big, it can be removed from Docker Hub,
+      #   it will create a new cache automatically, the first build after removal will only be slower.
+      IMAGE_BUILD_CACHE:  "${{ inputs.TARGET_IMAGE }}-buildcache:latest"
     steps:
 
-    - name: Slug
-      uses: rlespinasse/github-slug-action@aba9f8db6ef36e0733227a62673d6592b1f430ea # https://github.com/rlespinasse/github-slug-action/releases/tag/v5.0.0
-
-    - name: Debug
-      run: |
-        echo "github.ref_name=${{ github.ref_name }}"
-        echo "github.event.release.name=${{ github.event.release.name }}"
-        echo "env.IMAGE_DEV=${{ env.IMAGE_DEV }}"
-        echo "env.IMAGE_RELEASE=${{ env.IMAGE_RELEASE }}"
-        echo "env.IMAGE_LATEST=${{ env.IMAGE_LATEST }}"
 
       # Use a hash (commit) and not a short release-version to make sure it has not been tampered with
       # Release versions can easily be removed and re-uploaded. Hashes not so easily...
@@ -58,6 +56,7 @@ jobs:
         username: ${{ inputs.DOCKERHUB_USER }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@6524bf65af31da8d45b59e8c27de4bd072b392f5 # https://github.com/docker/setup-buildx-action/releases/tag/v3.8.0
 
@@ -68,8 +67,8 @@ jobs:
         load: true
         target: final_test
         tags: local/docker/image:test
-        cache-from: type=registry,ref=${{ inputs.TARGET_IMAGE }}-buildcache:latest
-        cache-to: type=registry,ref=${{ inputs.TARGET_IMAGE }}-buildcache:latest,mode=max
+        cache-from: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}
+        cache-to: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }},mode=max
 
 
     - name: Run tests
@@ -79,29 +78,36 @@ jobs:
         docker run --rm local/docker/image:test vendor/bin/phpunit
 
 
-    - if: ${{ inputs.DOCKER_PUSH_DEV == 'yes' || inputs.DOCKER_PUSH_RELEASE == 'yes' }}
+    - if: ${{ inputs.DOCKER_PUSH_DEV == 1 || inputs.DOCKER_PUSH_RELEASE == 1 }}
       name: Build production image
       uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d # https://github.com/docker/build-push-action/releases/tag/v6.12.0
       with:
         load: true
         target: final_prod
-        tags: local/docker/image:build
-        cache-from: type=registry,ref=${{ inputs.TARGET_IMAGE }}-buildcache:latest
-        cache-to: type=registry,ref=${{ inputs.TARGET_IMAGE }}-buildcache:latest,mode=max
+        tags: local/docker/image:prod
+        cache-from: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }}
+        cache-to: type=registry,ref=${{ env.IMAGE_BUILD_CACHE }},mode=max
 
 
-    - if: ${{ inputs.DOCKER_PUSH_DEV == 'yes' }}
-      name: Docker push dev
+    - if: ${{ inputs.DOCKER_PUSH_DEV == 1 }}
+      name: Docker push developer image
       run: |
-        docker tag local/docker/image:build ${{ env.IMAGE_DEV }}
-        docker push ${{ env.IMAGE_DEV }}
+        docker tag local/docker/image:prod ${{ env.IMAGE_DEV_PROD }}
+        docker push ${{ env.IMAGE_DEV_PROD }}
+
+        docker tag local/docker/image:test ${{ env.IMAGE_DEV_TEST }}
+        docker push ${{ env.IMAGE_DEV_TEST }}
 
 
-    - if: ${{ inputs.DOCKER_PUSH_RELEASE == 'yes' }}
+    - if: ${{ inputs.DOCKER_PUSH_RELEASE == 1 }}
       name: Docker push release + latest
       run: |
-        docker tag local/docker/image:build ${{ env.IMAGE_RELEASE }}
-        docker push ${{ env.IMAGE_RELEASE }}
-
-        docker tag local/docker/image:build ${{ env.IMAGE_LATEST }}
-        docker push ${{ env.IMAGE_LATEST }}
+        docker tag local/docker/image:prod ${{ env.IMAGE_RELEASE_PROD }}
+        docker tag local/docker/image:prod ${{ env.IMAGE_LATEST_PROD }}
+        docker push ${{ env.IMAGE_RELEASE_PROD }}
+        docker push ${{ env.IMAGE_LATEST_PROD }}
+        
+        docker tag local/docker/image:test ${{ env.IMAGE_RELEASE_TEST }}
+        docker tag local/docker/image:test ${{ env.IMAGE_LATEST_TEST }}
+        docker push ${{ env.IMAGE_RELEASE_TEST }}
+        docker push ${{ env.IMAGE_LATEST_TEST }}
