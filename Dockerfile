@@ -48,6 +48,7 @@ RUN apk add --no-cache \
     nginx \
     php${PHP_VERSION_SHORT} \
     php${PHP_VERSION_SHORT}-ctype \
+    php${PHP_VERSION_SHORT}-curl \
     php${PHP_VERSION_SHORT}-dom \
     php${PHP_VERSION_SHORT}-fpm \
     php${PHP_VERSION_SHORT}-iconv \
