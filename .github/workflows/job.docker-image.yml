@@ -108,10 +108,10 @@ jobs:
         timeout 15s sh -c 'until docker ps | grep -w running_test_container | grep -q healthy; do echo "Waiting for container to be healthy..."; sleep 1; done'
 
         # try to see if the container is really serving the CMS (otherwise try to remove the container, and exit with errorcode 1)
-        curl --silent http://localhost:8250 | grep "<h1>CMS</h1>" || (docker rm running_test_container --force; exit 1)
+        curl --silent http://localhost:8250 | grep "<h1>CMzS</h1>" || (docker rm running_test_container --force; exit 1)
 
         # stop/remove the container
-        docker rm testcontainer --force
+        docker rm running_test_container --force
 
 
     - if: ${{ inputs.DOCKER_PUSH == 1 && inputs.DOCKER_PUSH_LATEST != 1 }}
