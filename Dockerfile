@@ -16,9 +16,8 @@
 # run phpstan:      docker run --rm -it mysticeragames/local:final_test php vendor/bin/phpstan --memory-limit=512M analyse src tests
 # run phpunit:      docker run --rm -it mysticeragames/local:final_test php vendor/bin/phpunit
 
-# run phpunit:      docker run --rm -it mysticeragames/local:final_test composer test
-# run test image:   docker run --rm -it -p 8080:8080 mysticeragames/local:final_test
-# run production:   docker run --rm -it -p 8080:8080 mysticeragames/local:final_prod
+# run test image:   docker run --rm -it -p 8250:8250 mysticeragames/local:final_test
+# run production:   docker run --rm -it -p 8250:8250 mysticeragames/local:final_prod
 # remove all:       docker rmi $(docker images -q mysticeragames/local:*)
 
 ################################################################################
@@ -29,14 +28,18 @@
 FROM alpine:3.21.2 AS minimal
 
 # Set the php version (short format: 84)
-ENV PHP_VERSION_SHORT=84
+ARG PHP_VERSION_SHORT=84
+
+# Set the internal user/group
+ARG APP_USER=appuser
+ARG APP_GROUP=appgroup
 
 # Set workdir
 WORKDIR /var/www/html
 
 # Add user with home dir (for git, that will be used to handle repositories)
-RUN addgroup -g 1000 appgroup && \
-    adduser -D -G appgroup -u 1000 -h /home/appuser -s /bin/sh appuser
+RUN addgroup -g 1112 ${APP_GROUP} && \
+    adduser -D -G ${APP_GROUP} -u 1111 -h /home/${APP_USER} -s /bin/sh ${APP_USER}
 
 # Install packages
 RUN apk add --no-cache \
@@ -71,7 +74,7 @@ COPY .docker/nginx.conf /etc/nginx/nginx.conf
 COPY .docker/conf.d /etc/nginx/conf.d/
 
 # PHP
-ENV PHP_INI_DIR=/etc/php${PHP_VERSION_SHORT}
+ARG PHP_INI_DIR=/etc/php${PHP_VERSION_SHORT}
 COPY .docker/fpm-pool.conf ${PHP_INI_DIR}/php-fpm.d/www.conf
 COPY .docker/php.ini ${PHP_INI_DIR}/conf.d/custom.ini
 RUN if [ ! -f /usr/bin/php ]; then ln -s /usr/bin/php${PHP_VERSION_SHORT} /usr/bin/php; fi
@@ -81,7 +84,7 @@ COPY .docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN sed -i "s/php-fpm___VERSION___/php-fpm${PHP_VERSION_SHORT}/g" /etc/supervisor/conf.d/supervisord.conf
 
 # Set permissions
-RUN chown -R appuser:appgroup /var/www/html /run /var/lib/nginx /var/log/nginx
+RUN chown -R ${APP_USER}:${APP_GROUP} /var/www/html /run /var/lib/nginx /var/log/nginx
 
 
 # TODO:   RUN composer run post-create-project-cmd
@@ -122,22 +125,22 @@ RUN apk add --no-cache \
 FROM minimal AS final_prod
 
 # Copy all source files
-COPY --chown=appuser:appgroup . /var/www/html
+COPY --chown=${APP_USER}:${APP_GROUP} . /var/www/html
 
 # Copy all vendor files
-COPY --chown=appuser:appgroup --from=build_prod /var/www/html/vendor vendor
+COPY --chown=${APP_USER}:${APP_GROUP} --from=build_prod /var/www/html/vendor vendor
 
 # Make sure it runs in production mode
 RUN echo -e "APP_ENV=prod\nAPP_SECRET=" > /var/www/html/.env.local
 
 # Setup directories and file permissions https://symfony.com/doc/current/setup/file_permissions.html
 RUN mkdir -p ./var/log ./var/cache && \
-    chown -R appuser:appgroup ./var
+    chown -R ${APP_USER}:${APP_GROUP} ./var ./.env.local
 
-USER appuser
-EXPOSE 8080
+USER ${APP_USER}
+EXPOSE 8250
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
-HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8080/fpm-ping || exit 1
+HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8250/fpm-ping || exit 1
 
 
 
@@ -153,19 +156,19 @@ FROM minimal AS final_test
 COPY .docker/test/99-xdebug.ini ${PHP_INI_DIR}/conf.d/99-xdebug.ini
 
 # Copy all source files
-COPY --chown=appuser:appgroup . /var/www/html
+COPY --chown=${APP_USER}:${APP_GROUP} . /var/www/html
 
 # Copy all vendor files
-COPY --chown=appuser:appgroup --from=build_test /var/www/html/vendor vendor
+COPY --chown=${APP_USER}:${APP_GROUP} --from=build_test /var/www/html/vendor vendor
 
 # Make sure it runs in test mode
 COPY .env.test .env.local
 
 # Setup directories and file permissions https://symfony.com/doc/current/setup/file_permissions.html
 RUN mkdir -p ./var/log ./var/cache && \
-    chown -R appuser:appgroup ./var
+    chown -R ${APP_USER}:${APP_GROUP} ./var ./.env.local
 
-USER appuser
-EXPOSE 8081
+USER ${APP_USER}
+EXPOSE 8250
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
-HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8080/fpm-ping || exit 1
+HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8250/fpm-ping || exit 1

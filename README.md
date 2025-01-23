@@ -1,55 +1,65 @@
 # **MakeIt***Static*-CMS
 
-Flat-File CMS with Static Site Generator
+Open source Flat-File CMS with Static Site Generator
 
+[![GitHub Release](https://img.shields.io/github/v/release/mysticeragames/MakeItStatic-CMS)](https://github.com/mysticeragames/MakeItStatic-CMS/releases/latest)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mysticeragames/MakeItStatic-CMS/trigger.release.yml)](https://github.com/mysticeragames/MakeItStatic-CMS/actions/workflows/trigger.release.yml)
 [![GitHub Release Date](https://img.shields.io/github/release-date/mysticeragames/makeitstatic-cms)
 ](https://github.com/mysticeragames/MakeItStatic-CMS/releases/latest)
-[![GitHub Release](https://img.shields.io/github/v/release/mysticeragames/MakeItStatic-CMS)](https://github.com/mysticeragames/MakeItStatic-CMS/releases/latest)
 [![Docker Image Size](https://img.shields.io/docker/image-size/mysticeragames/makeitstatic-cms)](https://hub.docker.com/r/mysticeragames/makeitstatic-cms/tags)
 [![Docker Pulls](https://img.shields.io/docker/pulls/mysticeragames/makeitstatic-cms)](https://hub.docker.com/r/mysticeragames/makeitstatic-cms/tags)
-![GitHub License](https://img.shields.io/github/license/mysticeragames/makeitstatic-cms)
+[![GitHub License](https://img.shields.io/github/license/mysticeragames/makeitstatic-cms)](https://github.com/mysticeragames/MakeItStatic-CMS#MIT-1-ov-file)
 
-### Development
+---
 
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mysticeragames/MakeItStatic-CMS/trigger.main.yml?branch=main&label=build%20(dev-main))](https://github.com/mysticeragames/MakeItStatic-CMS/actions/workflows/trigger.main.yml)
-[![GitHub commits since latest release (branch)](https://img.shields.io/github/commits-since/mysticeragames/makeitstatic-cms/latest/main)](https://github.com/mysticeragames/MakeItStatic-CMS/commits/main/)
+# *WORK IN PROGRESS!*
 
-## *WORK IN PROGRESS!*
+## Requirements:
 
-# Docker
+- [**Local Docker installation**](https://docs.docker.com/get-started/get-docker/) to run the CMS ([hub.docker.com/r/mysticeragames/makeitstatic-cms](https://hub.docker.com/r/mysticeragames/makeitstatic-cms/tags))
+- **GIT repositories** with SSH-key access, to store text content (for example [Github](https://github.com) or [Gitlab](https://gitlab.com))
+- **S3 storage** (optional) for larger assets like images or videos (for example [DigitalOcean Spaces](https://www.digitalocean.com/products/spaces) or [Amazon S3](https://aws.amazon.com/s3/))
 
-## Initial setup
+## Notes
+- This CMS is intended to run on your local machine, it has no concept of 'cms-users'. You only authenticate against your own remote repositories and storage, so it's still possible to have multiple members in one GIT repository to support multiple users. The content is stored remotely on every save, so you can safely destroy your CMS container and spin up a new container when needed.
+
+## Spin up a new CMS
 
 ```bash
-# Create volume for content
-docker volume create makeitstatic-cms-content
+docker run -d --rm \
+    -p 8250:8250 \
+    -v ~/.ssh:/home/appuser/.ssh:ro \
+    --pull always \
+    --name makeitstatic-cms \
+    mysticeragames/makeitstatic-cms
 ```
 
-## Run latest CMS
+- Navigate to your CMS, connect your GIT repositories and start working:
+- **http://localhost:8100**
+
+## Done? Destroy the container
 
 ```bash
-# Pull latest version
-docker pull mysticeragames/makeitstatic-cms:latest
-
-# Run the CMS
-docker run -d -v makeitstatic-cms-content:/var/www/html/content --name makeitstatic-cms --restart unless-stopped -p 8000:8080 mysticeragames/makeitstatic-cms:latest
-```
-
-- http://localhost:8000
-
-## Update CMS
-
-```bash
-# Stop and remove your running container (your content will still be in the volume)
 docker rm makeitstatic-cms --force
-
-# Now re-run the commands above again (Run latest CMS)
 ```
+
+## Development
+
+[![GitHub commits since latest release (branch)](https://img.shields.io/github/commits-since/mysticeragames/makeitstatic-cms/latest/main)](https://github.com/mysticeragames/MakeItStatic-CMS/commits/main/)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/mysticeragames/MakeItStatic-CMS/trigger.main.yml?branch=main&label=build%20(dev-main))](https://github.com/mysticeragames/MakeItStatic-CMS/actions/workflows/trigger.main.yml)
+[![Docker Image Size](https://img.shields.io/docker/image-size/mysticeragames/makeitstatic-cms-test?label=image%20size%20(test))](https://hub.docker.com/r/mysticeragames/makeitstatic-cms-test/tags)
+[![Docker Pulls](https://img.shields.io/docker/pulls/mysticeragames/makeitstatic-cms-test?label=docker%20pulls%20(test))](https://hub.docker.com/r/mysticeragames/makeitstatic-cms-test/tags)
+[![Docker Image Size](https://img.shields.io/docker/image-size/mysticeragames/makeitstatic-cms-buildcache?label=buildcache)](https://hub.docker.com/r/mysticeragames/makeitstatic-cms-buildcache/tags)
+[![Docker Pulls](https://img.shields.io/docker/pulls/mysticeragames/makeitstatic-cms-buildcache?label=buildcache%20pulls)](https://hub.docker.com/r/mysticeragames/makeitstatic-cms-buildcache/tags)
+
+- [hub.docker.com/r/mysticeragames/makeitstatic-cms/tags?name=dev-main](https://hub.docker.com/r/mysticeragames/makeitstatic-cms/tags?name=dev-main)
 
 ### Other Docker commands
 
 ```bash
+# Shell access
+docker exec -it makeitstatic-cms sh
+
 # Show status
 docker ps -a -f "name=makeitstatic-cms"
 
@@ -129,8 +139,8 @@ symfony server:start
 
 |  |  |
 | ---- | --- |
-| Website   | http://localhost:8000 |
-| CMS       | http://localhost:8000/---cms |
+| Website   | http://localhost:8250 |
+| CMS       | http://localhost:8250/---cms |
 
 ```bash
 php bin/console site
@@ -165,7 +175,7 @@ Idea/TODO: The content + generated files are attached as git-submodule repositor
 ```bash
 # Normal usage
 docker pull mysticeragames/makeitstatic-cms:latest  # pull latest version
-docker run -d --name cms --restart unless-stopped -p 8000:8080 mysticeragames/makeitstatic-cms:latest  # start container
+docker run -d --name cms --restart unless-stopped -p 8250:8250 mysticeragames/makeitstatic-cms:latest  # start container
 docker exec cms sh -c "mkdir -p ./content && cp -r ./src/Demo/Content/Full/* ./content" # Copy demo content
 docker exec -t cms php bin/console site # CMS commands
 docker stop cms  # stop container
@@ -179,7 +189,7 @@ docker run --rm -it mysticeragames/makeitstatic-cms:latest npm -v
 docker run --rm -it mysticeragames/makeitstatic-cms:latest sh
 
 # Debug run
-docker run --rm --name cms -p 8000:8080 mysticeragames/makeitstatic-cms:latest
+docker run --rm --name cms -p 8250:8250 mysticeragames/makeitstatic-cms:latest
 
 
 docker exec cms sh -c 'echo -e "APP_ENV=dev\nAPP_SECRET=" > /var/www/html/.env.local && php bin/console cache:clear && /usr/sbin/nginx -s reload' # set env to dev
@@ -192,8 +202,8 @@ docker exec cms tail /var/log/nginx/project_access.log -n 5
 docker exec cms tail /var/log/nginx/project_error.log -n 5
 ```
 
-- http://localhost:8000
-- http://localhost:8000/---cms
+- http://localhost:8250
+- http://localhost:8250/---cms
 
 ```bash
 # Build new image
@@ -202,7 +212,7 @@ docker build -t mysticeragames/makeitstatic-cms:latest .
 # docker push mysticeragames/makeitstatic-cms:latest   # push to repo (TODO: make Github Action that takes the Release version as tag)
 
 # DEVELOPMENT MODE: Mount local folder (including all the CMS files - note: use APP_ENV=prod to avoid messages)
-docker run --rm --name makeitstatic-cms -p 8000:8080 -v $(pwd):/var/www/html mysticeragames/makeitstatic-cms:latest
+docker run --rm --name makeitstatic-cms -p 8250:8250 -v $(pwd):/var/www/html mysticeragames/makeitstatic-cms:latest
 
 
 ### TODO / idea:
