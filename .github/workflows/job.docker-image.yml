@@ -95,15 +95,24 @@ jobs:
 
     - name: Run tests (linux/amd64)
       #id: tests
+      timeout-minutes: 5
       run: |
         docker images ${{ steps.vars.outputs.IMAGE_TEST }}
         docker run --rm --platform linux/amd64 ${{ steps.vars.outputs.IMAGE_TEST }} php vendor/bin/phpcs
         docker run --rm --platform linux/amd64 ${{ steps.vars.outputs.IMAGE_TEST }} php vendor/bin/phpstan --memory-limit=512M analyse src tests
         docker run --rm --platform linux/amd64 ${{ steps.vars.outputs.IMAGE_TEST }} php vendor/bin/phpunit
 
+        # run a detached container
         docker run --rm --platform linux/amd64 -d --name test -p 8250:8250 ${{ steps.vars.outputs.IMAGE_TEST }}
-        docker run --rm --platform linux/amd64 ${{ steps.vars.outputs.IMAGE_TEST }}
+        
+        # wait until container is healthy
+        timeout 10s sh -c 'until docker ps | grep -w 'test' | grep -q healthy; do echo "Waiting for container to be healthy..."; sleep 1; done'
+        sleep 1
+
+        # try to see if it's available
         curl --silent http://localhost:8250 | grep "<h1>CMS</h1>" || (docker rm test --force; exit 1)
+
+        # destroy the container
         docker rm test --force
 
     # - name: On test failure - Push test environment (for local testing)
