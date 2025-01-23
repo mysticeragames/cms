@@ -53,30 +53,31 @@ jobs:
       #   it will create a new cache automatically, the first build after removal will only be slower.
       IMAGE_BUILD_CACHE:  "${{ inputs.TARGET_IMAGE_CACHE }}:cache-$( echo ${{ inputs.TARGET_IMAGE_CACHE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
 
-    outputs:
-      abctest: ${{ steps.vars.outputs.ABC }}
-      imgprod: ${{ steps.vars.outputs.PROD }}
-      imgtest: ${{ steps.vars.outputs.TEST }}
+    # outputs:
+    #   abctest: ${{ steps.vars.outputs.ABC }}
+    #   imgprod: ${{ steps.vars.outputs.PROD }}
+    #   imgtest: ${{ steps.vars.outputs.TEST }}
 
     steps:
 
     - name: Set variables
       id: vars
       run: |
-        echo "ABC=46/MyTe-st_528" >> "$GITHUB_OUTPUT"
+        echo "ABC2=46/MyTe-st_528" >> "$GITHUB_OUTPUT"
         ABC="46/MyTe-st _528"
         echo "PROD=${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )" >> "$GITHUB_OUTPUT"
         echo "TEST=${{ inputs.TARGET_IMAGE_PROD }}:$( echo "${ABC}" | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )" >> "$GITHUB_OUTPUT"
   
     - name: Debug variables
       env:
-        AAA: ${{ steps.vars.outputs.abctest }}
+        ABC2: ${{ steps.vars.outputs.ABC2 }}
         PPP: ${{ steps.vars.outputs.imgprod }}
-        zz: ${{ steps.vars.outputs.imgtest }}
+        PROD2: ${{ steps.vars.outputs.PROD }}
+        TEST: ${{ steps.vars.outputs.TEST }}
       run: |
-        echo ${{ env.AAA }}
-        echo "${{ env.PPP }}"
-        echo "${{ env.zz }}"
+        echo ${{ env.ABC2 }}
+        echo "${{ env.PROD2 }}"
+        echo "${{ env.TEST }}"
         asdf
 
       # Use a hash (commit) and not a short release-version to make sure it has not been tampered with
