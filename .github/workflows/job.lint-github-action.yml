@@ -3,6 +3,9 @@ name: '[job] Lint github action'
 on:
   workflow_call:
 
+# lint locally:
+# docker run --rm -v $(pwd):/repo --workdir /repo rhysd/actionlint:latest -color
+
 jobs:
   lint:
     name: Lint github action
@@ -29,5 +32,3 @@ jobs:
     - name: Check workflow files
       run: ${{ steps.get_actionlint.outputs.executable }} -color
       shell: bash
-
-    # lint locally: docker run --rm -v $(pwd):/repo --workdir /repo rhysd/actionlint:latest -color

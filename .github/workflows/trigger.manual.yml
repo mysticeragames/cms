@@ -13,7 +13,5 @@ jobs:
     with:
       DOCKER_PUSH_DEV: 1
       DOCKER_PUSH_RELEASE: 0
-      TARGET_IMAGE: mysticeragames/makeitstatic-cms
-      DOCKERHUB_USER: rboonzaijer
     secrets:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
