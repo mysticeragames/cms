@@ -44,9 +44,9 @@ jobs:
       # Remove special characters in tag name with sed
       run: |
         {
-          echo "IMAGE_PROD=${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )" >> "$GITHUB_OUTPUT";
-          echo "IMAGE_PROD_LATEST=${{ inputs.TARGET_IMAGE_PROD }}:latest" >> "$GITHUB_OUTPUT";
-          echo "IMAGE_TEST=${{ inputs.TARGET_IMAGE_TEST }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )" >> "$GITHUB_OUTPUT";
+          echo "IMAGE_PROD=${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )";
+          echo "IMAGE_PROD_LATEST=${{ inputs.TARGET_IMAGE_PROD }}:latest";
+          echo "IMAGE_TEST=${{ inputs.TARGET_IMAGE_TEST }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )";
           echo "IMAGE_BUILD_CACHE=${{ inputs.TARGET_IMAGE_CACHE }}:cache"
         } >> "$GITHUB_OUTPUT"
 
