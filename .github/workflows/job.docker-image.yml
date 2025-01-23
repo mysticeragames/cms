@@ -63,21 +63,19 @@ jobs:
     - name: Set variables
       id: vars
       run: |
-        echo "ABC2=46/MyTe-st_528" >> "$GITHUB_OUTPUT"
-        ABC="46/MyTe-st _528"
-        echo "PROD=${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )" >> "$GITHUB_OUTPUT"
-        echo "TEST=${{ inputs.TARGET_IMAGE_PROD }}:$( echo "${ABC}" | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )" >> "$GITHUB_OUTPUT"
-  
+        {
+          echo "IMAGE_PROD=${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )" >> "$GITHUB_OUTPUT";
+          echo "IMAGE_TEST=${{ inputs.TARGET_IMAGE_TEST }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )" >> "$GITHUB_OUTPUT";
+          echo "IMAGE_BUILD_CACHE=${{ inputs.TARGET_IMAGE_CACHE }}:cache-$( echo ${{ inputs.TARGET_IMAGE_CACHE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )"
+        } >> "$GITHUB_OUTPUT"
+
     - name: Debug variables
       env:
-        ABC2: ${{ steps.vars.outputs.ABC2 }}
-        PPP: ${{ steps.vars.outputs.imgprod }}
-        PROD2: ${{ steps.vars.outputs.PROD }}
-        TEST: ${{ steps.vars.outputs.TEST }}
+        IMAGE_TEST: ${{ steps.vars.outputs.IMAGE_TEST }}
+        IMAGE_BUILD_CACHE: ${{ steps.vars.outputs.IMAGE_BUILD_CACHE }}
       run: |
-        echo ${{ env.ABC2 }}
-        echo "${{ env.PROD2 }}"
-        echo "${{ env.TEST }}"
+        echo "IMAGE_PROD=${{ steps.vars.outputs.IMAGE_PROD }}"
+        echo "IMAGE_TEST=${{ env.IMAGE_TEST }}"
         asdf
 
       # Use a hash (commit) and not a short release-version to make sure it has not been tampered with
