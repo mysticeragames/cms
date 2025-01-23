@@ -46,8 +46,7 @@ jobs:
         {
           echo "IMAGE_PROD=${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )";
           echo "IMAGE_PROD_LATEST=${{ inputs.TARGET_IMAGE_PROD }}:latest";
-          # echo "IMAGE_TEST=${{ inputs.TARGET_IMAGE_TEST }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )";
-          echo "IMAGE_TEST=local/docker/build:test";
+          echo "IMAGE_TEST=${{ inputs.TARGET_IMAGE_TEST }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )";
           echo "IMAGE_BUILD_CACHE=${{ inputs.TARGET_IMAGE_CACHE }}:cache"
         } >> "$GITHUB_OUTPUT"
 
@@ -95,12 +94,23 @@ jobs:
 
 
     - name: Run tests (linux/amd64)
+      id: tests
       run: |
         docker images ${{ steps.vars.outputs.IMAGE_TEST }}
-        docker run --rm --platform linux/amd64 ${{ steps.vars.outputs.IMAGE_TEST }} vendor/bin/phpcs
-        docker run --rm --platform linux/amd64 ${{ steps.vars.outputs.IMAGE_TEST }} vendor/bin/phpstan --memory-limit=512M analyse src tests
-        docker run --rm --platform linux/amd64 ${{ steps.vars.outputs.IMAGE_TEST }} vendor/bin/phpunit
+        docker run --rm --platform linux/amd64 ${{ steps.vars.outputs.IMAGE_TEST }} php vendor/bin/phpcs
+        docker run --rm --platform linux/amd64 ${{ steps.vars.outputs.IMAGE_TEST }} php vendor/bin/phpstan --memory-limit=512M analyse src tests
+        docker run --rm --platform linux/amd64 ${{ steps.vars.outputs.IMAGE_TEST }} php vendor/bin/phpunit
 
+
+    - name: On test failure - Push test environment (for local testing)
+      if: failure() && steps.tests.outcome == 'failure'
+      uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d # https://github.com/docker/build-push-action/releases/tag/v6.12.0
+      with:
+        push: true
+        target: final_test
+        tags: ${{ steps.vars.outputs.IMAGE_TEST }}
+        platforms: linux/amd64
+        cache-from: type=registry,ref=${{ steps.vars.outputs.IMAGE_BUILD_CACHE }}-test_linux_amd64
 
 
     - if: ${{ inputs.DOCKER_PUSH == 1 && inputs.DOCKER_PUSH_LATEST != 1 }}
