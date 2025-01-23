@@ -52,8 +52,32 @@ jobs:
       # If the image gets too big, it can be removed from Docker Hub,
       #   it will create a new cache automatically, the first build after removal will only be slower.
       IMAGE_BUILD_CACHE:  "${{ inputs.TARGET_IMAGE_CACHE }}:cache-$( echo ${{ inputs.TARGET_IMAGE_CACHE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' )"
+
+    outputs:
+      abctest: ${{ steps.vars.outputs.ABC }}
+      imgprod: ${{ steps.vars.outputs.PROD }}
+      imgtest: ${{ steps.vars.outputs.TEST }}
+
     steps:
 
+    - name: Set variables
+      id: vars
+      run: |
+        echo "ABC=46/MyTe-st_528" >> "$GITHUB_OUTPUT"
+        ABC="46/MyTe-st _528"
+        echo "PROD=${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )" >> "$GITHUB_OUTPUT"
+        echo "TEST=${{ inputs.TARGET_IMAGE_PROD }}:$( echo "${ABC}" | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )" >> "$GITHUB_OUTPUT"
+  
+    - name: Debug variables
+      env:
+        AAA: ${{ steps.vars.outputs.abctest }}
+        PPP: ${{ steps.vars.outputs.imgprod }}
+        zz: ${{ steps.vars.outputs.imgtest }}
+      run: |
+        echo ${{ env.AAA }}
+        echo "${{ env.PPP }}"
+        echo "${{ env.zz }}"
+        asdf
 
       # Use a hash (commit) and not a short release-version to make sure it has not been tampered with
       # Release versions can easily be removed and re-uploaded. Hashes not so easily...
