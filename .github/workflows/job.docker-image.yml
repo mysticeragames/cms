@@ -108,7 +108,7 @@ jobs:
         docker images ${{ steps.vars.outputs.IMAGE_TEST }}
         docker run --rm --platform linux/amd64 ${{ steps.vars.outputs.IMAGE_TEST }} vendor/bin/phpcs
         docker run --rm --platform linux/amd64 ${{ steps.vars.outputs.IMAGE_TEST }} vendor/bin/phpstan --memory-limit=512M analyse src tests
-        docker run --rm --platform linux/amd64 ${{ steps.vars.outputs.IMAGE_TEST }} vendor/bin/phpunit
+        docker run --rm --platform linux/amd64 ${{ steps.vars.outputs.IMAGE_TEST }} vendor/bin/bdi detect drivers && vendor/bin/phpunit
 
 
 
