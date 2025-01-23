@@ -13,6 +13,7 @@ jobs:
     with:
       DOCKER_PUSH_DEV: 0
       DOCKER_PUSH_RELEASE: 0
+      TARGET_IMAGE_CACHE_TAG: ${{ github.ref_name }}
     secrets:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
