@@ -19,11 +19,11 @@ on:
         type: string
         default: mysticeragames/makeitstatic-cms-dev
 
-      # The test-image doesn't need to be pushed, use it only for local testing
-      TARGET_IMAGE_TEST:
-        type: string
-        #default: mysticeragames/makeitstatic-cms-test
-        default: local/docker/build:test
+      # # The test-image doesn't need to be pushed, use it only for local testing
+      # TARGET_IMAGE_TEST:
+      #   type: string
+      #   #default: mysticeragames/makeitstatic-cms-test
+      #   default: local/docker/build
 
       # The build cache is used to cache Docker layers, used to speed up the build process
       TARGET_IMAGE_CACHE:
@@ -49,7 +49,7 @@ jobs:
         {
           echo "IMAGE_PROD=${{ inputs.TARGET_IMAGE_PROD }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )";
           echo "IMAGE_PROD_LATEST=${{ inputs.TARGET_IMAGE_PROD }}:latest";
-          echo "IMAGE_TEST=${{ inputs.TARGET_IMAGE_TEST }}:$( echo ${{ inputs.TARGET_IMAGE_TAG }} | sed 's|[^a-zA-Z0-9\\.\\-\\_]|-|g' | awk '{print tolower($0)}' )";
+          echo "IMAGE_TEST=local/docker/build:test";
           echo "IMAGE_BUILD_CACHE=${{ inputs.TARGET_IMAGE_CACHE }}:cache"
         } >> "$GITHUB_OUTPUT"
 
