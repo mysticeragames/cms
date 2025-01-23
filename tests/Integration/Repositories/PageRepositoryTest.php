@@ -13,10 +13,20 @@ use App\Helpers\DateHelper;
 use App\Repositories\PageRepository;
 use App\Tests\Base\BaseIntegrationTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversNothing;
 
-#[CoversClass(PageRepository::class)]
+##[CoversClass(PageRepository::class)]
+#[CoversNothing]
 class PageRepositoryTest extends BaseIntegrationTestCase
 {
+    protected PageRepository $pageRepository;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->pageRepository = self::getContainer()->get(PageRepository::class);
+    }
+
     public function testGetPages(): void
     {
         $pages = $this->pageRepository->getPages($this->getTestSiteName());

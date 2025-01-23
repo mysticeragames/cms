@@ -12,11 +12,13 @@ namespace App\Tests\Functional\Controller;
 use App\Controller\Cms\SiteController;
 use App\Tests\Base\BaseFunctionalTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use Symfony\Component\DomCrawler\Crawler;
 
 // https://symfony.com/doc/current/testing.html#application-tests
 
-#[CoversClass(SiteController::class)]
+##[CoversClass(SiteController::class)]
+#[CoversNothing]
 class SiteControllerTest extends BaseFunctionalTestCase
 {
     public function testIndex(): void
