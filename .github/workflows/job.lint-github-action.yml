@@ -4,7 +4,10 @@ on:
   workflow_call:
 
 # lint locally:
-# docker run --rm -v $(pwd):/repo --workdir /repo rhysd/actionlint:latest -color
+#   docker run --rm -v $(pwd):/repo --workdir /repo rhysd/actionlint:latest -color && echo "OK"
+
+# pull latest:
+#   docker run --rm --pull always -v $(pwd):/repo --workdir /repo rhysd/actionlint:latest -color && echo "OK"
 
 jobs:
   lint:

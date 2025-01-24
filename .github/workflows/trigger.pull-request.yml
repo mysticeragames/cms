@@ -8,8 +8,6 @@ on:
 jobs:
   docker-image:
     uses: ./.github/workflows/job.docker-image.yml
-    permissions:
-      contents: read
     with:
       DOCKER_PUSH: 0
     secrets:
@@ -17,5 +15,3 @@ jobs:
 
   lint-github-actions:
     uses: ./.github/workflows/job.lint-github-action.yml
-    permissions:
-      contents: read
