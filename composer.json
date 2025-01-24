@@ -94,8 +94,7 @@
             "@php vendor/bin/phpunit"
         ],
         "fix": [
-            "@php vendor/bin/phpcbf || true",
-            "composer test"
+            "@php vendor/bin/phpcbf || true"
         ],
         "git-prune": [
             "git branch -a",

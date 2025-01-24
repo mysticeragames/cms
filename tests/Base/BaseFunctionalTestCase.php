@@ -3,34 +3,41 @@
 namespace App\Tests\Base;
 
 use App\Helpers\ProjectDirHelper;
-use App\Repositories\PageRepository;
 use App\Tests\Base\IBaseTestCase;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Nette\Utils\FileSystem as NetteUtils_FileSystem;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as RootTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
-class BaseFunctionalTestCase extends WebTestCase implements IBaseTestCase
+class BaseFunctionalTestCase extends RootTestCase implements IBaseTestCase
 {
     //protected static bool $initialized = false;
-    protected PageRepository $pageRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->setupTestContent();
+        self::removeAllSites();
+        //self::setupTestContent();
     }
 
+    // teardown after every test function (so: multiple times in 1 class)
     protected function tearDown(): void
     {
         parent::tearDown();
     }
 
-
     //////
     ////// ---> START: test setup
     //////
-    private function setupTestContent(): void
+    protected function removeAllSites(): void
+    {
+        $fs = new NetteUtils_FileSystem();
+        $fs->delete(ProjectDirHelper::getProjectDir() . '/content/src/');
+        $fs->write(ProjectDirHelper::getProjectDir() . '/content/src/.gitkeep', '');
+    }
+
+    protected function setupTestContent(): void
     {
         // // setup once per test-run class
         // if (self::$initialized === false) {

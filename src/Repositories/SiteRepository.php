@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use Exception;
+use Nette\Utils\FileSystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -12,6 +14,48 @@ class SiteRepository
     public function __construct(string $projectDir)
     {
         $this->projectDir = $projectDir;
+    }
+
+    public function ensureValid(string $siteName): bool
+    {
+        $dir = $this->projectDir . '/content/src/' . $siteName;
+
+        if (!is_dir($dir . '/pages')) {
+            return $this->create($siteName);
+        }
+        return true;
+    }
+
+    public function create(string $siteName): bool
+    {
+        $dir = $this->projectDir . '/content/src/' . $siteName . '/pages';
+
+        if (!is_dir($dir)) {
+            $fs = new FileSystem();
+
+            try {
+                $fs->createDir($dir);
+            } catch (Exception $e) {
+                return false;
+            }
+        }
+        return is_dir($dir);
+    }
+
+    public function remove(string $siteName): bool
+    {
+        $dir = $this->projectDir . '/content/src/' . $siteName;
+
+        if (is_dir($dir)) {
+            $fs = new FileSystem();
+
+            try {
+                $fs->delete($dir);
+            } catch (Exception $e) {
+                return false;
+            }
+        }
+        return ! is_dir($dir);
     }
 
     public function getSites(): array

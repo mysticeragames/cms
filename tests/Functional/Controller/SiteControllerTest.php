@@ -21,6 +21,12 @@ use Symfony\Component\DomCrawler\Crawler;
 #[CoversNothing]
 class SiteControllerTest extends BaseFunctionalTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        //parent::setupTestContent();
+    }
+
     public function testIndex(): void
     {
         $client = static::createClient();

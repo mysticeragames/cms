@@ -4,6 +4,7 @@ namespace App\Controller\Cms;
 
 use App\Repositories\SiteRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -23,6 +24,25 @@ class SiteController extends AbstractController
         return $this->render('@cms/sites/index.html.twig', [
             'sites' => $this->siteRepository->getSites(),
         ]);
+    }
+
+    #[Route('/create', 'create', methods: ['post'])]
+    public function create(): Response
+    {
+        $request = Request::createFromGlobals();
+        $siteName = $request->get('site-name');
+
+        $this->siteRepository->create($siteName);
+
+        return $this->redirectToRoute('cms.sites.index');
+    }
+
+    #[Route('/destroy/{site}', 'destroy', methods: ['post'])]
+    public function destroy(string $site): Response
+    {
+        $this->siteRepository->remove($site);
+
+        return $this->redirectToRoute('cms.sites.index');
     }
 
     // #[Route('/show/{path}', 'show', methods: ['get'], requirements: ['path' => '.+'])]

@@ -23,7 +23,7 @@ class RenderController extends AbstractController
         $this->contentRenderer = $contentRenderer;
     }
 
-    #[Route('/{site}/{path}', 'render', methods: ['get'], requirements: ['path' => '(.+)?'])]
+    #[Route('/preview/{site}/{path}', 'render', methods: ['get'], requirements: ['path' => '(.+)?'])]
     public function renderPage(string $site, string $path, bool $editMode = false): Response
     {
         if (str_starts_with($path, 'assets/')) {
@@ -39,16 +39,17 @@ class RenderController extends AbstractController
         return new Response($content);
     }
 
-    #[Route(
-        '/---cms/render-edit/{path}',
-        'cms.pages.render-edit',
-        methods: ['get'],
-        requirements: ['path' => '.+'],
-        priority: 50
-    )]
+    #[Route('/edit/{site}/{path}', 'render-edit', methods: ['get'], requirements: ['path' => '(.+)?'])]
+    // #[Route(
+    //     '/---cms/render-edit/{path}',
+    //     'cms.pages.render-edit',
+    //     methods: ['get'],
+    //     requirements: ['path' => '.+'],
+    //     priority: 50
+    // )]
     public function renderEditUrl(string $site, string $path = ''): Response
     {
-        dump('EDITMODE --- ' . $path);
+        dump('EDITMODE PREVIEW --- ' . $path);
 
         $page = $this->pageRepository->getPage($site, $path);
         if ($page !== null) {
