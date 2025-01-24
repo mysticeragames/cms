@@ -1,6 +1,11 @@
 # Development
 
 ```bash
+# Build + test container locally:
+.cmd/build-and-test.sh
+```
+
+```bash
 # Test:
 vendor/bin/phpunit
 vendor/bin/phpcs
