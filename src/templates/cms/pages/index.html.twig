@@ -3,6 +3,20 @@
 {%~ block content %}
     <h1>Pages</h1>
 
+
+    <h2>Create</h2>
+    <form action="{{ path('cms.pages.create', { site: site } ) }}" method="POST">
+        Path:
+        <input type="text" placeholder="news/my news post" name="path" />
+        <input type="submit" value="Create" />
+    </form>
+
+    <hr>
+
+    {% if not pages %}
+        No pages found.
+    {% else %}
+
     <table>
         <thead>
             <tr>
@@ -14,6 +28,7 @@
                 <th>updatedAt</th>
                 <th>layout</th>
                 <th>template</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -30,8 +45,19 @@
                     <td title="{{ page.updatedAt }}">{{ page.updatedAt|date('Y-m-d') }}</td>
                     <td>{{ page.layout }}</td>
                     <td>{{ page.template }}</td>
+                    <td>
+                        <a href="#" onclick="event.preventDefault();if(confirm('Remove \'{{ page.path }}\' from \'{{ site }}\'?'))document.getElementById('form-destroy-{{ page.path }}').submit()">Remove</a>
+
+                        <form style="display:none" id="form-destroy-{{ page.path }}" action="{{ path('cms.pages.destroy', { site: site }) }}" method="post">
+                            <input type="hidden" name="path" value="{{ page.path }}">
+                            <input type="submit" value="X">
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    {% endif %}
+
 {%~ endblock %}

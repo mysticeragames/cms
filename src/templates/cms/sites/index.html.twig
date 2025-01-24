@@ -3,11 +3,27 @@
 {%~ block content %}
     <h1>Sites</h1>
 
+
+    <h2>Create</h2>
+    <form action="{{ path('cms.sites.create') }}" method="POST">
+        <input type="text" name="site-name" />
+        <input type="submit" value="Create" />
+    </form>
+
+    <hr>
+
+    {% if not sites %}
+        No sites found.
+    {% else %}
+
     <table>
         <thead>
             <tr>
                 <th></th>
-                <th>path</th>
+                <th>Name</th>
+                <th>GIT Repository</th>
+                <th>Storage</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -17,8 +33,20 @@
                         <a href="{{ path('cms.pages.index', { site: site.path })}}">Show</a>
                     </td>
                     <td>{{ site.path }}</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                        <a href="#" onclick="event.preventDefault();if(confirm('Remove {{ site.path }}?'))document.getElementById('form-destroy-{{ site.path }}').submit()">Remove</a>
+
+                        <form style="display:none" id="form-destroy-{{ site.path }}" action="{{ path('cms.sites.destroy', { site: site.path }) }}" method="post">
+                            <input type="submit" value="X">
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    {% endif %}
+
 {%~ endblock %}

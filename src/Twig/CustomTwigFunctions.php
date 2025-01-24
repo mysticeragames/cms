@@ -44,7 +44,7 @@ class CustomTwigFunctions extends AbstractExtension
 
         $absolutePath = Path::makeAbsolute(
             $path,
-            '/render//' . $this->twigVariables['site']['slug'] . '/'
+            '/render//preview//' . $this->twigVariables['site']['slug'] . '/'
         );
 
         // $currentAbsolutePath = Path::makeAbsolute(

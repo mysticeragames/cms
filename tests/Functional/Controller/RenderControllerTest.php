@@ -24,6 +24,12 @@ use Symfony\Component\Routing\RouterInterface;
 #[CoversNothing]
 class RenderControllerTest extends BaseFunctionalTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        parent::setupTestContent();
+    }
+
     public static function additionProvider(): array
     {
         return [

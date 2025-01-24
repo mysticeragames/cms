@@ -24,6 +24,7 @@ class PageRepositoryTest extends BaseIntegrationTestCase
     protected function setUp(): void
     {
         parent::setUp();
+        parent::setupTestContent();
         $this->pageRepository = self::getContainer()->get(PageRepository::class);
     }
 
