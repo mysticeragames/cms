@@ -35,6 +35,7 @@ jobs:
     steps:
 
 
+
     ######################## SETUP ########################
 
     - name: Set variables
@@ -62,8 +63,6 @@ jobs:
         echo "IMAGE_PROD_LATEST=${{ env.IMAGE_PROD_LATEST }}"
         echo "IMAGE_TEST=${{ env.IMAGE_TEST }}"
         echo "IMAGE_BUILD_CACHE_NAME=${{ env.IMAGE_BUILD_CACHE_NAME }}"
-
-        stop here ... ljasdflkjasdfljasdf
 
       # Use a hash (commit) and not a short release-version to make sure it has not been tampered with
       # Release versions can easily be removed and re-uploaded. Hashes not so easily...
