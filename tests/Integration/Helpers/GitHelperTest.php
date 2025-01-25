@@ -33,8 +33,35 @@ class GitHelperTest extends BaseIntegrationTestCase
         $fs = new FileSystem();
         $gitDir = $projectDir . '/content/src/--test-is-git-dir';
         $fs->createDir($gitDir);
-        $process = new Process(['git', '-C', $gitDir, 'init']);
+
+        (new Process(['git', '-C', $gitDir, 'init']))->run();
+
+        dump($gitDir);
+
+        $process = new Process(['pwd']);
         $process->run();
+        dump($process->getOutput());
+
+        $process = new Process(['ls', '-la', $gitDir]);
+        $process->run();
+        dump($process->getOutput());
+
+
+        $process = new Process(['git', '-v']);
+        $process->run();
+        dump($process->getOutput());
+
+        $process = new Process(['git', 'config', 'user.name']);
+        $process->run();
+        dump($process->getOutput());
+
+        $process = new Process(['git', 'config', 'user.email']);
+        $process->run();
+        dump($process->getOutput());
+
+        $process = new Process(['git', 'config', '-l']);
+        $process->run();
+        dump($process->getOutput());
 
         $this->assertTrue($git->isGitDir($projectDir));
     }
