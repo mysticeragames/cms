@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# FROM ROOT FOLDER:   .cmd/build.sh
+# FROM ROOT FOLDER:   .cmd/only-build.sh
 
 
 # You COULD use the external buildcache, but it's slower to lookup the remote every time, so it's faster using the local cache (which is used automatically after the first build)
@@ -11,6 +11,9 @@
 #DOCKER_BUILDKIT=1 docker build --target build_test -t cms:build_test .
 DOCKER_BUILDKIT=1 docker build --target final_test -t cms:test .
 DOCKER_BUILDKIT=1 docker build --target final_prod -t cms:prod .
+
+# DOCKER_BUILDKIT=1 docker build --no-cache --target final_test -t cms:test .
+# DOCKER_BUILDKIT=1 docker build --no-cache --target final_prod -t cms:prod .
 
 # display all images:
 docker images cms:*

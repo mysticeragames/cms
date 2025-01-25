@@ -6,9 +6,9 @@
 # - the build test container is being tested, not your local changes!
 # For local testing, just run directly: vendor/bin/phpunit
 # For building your local changes, and testing the actual build, run: ./.cmd/build-and-test.sh
-docker run --rm -it --name test-phpunit cms:test php vendor/bin/phpunit || exit 1
-docker run --rm -it --name test-phpstan cms:test php vendor/bin/phpstan --memory-limit=512M analyse src tests || exit 1
-docker run --rm -it --name test-phpcs cms:test php vendor/bin/phpcs || exit 1
+docker run --rm -it --name test-phpunit cms:test sh -c "php -d xdebug.mode=coverage vendor/bin/phpunit --coverage-html ./reports/coverage" || exit 1
+docker run --rm -it --name test-phpstan cms:test sh -c "php vendor/bin/phpstan --memory-limit=512M analyse src tests" || exit 1
+docker run --rm -it --name test-phpcs cms:test sh -c "php vendor/bin/phpcs" || exit 1
 
 # See if the containers actually serve content (this is also in job.docker-image.yml)
 # Send to the background with '&' at the end so they run in parallel, and wait for them to complete with 'wait'
