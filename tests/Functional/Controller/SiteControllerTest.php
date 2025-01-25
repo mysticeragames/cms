@@ -14,7 +14,9 @@ use App\Repositories\PageRepository;
 use App\Repositories\SiteRepository;
 use App\Services\ContentParser;
 use App\Tests\Base\BaseFunctionalTestCase;
+use App\Twig\CustomTwigFilters;
 use App\Twig\CustomTwigFunctions;
+use App\Twig\CustomTwigTests;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use Symfony\Component\DomCrawler\Crawler;
@@ -27,6 +29,8 @@ use Symfony\Component\DomCrawler\Crawler;
     UsesClass(PageRepository::class),
     UsesClass(ContentParser::class),
     UsesClass(CustomTwigFunctions::class),
+    UsesClass(CustomTwigFilters::class),
+    UsesClass(CustomTwigTests::class),
 ]
 class SiteControllerTest extends BaseFunctionalTestCase
 {
