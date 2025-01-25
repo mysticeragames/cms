@@ -98,15 +98,15 @@ jobs:
         tags: ${{ env.IMAGE_TEST }}
         platforms: linux/amd64
         cache-from: type=registry,ref=${{ env.IMAGE_BUILD_CACHE_NAME }}:cache-linux-amd64
-        cache-to: type=registry,ref=${{ env.IMAGE_BUILD_CACHE_NAME }}:cache-linux-amd64,mode=max
+        # cache-to: type=registry,ref=${{ env.IMAGE_BUILD_CACHE_NAME }}:cache-linux-amd64,mode=max # Don't overwrite the cache with each pull-request (keep this disabled)
 
     - name: Run tests (linux/amd64)
       timeout-minutes: 5
       run: |
         docker images ${{ env.IMAGE_TEST }}
-        docker run --rm --platform linux/amd64 ${{ env.IMAGE_TEST }} php vendor/bin/phpcs
-        docker run --rm --platform linux/amd64 ${{ env.IMAGE_TEST }} php vendor/bin/phpstan --memory-limit=512M analyse src tests
-        docker run --rm --platform linux/amd64 ${{ env.IMAGE_TEST }} php vendor/bin/phpunit
+        docker run --rm --platform linux/amd64 ${{ env.IMAGE_TEST }} sh -c "php -d xdebug.mode=coverage vendor/bin/phpunit --coverage-html ./reports/coverage"
+        docker run --rm --platform linux/amd64 ${{ env.IMAGE_TEST }} sh -c "php vendor/bin/phpcs"
+        docker run --rm --platform linux/amd64 ${{ env.IMAGE_TEST }} sh -c "php vendor/bin/phpstan --memory-limit=512M analyse src tests"
 
         # sanity check: see if the container actually serves content + test a non-default port
         bash .cmd/check-container.sh ${{ env.IMAGE_TEST }} 8251 linux/amd64

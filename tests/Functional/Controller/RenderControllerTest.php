@@ -10,18 +10,34 @@ vendor/bin/phpunit --testsuite functional --filter RenderControllerTest testMyMe
 namespace App\Tests\Functional\Controller;
 
 use App\Controller\Render\RenderController;
-use App\Helpers\ProjectDirHelper;
+use App\Repositories\PageRepository;
+use App\Services\ContentParser;
+use App\Services\ContentRenderer;
+use App\Services\TreeService;
+use App\Services\TwigRenderer;
 use App\Tests\Base\BaseFunctionalTestCase;
+use App\Twig\CustomTwigFilters;
+use App\Twig\CustomTwigFunctions;
+use App\Twig\CustomTwigTests;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\UsesClass;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Routing\RouterInterface;
 
 // https://symfony.com/doc/current/testing.html#application-tests
 
-##[CoversClass(RenderController::class)]
-#[CoversNothing]
+#[
+    CoversClass(RenderController::class),
+    UsesClass(PageRepository::class),
+    UsesClass(ContentParser::class),
+    UsesClass(ContentRenderer::class),
+    UsesClass(TreeService::class),
+    UsesClass(TwigRenderer::class),
+    UsesClass(CustomTwigFilters::class),
+    UsesClass(CustomTwigFunctions::class),
+    UsesClass(CustomTwigTests::class),
+]
 class RenderControllerTest extends BaseFunctionalTestCase
 {
     protected function setUp(): void

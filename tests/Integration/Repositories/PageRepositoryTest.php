@@ -11,12 +11,16 @@ namespace App\Tests\Integration\Repositories;
 
 use App\Helpers\DateHelper;
 use App\Repositories\PageRepository;
+use App\Services\ContentParser;
 use App\Tests\Base\BaseIntegrationTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\UsesClass;
 
-##[CoversClass(PageRepository::class)]
-#[CoversNothing]
+#[
+    CoversClass(PageRepository::class),
+    UsesClass(DateHelper::class),
+    UsesClass(ContentParser::class),
+]
 class PageRepositoryTest extends BaseIntegrationTestCase
 {
     protected PageRepository $pageRepository;

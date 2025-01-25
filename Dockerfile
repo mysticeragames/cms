@@ -51,11 +51,11 @@ RUN apk add --no-cache \
     php${PHP_VERSION_SHORT}-zip \
     supervisor
 
-# GIT
-RUN git config --global init.defaultBranch main && \
-    git config --global --add safe.directory '*' && \
-    git config --global user.email "MakeItStatic" &&\
-    git config --global user.name "MakeItStatic"
+# # GIT
+# RUN git config --global init.defaultBranch main && \
+#     git config --global --add safe.directory '*' && \
+#     git config --global user.email "MakeItStatic" &&\
+#     git config --global user.name "MakeItStatic"
 
 # Nginx
 COPY .docker/nginx.conf /etc/nginx/nginx.conf
@@ -117,11 +117,21 @@ COPY --chown=${APP_USER}:${APP_GROUP} --from=build_prod /var/www/html/vendor ven
 # Make sure it runs in production mode
 RUN echo -e "APP_ENV=prod\nAPP_SECRET=" > /var/www/html/.env.local
 
+# Copy gitconfig
+#COPY --chown=${APP_USER}:${APP_GROUP} --from=minimal /home/appuser/.gitconfig /home/appuser/.gitconfig
+
 # Setup directories and file permissions https://symfony.com/doc/current/setup/file_permissions.html
 RUN mkdir -p ./var/log ./var/cache && \
     chown -R ${APP_USER}:${APP_GROUP} ./var ./.env.local
 
 USER ${APP_USER}
+
+# GIT
+RUN git config --global init.defaultBranch main && \
+    git config --global --add safe.directory '*' && \
+    git config --global user.email "MakeItStatic" &&\
+    git config --global user.name "MakeItStatic"
+
 EXPOSE 8250
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 HEALTHCHECK --timeout=10s --interval=5s --start-interval=2s CMD curl --silent --fail http://127.0.0.1:8250/fpm-ping || exit 1
@@ -152,11 +162,21 @@ COPY --chown=${APP_USER}:${APP_GROUP} --from=build_test /var/www/html/vendor ven
 # Make sure it runs in test mode
 COPY .env.test .env.local
 
+# Copy gitconfig
+#COPY --chown=${APP_USER}:${APP_GROUP} --from=minimal /home/appuser/.gitconfig /home/appuser/.gitconfig
+
 # Setup directories and file permissions https://symfony.com/doc/current/setup/file_permissions.html
 RUN mkdir -p ./var/log ./var/cache && \
     chown -R ${APP_USER}:${APP_GROUP} ./var ./.env.local
 
 USER ${APP_USER}
+
+# GIT
+RUN git config --global init.defaultBranch main && \
+    git config --global --add safe.directory '*' && \
+    git config --global user.email "MakeItStatic" &&\
+    git config --global user.name "MakeItStatic"
+
 EXPOSE 8250
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 HEALTHCHECK --timeout=10s --interval=5s --start-interval=2s CMD curl --silent --fail http://127.0.0.1:8250/fpm-ping || exit 1

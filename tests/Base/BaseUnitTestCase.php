@@ -21,4 +21,9 @@ class BaseUnitTestCase extends TestCase
         // teardown after every test function (so: multiple times in 1 class)
         parent::tearDown();
     }
+
+    public function getProjectDir(): string
+    {
+        return dirname(dirname(__DIR__));
+    }
 }

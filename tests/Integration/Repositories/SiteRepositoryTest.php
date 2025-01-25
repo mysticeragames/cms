@@ -9,15 +9,16 @@ vendor/bin/phpunit --testsuite integration --filter SiteRepositoryTest testMyMet
 
 namespace App\Tests\Integration\Repositories;
 
-use App\Helpers\DateHelper;
 use App\Helpers\ProjectDirHelper;
 use App\Repositories\SiteRepository;
 use App\Tests\Base\BaseIntegrationTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\UsesClass;
 
-##[CoversClass(PageRepository::class)]
-#[CoversNothing]
+#[
+    CoversClass(SiteRepository::class),
+    UsesClass(ProjectDirHelper::class),
+]
 class SiteRepositoryTest extends BaseIntegrationTestCase
 {
     protected SiteRepository $siteRepository;
