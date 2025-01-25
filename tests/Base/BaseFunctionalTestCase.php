@@ -2,14 +2,13 @@
 
 namespace App\Tests\Base;
 
-use App\Helpers\ProjectDirHelper;
 use App\Tests\Base\IBaseTestCase;
 use Nette\Utils\FileSystem as NetteUtils_FileSystem;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as RootTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
-class BaseFunctionalTestCase extends RootTestCase implements IBaseTestCase
+class BaseFunctionalTestCase extends WebTestCase implements IBaseTestCase
 {
     //protected static bool $initialized = false;
 
@@ -33,8 +32,8 @@ class BaseFunctionalTestCase extends RootTestCase implements IBaseTestCase
     protected function removeAllSites(): void
     {
         $fs = new NetteUtils_FileSystem();
-        $fs->delete(ProjectDirHelper::getProjectDir() . '/content/src/');
-        $fs->write(ProjectDirHelper::getProjectDir() . '/content/src/.gitkeep', '');
+        $fs->delete($this->getProjectDir() . '/content/src/');
+        $fs->write($this->getProjectDir() . '/content/src/.gitkeep', '');
     }
 
     protected function setupTestContent(): void
@@ -64,7 +63,7 @@ class BaseFunctionalTestCase extends RootTestCase implements IBaseTestCase
 
     public function getProjectDir(): string
     {
-        return ProjectDirHelper::getProjectDir();
+        return dirname(dirname(__DIR__));
     }
 
     public function getTestSiteRootPath(): string

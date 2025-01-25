@@ -2,8 +2,8 @@
 
 /*
 
-vendor/bin/phpunit --testsuite integration --filter ProjectDirHelperTest
-vendor/bin/phpunit --testsuite integration --filter ProjectDirHelperTest testMyMethod
+vendor/bin/phpunit --testsuite functional --filter ProjectDirHelperTest
+vendor/bin/phpunit --testsuite functional --filter ProjectDirHelperTest testMyMethod
 
 */
 
@@ -13,14 +13,15 @@ declare(strict_types=1);
 // The KernelTestCase also makes sure your kernel is rebooted for each test.
 // This assures that each test is run independently from each other.
 
-namespace App\Tests\Integration\Helpers;
+namespace App\Tests\Functional\Helpers;
 
 use App\Helpers\ProjectDirHelper;
-use App\Tests\Base\BaseIntegrationTestCase;
+use App\Tests\Base\BaseFunctionalTestCase;
+use App\Tests\Base\BaseUnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 #[CoversClass(ProjectDirHelper::class)]
-class ProjectDirHelperTest extends BaseIntegrationTestCase
+class ProjectDirHelperTest extends BaseFunctionalTestCase
 {
     public function testValidProjectDir(): void
     {
