@@ -7,6 +7,19 @@ use Symfony\Component\Process\Process;
 
 class GitHelper
 {
+    public function isGitDir(string $dir): bool
+    {
+        $process = new Process(['git', '-C', $dir, 'rev-parse']);
+        $process->disableOutput();
+        $process->run();
+
+        // For code coverage tests, it's split up (therefore it's not 'return $process->isSuccessful()' )
+        if ($process->isSuccessful()) {
+            return true;
+        }
+        return false;
+    }
+
     public function pull(string $dir): void
     {
         // Pull
