@@ -31,12 +31,12 @@
         "symfony/runtime": "7.2.*",
         "symfony/twig-bundle": "7.2.*",
         "symfony/yaml": "7.2.*",
-        "twig/extra-bundle": "^3.18",
-        "twig/twig": "^3.18"
+        "twig/extra-bundle": "^3.19",
+        "twig/twig": "^3.19"
     },
     "require-dev": {
         "phpstan/phpstan": "^2.1.2",
-        "phpunit/phpunit": "^11.5.3",
+        "phpunit/phpunit": "^11.5.5",
         "squizlabs/php_codesniffer": "^3.11.3",
         "symfony/browser-kit": "7.2.*",
         "symfony/css-selector": "7.2.*",
