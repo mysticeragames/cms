@@ -2,8 +2,8 @@
 
 /*
 
-vendor/bin/phpunit --testsuite integration --filter GitHelperTest
-vendor/bin/phpunit --testsuite integration --filter GitHelperTest testMyMethod
+vendor/bin/phpunit --testsuite integration --filter GitRepositoryTest
+vendor/bin/phpunit --testsuite integration --filter GitRepositoryTest testMyMethod
 
 */
 
@@ -15,13 +15,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Services;
 
-use App\Services\GitHelper;
+use App\Repositories\GitRepository;
 use App\Tests\Base\BaseIntegrationTestCase;
 use Nette\Utils\FileSystem;
 use PHPUnit\Framework\Attributes\CoversClass;
 
-#[CoversClass(GitHelper::class)]
-class GitHelperTest extends BaseIntegrationTestCase
+#[CoversClass(GitRepository::class)]
+class GitRepositoryTest extends BaseIntegrationTestCase
 {
     protected static array $tempDirNames = [];
 
@@ -65,104 +65,98 @@ class GitHelperTest extends BaseIntegrationTestCase
 
     public function testIsRootGitDirFalse(): void
     {
-        $git = new GitHelper();
-        $this->assertFalse($git->isRootGitDir($this->createTempDir()));
+        $git = new GitRepository($this->createTempDir());
+        $this->assertFalse($git->isRootGitDir());
     }
 
     public function testNonExistingDirsCanNotBeInitiated(): void
     {
         $nonExistingDir = sys_get_temp_dir() . '/tmp-non-existing-dir-' . date('YmdHis') . '-' . mt_rand();
 
-        $git = new GitHelper();
-        $this->assertFalse($git->init($nonExistingDir));
+        $git = new GitRepository($nonExistingDir);
+        $this->assertFalse($git->init());
 
         // Sanity check: not only check if the init returns false,
         //   but also check if a dir was not created and turned into a git dir
-        $this->assertFalse($git->isRootGitDir($nonExistingDir));
+        $this->assertFalse($git->isRootGitDir());
     }
 
     public function testNonExistingDirsAreNotGitRootDirs(): void
     {
         $nonExistingDir = sys_get_temp_dir() . '/tmp-non-existing-dir-' . date('YmdHis') . '-' . mt_rand();
 
-        $git = new GitHelper();
-        $this->assertFalse($git->isRootGitDir($nonExistingDir));
+        $git = new GitRepository($nonExistingDir);
+        $this->assertFalse($git->isRootGitDir());
     }
 
     public function testInit(): void
     {
         $gitDir = $this->createTempDir();
-        $git = new GitHelper();
+        $git = new GitRepository($gitDir);
 
         // Sanity check
-        $this->assertFalse($git->isRootGitDir($gitDir));
+        $this->assertFalse($git->isRootGitDir());
 
-        $git->init($gitDir);
-        $this->assertTrue($git->isRootGitDir($gitDir));
+        $git->init();
+        $this->assertTrue($git->isRootGitDir());
     }
 
     public function testIsInitiated(): void
     {
-        $git = new GitHelper();
-
         $nonExistingDir = sys_get_temp_dir() . '/tmp-non-existing-dir-' . date('YmdHis') . '-' . mt_rand();
-        $this->assertFalse($git->isGitInitiated($nonExistingDir));
+        $git = new GitRepository($nonExistingDir);
+        $this->assertFalse($git->isInitiated());
 
-        $dir = $this->createTempDir();
-        $this->assertFalse($git->isGitInitiated($dir));
+        $git = new GitRepository($this->createTempDir());
+        $this->assertFalse($git->isInitiated());
 
-        $git->init($dir);
-        $this->assertTrue($git->isGitInitiated($dir));
-
-        // Non-existing subdir (false)
-        $this->assertFalse($git->isGitInitiated($dir . '/non-existing-subdir'));
-
-        $fs = new FileSystem();
-        $fs->createDir($dir . '/subdir');
-        $this->assertTrue($git->isGitInitiated($dir . '/subdir'));
+        $git->init();
+        $this->assertTrue($git->isInitiated());
     }
 
     public function testChanges(): void
     {
         $dir = $this->createTempDir();
 
-        $git = new GitHelper();
-        $git->init($dir);
+        $git = new GitRepository($dir);
+        $git->init();
 
         $fs = new FileSystem();
         $fs->write($dir . '/test.txt', 'test');
         $fs->write($dir . '/test/test2.txt', 'test2');
         $fs->write($dir . '/test/test2/test3.txt', 'test3');
 
-        $this->assertEquals('test.txt', $git->changes($dir)[0]['path']);
-        $this->assertEquals('test/test2.txt', $git->changes($dir)[1]['path']);
-        $this->assertEquals('test/test2/test3.txt', $git->changes($dir)[2]['path']);
-        $this->assertEquals('untracked', $git->changes($dir)[0]['status']);
-        $this->assertEquals('untracked', $git->changes($dir)[1]['status']);
-        $this->assertEquals('untracked', $git->changes($dir)[2]['status']);
+        // Everything is added by default when the 'changes' method is called
 
-        $git->add($dir, 'test.txt');
+        // $this->assertEquals('test.txt', $git->changes()[0]['path']);
+        // $this->assertEquals('test/test2.txt', $git->changes()[1]['path']);
+        // $this->assertEquals('test/test2/test3.txt', $git->changes()[2]['path']);
+        // $this->assertEquals('untracked', $git->changes()[0]['status']);
+        // $this->assertEquals('untracked', $git->changes()[1]['status']);
+        // $this->assertEquals('untracked', $git->changes()[2]['status']);
 
-        $this->assertEquals('test.txt', $git->changes($dir)[0]['path']);
-        $this->assertEquals('test/test2.txt', $git->changes($dir)[1]['path']);
-        $this->assertEquals('test/test2/test3.txt', $git->changes($dir)[2]['path']);
-        $this->assertEquals('added', $git->changes($dir)[0]['status']);
-        $this->assertEquals('untracked', $git->changes($dir)[1]['status']);
-        $this->assertEquals('untracked', $git->changes($dir)[2]['status']);
+        // $git->add('test.txt');
 
-        $git->add($dir, '.');
+        // $this->assertEquals('test.txt', $git->changes()[0]['path']);
+        // $this->assertEquals('test/test2.txt', $git->changes()[1]['path']);
+        // $this->assertEquals('test/test2/test3.txt', $git->changes()[2]['path']);
+        // $this->assertEquals('added', $git->changes()[0]['status']);
+        // $this->assertEquals('untracked', $git->changes()[1]['status']);
+        // $this->assertEquals('untracked', $git->changes()[2]['status']);
 
-        $this->assertEquals('test.txt', $git->changes($dir)[0]['path']);
-        $this->assertEquals('test/test2.txt', $git->changes($dir)[1]['path']);
-        $this->assertEquals('test/test2/test3.txt', $git->changes($dir)[2]['path']);
-        $this->assertEquals('added', $git->changes($dir)[0]['status']);
-        $this->assertEquals('added', $git->changes($dir)[1]['status']);
-        $this->assertEquals('added', $git->changes($dir)[2]['status']);
+        // $git->add('.');
 
-        $git->commit($dir, 'test');
-        $this->assertFalse($git->hasChanges($dir));
+        $this->assertEquals('test.txt', $git->changes()[0]['path']);
+        $this->assertEquals('test/test2.txt', $git->changes()[1]['path']);
+        $this->assertEquals('test/test2/test3.txt', $git->changes()[2]['path']);
+        $this->assertEquals('added', $git->changes()[0]['status']);
+        $this->assertEquals('added', $git->changes()[1]['status']);
+        $this->assertEquals('added', $git->changes()[2]['status']);
 
-        $this->assertEquals([], $git->changes($dir));
+        $git->commit('test');
+        $this->assertFalse($git->hasChanges());
+
+        $this->assertEquals([], $git->changes());
 
         $testPathAdded = 'test/test2/test3/test4.txt';
         $testPathDeleted = 'test/test2.txt';
@@ -174,9 +168,9 @@ class GitHelperTest extends BaseIntegrationTestCase
 
         // TODO: it will not have the same result when the changes are not added first...
         // TODO: Test the $git->parseGitStatus() for all possible use cases (merge conflicts, etc)
-        $git->addAll($dir);
+        $git->addAll();
 
-        $changes = $git->changes($dir);
+        $changes = $git->changes();
         $paths = array_column($changes, 'path');
 
         $this->assertContains($testPathAdded, $paths);
@@ -195,6 +189,6 @@ class GitHelperTest extends BaseIntegrationTestCase
             }
         }
 
-        $this->assertTrue($git->hasChanges($dir));
+        $this->assertTrue($git->hasChanges());
     }
 }

@@ -76,16 +76,21 @@ EOD;
         if (empty($path)) {
             $path = 'index';
         }
-        $files = [
-            $this->projectDir . '/content/src/' . $siteName . '/pages/' . $path . '.md',
-            $this->projectDir . '/content/src/' . $siteName . '/pages/' . $path . '.yml',
-        ];
+        $file = $this->projectDir . '/content/src/' . $siteName . '/pages/' . $path . '.md';
+        $dir = dirname($file);
 
-        foreach ($files as $file) {
-            if (is_file($file)) {
-                $fs = new FileSystem();
-                $fs->delete($file);
-            }
+        if (is_file($file)) {
+            $fs = new FileSystem();
+            $fs->delete($file);
+        }
+
+        // If directory is empty, remove dir
+        $finder = new Finder();
+        $finder->files()->in($dir);
+
+        if (!$finder->hasResults()) {
+            $fs = new FileSystem();
+            $fs->delete($dir);
         }
         return true;
     }

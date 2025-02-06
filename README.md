@@ -26,21 +26,34 @@ Open source Flat-File CMS with Static Site Generator
 ## Spin up a new CMS
 
 ```bash
-docker run -d --rm \
+# Create volume for SSH keys (to access GIT repositories)
+docker volume create makeitstatic_ssh
+
+# Copy SSH keys to volume and set owner
+docker run --rm \
+    -v makeitstatic_ssh:/target \
+    -v ~/.ssh:/source \
+    alpine \
+    sh -c "cp -r /source/* /target && chown -R 1111:1112 /target && ls -la /target"
+
+# Start the CMS
+docker run --rm \
     -p 8250:8250 \
-    -v ~/.ssh:/home/appuser/.ssh:ro \
+    -v makeitstatic_ssh:/home/appuser/.ssh:ro \
     --pull always \
-    --name makeitstatic-cms \
+    --name makeitstatic_cms \
     mysticeragames/makeitstatic-cms
 ```
 
 - Navigate to your CMS, connect your GIT repositories and start working:
 - **http://localhost:8250**
 
-## Done? Destroy the container
+## Done? Cleanup
 
 ```bash
-docker rm makeitstatic-cms --force
+docker rm makeitstatic_cms --force
+
+docker volume rm makeitstatic_ssh
 ```
 
 ## Development (main branch)

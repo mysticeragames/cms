@@ -15,13 +15,15 @@ ARG PHP_VERSION_SHORT=84
 # Set the internal user/group
 ARG APP_USER=appuser
 ARG APP_GROUP=appgroup
+ARG APP_UID=1111
+ARG APP_GID=1112
 
 # Set workdir
 WORKDIR /var/www/html
 
 # Add user with home dir (for git, that will be used to handle repositories)
-RUN addgroup -g 1112 ${APP_GROUP} && \
-    adduser -D -G ${APP_GROUP} -u 1111 -h /home/${APP_USER} -s /bin/sh ${APP_USER}
+RUN addgroup -g ${APP_GID} ${APP_GROUP} && \
+    adduser -D -G ${APP_GROUP} -u ${APP_UID} -h /home/${APP_USER} -s /bin/sh ${APP_USER}
 
 # Fix vulnerability (Found with Docker Scout)
 # https://security.alpinelinux.org/vuln/CVE-2024-50349
@@ -31,6 +33,7 @@ RUN apk add --no-cache git=2.48.1-r0 --repository=https://dl-cdn.alpinelinux.org
 # Install packages
 RUN apk add --no-cache \
     curl \
+    openssh-client \
     # git \
     nginx \
     php${PHP_VERSION_SHORT} \
@@ -51,11 +54,20 @@ RUN apk add --no-cache \
     php${PHP_VERSION_SHORT}-zip \
     supervisor
 
-# # GIT
-# RUN git config --global init.defaultBranch main && \
-#     git config --global --add safe.directory '*' && \
-#     git config --global user.email "MakeItStatic" &&\
-#     git config --global user.name "MakeItStatic"
+# Create SSH folder
+RUN mkdir -p /home/${APP_USER}/.ssh && \
+    chown -R ${APP_USER}:${APP_GROUP} /home/${APP_USER}/.ssh && \
+    chmod 700 /home/${APP_USER}/.ssh
+
+USER ${APP_USER}
+
+# GIT
+RUN git config --global init.defaultBranch main && \
+    git config --global --add safe.directory '*' && \
+    git config --global user.email "MakeItStatic" &&\
+    git config --global user.name "MakeItStatic"
+
+USER root
 
 # Nginx
 COPY .docker/nginx.conf /etc/nginx/nginx.conf
@@ -126,12 +138,6 @@ RUN mkdir -p ./var/log ./var/cache && \
 
 USER ${APP_USER}
 
-# GIT
-RUN git config --global init.defaultBranch main && \
-    git config --global --add safe.directory '*' && \
-    git config --global user.email "MakeItStatic" &&\
-    git config --global user.name "MakeItStatic"
-
 EXPOSE 8250
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 HEALTHCHECK --timeout=10s --interval=5s --start-interval=2s CMD curl --silent --fail http://127.0.0.1:8250/fpm-ping || exit 1
@@ -170,12 +176,6 @@ RUN mkdir -p ./var/log ./var/cache && \
     chown -R ${APP_USER}:${APP_GROUP} ./var ./.env.local
 
 USER ${APP_USER}
-
-# GIT
-RUN git config --global init.defaultBranch main && \
-    git config --global --add safe.directory '*' && \
-    git config --global user.email "MakeItStatic" &&\
-    git config --global user.name "MakeItStatic"
 
 EXPOSE 8250
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
