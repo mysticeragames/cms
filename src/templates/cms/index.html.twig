@@ -3,5 +3,39 @@
 {%~ block content %}
     <h1>CMS</h1>
 
-    <a href="{{ path('cms.sites.index') }}">Sites</a>
+    {% if remote %}
+
+        <a href="{{ path('cms.sites.index') }}">Sites</a>
+
+        <h3>{{ remote }}</h3>
+        
+        {% if flatChanges %}
+
+            <h3>Commit/Push</h3>
+            {{ form(gitCommitForm) }}
+
+            <h3>Warning</h3>
+            <p>These changes have not yet been saved</p>
+
+            <ul>
+            {% for change in flatChanges %}
+                <li>{{ change }}</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            no changes
+        {% endif %}
+        
+        <hr>
+        
+        <a href="#" onclick="event.preventDefault();if(confirm('Disconnect remote \'{{ remote }}\'?'))document.getElementById('form-disconnect').submit()">Disconnect remote</a>
+        <form style="display:none" id="form-disconnect" action="{{ path('cms.remote.disconnect') }}" method="post">
+            <input type="submit" value="X">
+        </form>
+
+    {% else %}
+        <h3>Connect to any GIT repository to get started</h3>
+        {{ form(gitRemoteForm) }}
+    {% endif %}
+
 {%~ endblock %}

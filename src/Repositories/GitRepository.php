@@ -1,45 +1,83 @@
 <?php
 
-namespace App\Services;
+namespace App\Repositories;
 
+use Nette\Utils\FileSystem;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-class GitHelper
+class GitRepository
 {
-    public function run(array $cmd): Process
+    protected string $dir;
+    private string $originalDir;
+    private ?string $subDir = null;
+
+    public function __construct(string $dir)
     {
+        $this->originalDir = $dir;
+        $this->dir = $this->originalDir;
+    }
+
+    protected function setSubDir(string $dir): void
+    {
+        $this->subDir = $dir;
+
+        if (empty($this->subDir)) {
+            $this->dir = $this->originalDir;
+        } else {
+            $this->dir = $this->originalDir . '/' . $this->subDir;
+        }
+    }
+
+    public function git(array $arguments): Process
+    {
+        $cmd = array_merge(['git', '-C', $this->dir], $arguments);
+
         $process = new Process($cmd);
         $process->run();
 
         return $process;
     }
 
-    public function isGitInitiated(string $dir): bool
+    // public function addRemote(string $repositoryUrl): bool
+    // {
+    //     if (empty($repositoryUrl)) {
+    //         dump('empty repo url');
+    //         return false;
+    //     }
+
+    //     if ($this->hasRemote()) {
+    //         dump('already has remote');
+    //         return false; // Remote already connected, should be removed first
+    //     }
+
+    //     $this->disconnectRemote();
+
+    //     $this->clone($this->dir, $repositoryUrl);
+
+    //     return $this->hasRemote();
+    // }
+
+    public function destroy(bool $recreateEmptyDir = false): void
     {
-        if (is_dir($dir) === false) {
-            // Directory does not exist
-            return false;
-        }
+        $fs = new FileSystem();
+        $fs->delete($this->dir);
 
-        if (empty($this->getRootDir($dir))) {
-            // Dir does not have a git-root, so it's not yet initiated
-            return false;
+        if ($recreateEmptyDir) {
+            $fs->createDir($this->dir);
         }
-
-        return true;
     }
 
-    public function getRootDir(string $dir): string
+    public function getRootDir(): string
     {
-        $process = $this->run(['git', '-C', $dir, 'rev-parse', '--show-toplevel']);
+        $process = $this->git(['rev-parse', '--show-toplevel']);
 
         return trim($process->getOutput());
     }
 
-    public function isRootGitDir(string $dir): bool
+    public function isRootGitDir(): bool
     {
-        if ($dir === $this->getRootDir($dir)) {
+        if ($this->dir === $this->getRootDir()) {
             return true;
         }
         return false;
@@ -48,14 +86,14 @@ class GitHelper
         // return $dir === $this->getRootDir($dir);
     }
 
-    public function isNonRootGitDir(string $dir): bool
+    public function isNonRootGitDir(): bool
     {
-        $rootDir = $this->getRootDir($dir);
+        $rootDir = $this->getRootDir();
 
         if (empty($rootDir)) {
             return false; // Not a git repository
         }
-        if ($rootDir !== $dir) {
+        if ($rootDir !== $this->dir) {
             return false; // The given $dir is part of a git repository, but not the root
         }
         return true;
@@ -64,19 +102,37 @@ class GitHelper
         //return !empty($output) && $output !== $dir;
     }
 
-    public function init(string $dir): bool
+    public function hasRemote(): bool
     {
-        if (is_dir($dir) === false) {
+        return !empty($this->getRemote());
+    }
+
+    public function getRemote(): ?string
+    {
+        if (!$this->isInitiated()) {
+            return null;
+        }
+
+        $process = $this->git(['config', 'remote.origin.url']);
+
+        return trim($process->getOutput());
+    }
+
+    public function init(): bool
+    {
+        if (is_dir($this->dir) === false) {
             // Directory does not exist
+            //dd('init: dir does not exist: ' . $this->dir);
             return false;
         }
 
-        if (! empty($this->getRootDir($dir))) {
+        if ($this->isRootGitDir()) {
             // This is already a git dir
+            //dd('init: This is already a root git dir: ' . $this->dir);
             return false;
         }
 
-        $process = $this->run(['git', '-C', $dir, 'init']);
+        $process = $this->git(['init']);
 
         // For code coverage tests, it's split up (therefore it's not 'return $process->isSuccessful()' )
         if ($process->isSuccessful()) {
@@ -85,27 +141,86 @@ class GitHelper
         return false;
     }
 
-    public function pull(string $dir): void
+    public function isInitiated(): bool
     {
-        $process = $this->run(['git', '-C', $dir, 'pull']);
+        if (is_dir($this->dir) === false) {
+            // Directory does not exist
+            return false;
+        }
+
+        if (empty($this->getRootDir())) {
+            // Dir does not have a git-root, so it's not yet initiated
+            return false;
+        }
+
+        return true;
+    }
+
+    public function clone(string $repositoryUrl, string $origin = 'origin'): bool
+    {
+        // TODO: Check if this can be done just normally with 'git clone' and then depth = 1, and only default branch
+
+        $result = $this->init();
+
+        if (!$result) {
+            return false;
+        }
+        $result = $this->git(['remote', 'add', $origin, $repositoryUrl]);
+        if (!$result->isSuccessful()) {
+            //dd('clone: could not add remote');
+            return false;
+        }
+        //$result = $this->git(['fetch', '--all']);
+        $result = $this->git(['fetch']);
+
+
+        $currentBranch = $this->getCurrentBranch();
+        $this->git(['checkout', '--track', $origin . '/' . $currentBranch]);
+
+        return true;
+    }
+
+    public function setRemote(string $url): bool
+    {
+        if (!$this->hasRemote()) {
+            $this->git(['remote', 'add', 'origin', trim($url)]);
+        } else {
+            $this->git(['remote', 'set-url', 'origin', trim($url)]);
+        }
+        return $this->getRemote() === trim($url);
+    }
+
+    public function disconnectRemote(): bool
+    {
+        if ($this->hasRemote()) {
+            $this->git(['remote', 'remove', 'origin']);
+        }
+        return $this->hasRemote();
+    }
+
+
+
+    public function pull(): void
+    {
+        $process = $this->git(['pull']);
 
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
     }
 
-    public function addAll(string $dir): bool
+    public function addAll(): bool
     {
-        return $this->add($dir, '.');
+        return $this->add('.');
     }
 
-    public function add(string $dir, ?string $path = null): bool
+    public function add(?string $path = null): bool
     {
         if ($path === null) {
             return false;
         }
 
-        $process = $this->run(['git', '-C', $dir, 'add', $path]);
+        $process = $this->git(['add', $path]);
 
         if (!$process->isSuccessful()) {
             //throw new ProcessFailedException($process);
@@ -114,9 +229,9 @@ class GitHelper
         return true;
     }
 
-    public function commit(string $dir, string $message = ''): void
+    public function commit(string $message = ''): void
     {
-        $process = $this->run(['git', '-C', $dir, 'commit', '-m', $message]);
+        $process = $this->git(['commit', '-m', $message]);
 
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
@@ -184,13 +299,36 @@ class GitHelper
         return $results;
     }
 
-    public function hasChanges(string $dir): bool
+    public function hasChanges(): bool
     {
-        return !empty($this->changes($dir));
+        return !empty($this->changes());
     }
 
-    public function changes(string $dir): array
+    public function flatChanges(): array
     {
+        return array_map(function ($item) {
+            $status = $item['x'];
+            if ($status === '?') {
+                $status = $item['y'];
+            }
+
+            if ($status === 'R' && isset($item['orig_path'])) {
+                $item['path'] = $item['orig_path'] . ' -> ' . $item['path'];
+            }
+
+            return $status . ' ' . $item['path'];
+        }, $this->changes());
+    }
+
+    public function changes(): array
+    {
+        if (!$this->isInitiated()) {
+            return [];
+        }
+
+        // For this project, just always add any changes
+        $this->addAll();
+
         // https://git-scm.com/docs/git-status#_short_format
         // X          Y     Meaning
         // -------------------------------------------------
@@ -220,7 +358,7 @@ class GitHelper
         // !           !    ignored
         // -------------------------------------------------
 
-        $process = $this->run(['git', '-C', $dir, 'status', '-u', '--porcelain']);
+        $process = $this->git(['status', '-u', '--porcelain']);
 
         return $this->parseGitStatus($process->getOutput());
 
@@ -244,33 +382,38 @@ class GitHelper
         // return $files;
     }
 
-    public function addCommitPush(string $dir, ?string $message = null): void
+    public function getCurrentBranch(): string
+    {
+        $process = $this->git(['branch', '--show-current']);
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        return trim($process->getOutput());
+    }
+
+    public function addCommitPush(?string $message = null): void
     {
         if (empty($message)) {
             $message = 'deployment ' . date('Y-m-d H:i:s');
         }
 
         // Get current branch
-        $process = $this->run(['git', '-C', $dir, 'branch', '--show-current']);
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-        $branch = trim($process->getOutput());
+        $branch = $this->getCurrentBranch();
 
         // Add all files in working directory
-        $process = $this->run(['git', '-C', $dir, 'add', '.']);
+        $process = $this->git(['add', '.']);
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
 
         // Commit files
-        $process = $this->run(['git', '-C', $dir, 'commit', '-m', $message]);
+        $process = $this->git(['commit', '-m', $message]);
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
 
         // Push
-        $process = $this->run(['git', '-C', $dir, 'push', '-u', 'origin', $branch]);
+        $process = $this->git(['push', '-u', 'origin', $branch]);
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
