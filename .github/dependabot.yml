@@ -10,15 +10,27 @@ updates:
     open-pull-requests-limit: 25
     schedule:
       interval: "daily"
+    groups:
+      dependabot-version-updates:
+        patterns:
+          - "*"
 
   - package-ecosystem: "docker"
     directory: "/"
     open-pull-requests-limit: 25
     schedule:
       interval: "daily"
+    groups:
+      dependabot-version-updates:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     open-pull-requests-limit: 25
     schedule:
       interval: "daily"
+    groups:
+      dependabot-version-updates:
+        patterns:
+          - "*"
