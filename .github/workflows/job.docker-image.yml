@@ -98,7 +98,7 @@ jobs:
         tags: ${{ env.IMAGE_TEST }}
         platforms: linux/amd64
         cache-from: type=registry,ref=${{ env.IMAGE_BUILD_CACHE_NAME }}:cache-linux-amd64
-        # cache-to: type=registry,ref=${{ env.IMAGE_BUILD_CACHE_NAME }}:cache-linux-amd64,mode=max # Don't overwrite the cache with each pull-request (keep this disabled)
+        cache-to: type=registry,ref=${{ env.IMAGE_BUILD_CACHE_NAME }}:cache-linux-amd64,mode=max
 
     - name: Run tests (linux/amd64)
       timeout-minutes: 5
