@@ -9,7 +9,7 @@ updates:
     directory: "/" # Location of package manifests
     open-pull-requests-limit: 25
     schedule:
-      interval: "daily"
+      interval: "weekly"
     groups:
       dependabot-version-updates:
         patterns:
@@ -19,7 +19,7 @@ updates:
     directory: "/"
     open-pull-requests-limit: 25
     schedule:
-      interval: "daily"
+      interval: "weekly"
     groups:
       dependabot-version-updates:
         patterns:
@@ -29,7 +29,7 @@ updates:
     directory: "/"
     open-pull-requests-limit: 25
     schedule:
-      interval: "daily"
+      interval: "weekly"
     groups:
       dependabot-version-updates:
         patterns:
